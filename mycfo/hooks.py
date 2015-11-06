@@ -50,6 +50,7 @@ app_version = "0.0.1"
 
 # notification_config = "mycfo.notifications.get_notification_config"
 
+fixtures = ['Custom Field', 'Property Setter']
 # Permissions
 # -----------
 # Permissions evaluated in scripted ways
