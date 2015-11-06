@@ -11,13 +11,22 @@ import json
 class FFWW(Document):
 	pass	
 
-@frappe.whitelist()
-def load_address_and_contact(doc,key):
-	doc = json.loads(doc)
-	if doc.get('doctype') == "FFWW":
-		contact_list = frappe.get_all("Contact",
-			fields="*", filters={key: doc.get('customer')})
 
+modules = [] 	
+doctypes = []
+folders = []
+single_type = []
+docnames = []
+response = []
+@frappe.whitelist()
+def load_address_and_contact(record,key):
+	frappe.errprint(["records",record])
+	# doc = json.loads(doc)
+	# if doc.get('doctype') == "FFWW":
+	contact_list = frappe.get_all("Contact",
+			fields="*", filters={key:record})
+
+	if len(contact_list)>0:
 		args = {'contact_list':contact_list}
 		frappe.errprint(args)
 		return args
@@ -33,3 +42,22 @@ def load_operational_data(doc,key):
 		args = {'operational_matrix_list':operational_matrix_list}
 		frappe.errprint(args)
 		return args
+
+
+@frappe.whitelist()
+def get_children():
+	args = frappe.local.form_dict
+	response = []
+	docn = {}
+
+	if args.get('parent') == 'Designation':
+		single_types = frappe.db.sql("""Select name from `tabDesignation`""",as_dict=1)
+		[response.append({"value":d["name"],"expandable":1}) for d in single_types]
+		[single_type.append(d["name"]) for d in single_types]
+
+	elif args.get('parent') in single_type:
+		doctypes_list = frappe.db.sql("""Select name from `tabContact` 
+			where contact_designation_='%s' """%args.get('parent'),as_dict=1)	
+		[response.append({"value":d["name"],"expandable":0}) for d in doctypes_list]
+
+	return response
