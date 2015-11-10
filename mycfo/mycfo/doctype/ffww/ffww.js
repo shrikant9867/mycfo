@@ -19,7 +19,7 @@ frappe.ui.form.on("FFWW", "refresh", function(wrapper) {
 				var root = 'Designation';
 				dms = new DMS(ctype, root,
 					wrapper.page.main.css({
-						"min-height": "300px",
+						"min-height": "500px",
 						"padding-bottom": "25px"
 					}));
 			}
@@ -136,14 +136,10 @@ frappe.ui.Tree1 = Class.extend({
 		console.log("treee1")
 		$.extend(this, args);
 		this.nodes = {};
-		this.$w = $('<div><div id="sorting" style="float:right;text-align=right;padding:5px">\
-			<button class="btn btn-sm btn-default btn-address"> <i class="icon-plus"></i><a id="new"> New Contact</a></button></div>\
-			<div id="sorting" style="float:right;text-align=right;padding:5px">\
-			<button class="btn btn-sm btn-default btn-address"> <i class="icon-plus"></i><a id="new_add"> New Address</a></button></div>\</div></div>\
-			<div class="col-md-12 tree">\
+		this.$w = $('<div class="col-md-12 tree">\
 			<div class="col-md-4" id ="designation"></div>\
 		<div class="col-md-4" id ="contact"></div>\
-		<div class="col-md-4" id ="address">3</div></div>').appendTo(this.parent);
+		<div class="col-md-4" id ="address"></div></div>').appendTo(this.parent);
 		this.rootnode = new frappe.ui.TreeNode({
 			tree: this,
 			parent: $("#designation"),
@@ -252,15 +248,23 @@ frappe.ui.TreeNode = Class.extend({
 			console.log($(this).text())
 			frappe.call({
 				method:"mycfo.mycfo.doctype.ffww.ffww.load_address_and_contact",
-				args:{record:$(this).text(),key:'name'},
+				args:{record:$(this).text(),key:'name',key1:'contact'},
 				callback: function(r) {
-					console.log(r.message)
+					console.log(r.message['contact_list'])
 					console.log($('#contact'))
 					$("#contact")
 								.html(frappe.render_template("contact_list",
 									r.message))
 								.find(".btn-contact").on("click", function() {
 									new_doc("Contact");
+								}
+					);
+
+					$("#address")
+								.html(frappe.render_template("address_list",
+									r.message))
+								.find(".btn-address").on("click", function() {
+									new_doc("Address");
 								}
 					);
 				},
