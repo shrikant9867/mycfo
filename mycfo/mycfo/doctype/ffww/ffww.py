@@ -29,7 +29,6 @@ def load_address_and_contact(record,key,key1):
 
 	if len(contact_details)>0:
 		for i in contact_details:
-			frappe.errprint(i)
 			if i['contact_type'] == 'Personal':
 				personal_emailid.append(i['email_id'])
 				personal_mobileno.append(i['mobile_no'])
@@ -59,7 +58,8 @@ def load_address_and_contact(record,key,key1):
 		#args = {'address_list':address_list}
 		args['addr_list'] =  addr_list
 
-	return args
+	if args:
+		return args
 
 
 @frappe.whitelist()
@@ -70,7 +70,6 @@ def load_operational_data(doc,key):
 			fields="*", filters={key: doc.get('customer')})
 
 		args = {'operational_matrix_list':operational_matrix_list}
-		frappe.errprint(args)
 		return args
 
 

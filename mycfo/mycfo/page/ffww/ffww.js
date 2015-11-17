@@ -10,25 +10,11 @@ frappe.pages['FFWW'].on_page_load = function(wrapper) {
 	wrapper.property = new FFWW(wrapper);
 }
 
-// frappe.pages['FFWW'].on_page_show = function(wrapper) {
-// 	console.log("refreshhhhhhhhhhhhh")
-// 	console.log(frappe.route_options)
-// 	// var page = frappe.ui.make_app_page({
-// 	// 	parent: wrapper,
-// 	// 	title: 'FFWW Details',
-// 	// 	single_column: true
-// 	// });
-
-// 	// $("<div class='user-settings'></div>").appendTo(page.main);
-
-// 	// wrapper.property = new FFWW(wrapper);
-// }
 
 FFWW = Class.extend({
 	init: function(wrapper) {
 		this.wrapper = wrapper;
 		this.body = $(this.wrapper).find(".user-settings");
-		console.log("in init of ffwww")
 		this.make();
 		this.refresh();
 	},
@@ -45,8 +31,6 @@ FFWW = Class.extend({
 			return;
 		}
 		else{
-			console.log("data available")
-			console.log(frappe.route_options)
 			var customer_name = frappe.route_options['customer']
 			$("<div class='col-md-12 row'><p><button class='btn btn-sm btn-default btn-address'> <i class='icon-plus'></i><a id='new'> New Contact</a></button></p></div>\
 			<div id='property' class='col-md-12 row'>\

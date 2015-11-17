@@ -14,14 +14,12 @@ cur_frm.cscript.validate = function(doc, dt, dn) {
 
 
 var calculate_all = function(doc, dt, dn) {
-	//console.log("inc calculate_all")
 	calculate_total_shares(doc, dt, dn);
 	
 }
 
 
 var calculate_total_shares = function(doc, dt, dn) {
-	//console.log("earning total")
 	var tbl = doc.shareholders_detail || [];
 
 	var total_shares = 0;

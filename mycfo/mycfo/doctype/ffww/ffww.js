@@ -4,12 +4,9 @@
 {% include 'controllers/js/contact_address_common.js' %};
 
 frappe.ui.form.on("FFWW", "refresh", function(wrapper) {
-	console.log($(wrapper))
-
 	wrapper.disable_save();
 	wrapper.make_tree = function() {
 		var ctype = 'Designation';
-		console.log(["ctype",ctype])
 		this.designation = $(wrapper.body).find("#designation");
 
 		return frappe.call({
@@ -32,12 +29,9 @@ frappe.ui.form.on("FFWW", "refresh", function(wrapper) {
 
 DMS = Class.extend({
 	init: function(ctype, root,  parent) {
-		console.log("inside init")
-		console.log([parent])
 		$(parent).empty();
 		var me = this;
 		me.ctype = ctype;
-		//me.page = page;
 		me.can_read = frappe.model.can_read(this.ctype);
 		me.can_create = frappe.boot.user.can_create.indexOf(this.ctype) !== -1 ||
 					frappe.boot.user.in_create.indexOf(this.ctype) !== -1;
@@ -54,86 +48,12 @@ DMS = Class.extend({
 				{toggle_btn: true},		
 			]
 		});
-		console.log(["tree",$(this.tree)])
 	},   
 });
-
-// frappe.provide("contact")
-// contact.operations = {
-// 	init:function(frm){
-// 		var me = this;
-// 		this.doc = frm.doc
-// 		if(frappe.route_options){
-// 			me.enable_contact(frm,frappe.route_options["doc"])
-// 		}
-// 		else {
-// 			if(frm.doc.customer)
-// 				me.enable_contact_posting(frm)
-// 		}
-// 	},
-
-// 	enable_contact:function(frm,doc){
-// 		var me = this;
-// 		var me = this;
-// 		frm.disable_save();
-// 		frm.doc.customer = frappe.route_options['customer']
-// 		if(frm.doc.customer){
-// 			frappe.call({
-// 				method:"mycfo.mycfo.doctype.ffww.ffww.load_address_and_contact",
-// 				args:{doc: frm.doc,key:'customer'},
-// 				callback: function(r) {
-// 					if(frm.fields_dict['contact_html']) {
-// 						$(frm.fields_dict['contact_html'].wrapper)
-// 							.html(frappe.render_template("contact_list",
-// 								r.message))
-// 							.find(".btn-contact").on("click", function() {
-// 								new_doc("Contact");
-// 							}
-// 						);
-// 				}
-// 				},
-// 				always: function() {
-// 					frappe.ui.form.is_saving = false;
-// 				}
-// 		})
-// 	}
-	
-
-// 	},
-
-// 	enable_contact_posting:function(frm){
-// 		var me = this;
-// 		me.manage_primary_operations(frm)	
-// 	},
-
-// 	manage_primary_operations:function(frm){
-// 		var me = this;
-// 		frm.disable_save();
-// 		frappe.call({
-// 				method:"mycfo.mycfo.doctype.ffww.ffww.load_address_and_contact",
-// 				args:{doc: frm.doc,key:'customer'},
-// 				callback: function(r) {
-// 					if(frm.fields_dict['contact_html']) {
-// 						$(frm.fields_dict['contact_html'].wrapper)
-// 							.html(frappe.render_template("contact_list",
-// 								r.message))
-// 							.find(".btn-contact").on("click", function() {
-// 								new_doc("Contact");
-// 							}
-// 						);
-// 				}
-// 				},
-// 				always: function() {
-// 					frappe.ui.form.is_saving = false;
-// 				}
-// 		})
-// 	},
-// }
 
 
 frappe.ui.Tree1 = Class.extend({
 	init: function(args) {
-		console.log("treee1")
 		$.extend(this, args);
 		this.nodes = {};
 		this.$w = $('<div class="col-md-12 tree">\
@@ -158,17 +78,11 @@ frappe.ui.Tree1 = Class.extend({
 
 
 		$('#new').click(function(){
-			console.log("in new")
 			new_doc('Contact');
-				//contact.customer =  frappe.route_options['customer']
-				//frappe.set_route("Form","Contact");
 		})
 
 		$('#new_add').click(function(){
-			console.log("in new")
 			new_doc('Contact');
-				//contact.customer =  frappe.route_options['customer']
-				//frappe.set_route("Form","Contact");
 		})
 	},
 	get_selected_node: function() {
@@ -183,12 +97,10 @@ frappe.ui.Tree1 = Class.extend({
 
 frappe.ui.TreeNode = Class.extend({
 	init: function(args) {
-		console.log(["args",args])
 		$.extend(this, args);
 		this.loaded = false;
 		this.expanded = false;
 		this.tree.nodes[this.label] = this;
-		console.log(this.id)
 		if(this.parent_label)
 			this.parent_node = this.tree.nodes[this.parent_label];
 
@@ -200,7 +112,6 @@ frappe.ui.TreeNode = Class.extend({
 		}
 	},
 	make: function() {
-		console.log("make")
 		var me = this;
 		this.$a = $('<span class="tree-link">')
 			.click(function(event) {
@@ -229,8 +140,6 @@ frappe.ui.TreeNode = Class.extend({
 
 	},
 	make_icon: function() {
-		// label with icon
-		console.log("make_icon")
 		var me= this;
 		var icon_html = '<i class="icon-fixed-width octicon octicon-primitive-dot text-extra-muted"></i>';
 		if(this.expandable) {
@@ -240,18 +149,14 @@ frappe.ui.TreeNode = Class.extend({
 			appendTo(this.$a);
 
 		this.$a.find('i').click(function() {
-			console.log("hello")
 			setTimeout(function() { me.toolbar.find(".btn-expand").click(); }, 100);
 		});
 
 		$('#'+this.get_label()+'').click(function(){
-			console.log($(this).text())
 			frappe.call({
 				method:"mycfo.mycfo.doctype.ffww.ffww.load_address_and_contact",
 				args:{record:$(this).text(),key:'name',key1:'contact'},
 				callback: function(r) {
-					console.log(r.message['contact_list'])
-					console.log($('#contact'))
 					$("#contact")
 								.html(frappe.render_template("contact_list",
 									r.message))
@@ -278,8 +183,6 @@ frappe.ui.TreeNode = Class.extend({
 		if(this.tree.get_label) {
 			return this.tree.get_label(this);
 		}
-
-		console.log(["label",this.label])
 		return __(this.label);
 	},
 	toggle: function(callback) {
@@ -324,7 +227,6 @@ frappe.ui.TreeNode = Class.extend({
 				.html(label)
 				.appendTo(me.toolbar)
 				.click(function() { item.click(me, this); return false; });
-			console.log(["var lonk",link])
 
 			if(item.btnClass) link.addClass(item.btnClass);
 		})
@@ -350,7 +252,6 @@ frappe.ui.TreeNode = Class.extend({
 	},
 	addnode: function(data,id) {
 		var $li = $('<li class="tree-node">');
-		console.log(["liiii",$li])
 		if(this.tree.drop) $li.draggable({revert:true});
 		return new frappe.ui.TreeNode({
 			tree:this.tree,
