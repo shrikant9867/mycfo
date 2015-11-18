@@ -318,7 +318,6 @@ Operational = Class.extend({
 
 		    me.show_user_property_table(page,numPages,values,records_per_page,length);
 
-		    console.log(["length",length])
 		    $("#page").text(length)
 		    if(length==1)
 		    	$("#page")
