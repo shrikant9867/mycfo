@@ -25,7 +25,7 @@ class ProjectCommercial(Document):
 		frappe.errprint(type(self.p_value))
 		frappe.errprint(type(total))
 		if flt(self.p_value) != total:
-			frappe.msgprint("Project value must be equal to the total amount description in the amount details child table",raise_exception=1)
+			frappe.msgprint("Project value must be equal to the total of all amount specified in the child table.",raise_exception=1)
 
 	def validate_fixed_variable_type(self):
 		if self.p_value:

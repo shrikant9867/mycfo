@@ -7,6 +7,10 @@
 
 cur_frm.add_fetch('customer', 'customer_name', 'customer_name');
 
+cur_frm.add_fetch('user_name', 'user_id', 'email_id');
+
+cur_frm.add_fetch('user_name', 'cell_number', 'contact');
+
 
 cur_frm.cscript.email = function(doc,cdt,cdn){
 	var d = locals[cdt][cdn];
