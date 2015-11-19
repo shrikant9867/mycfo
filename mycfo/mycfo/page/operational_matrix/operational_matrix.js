@@ -236,6 +236,36 @@ Operational = Class.extend({
 					options: "Customer"
 		});
 
+		me.filters.project_id = me.wrapper.page.add_field({
+					fieldname: "project_id",
+					label: __("Project ID"),
+					fieldtype: "Link",
+					options: "Project Commercial",
+					"get_query": function() {
+				return {
+					"doctype": "Project Commercial",
+					"filters": {
+						"project_status": 'Active',
+					}
+				}
+			}
+		});
+
+		me.filters.operational_matrix = me.wrapper.page.add_field({
+					fieldname: "operational_matrix",
+					label: __("Operational Matrix"),
+					fieldtype: "Link",
+					options: "Operational Matrix",
+					"get_query": function() {
+				return {
+					"doctype": "Operational Matrix",
+					"filters": {
+						"operational_matrix_status": 'Active',
+					}
+				}
+			}
+		});
+
 		if(frappe.route_options)
 			me.filters.customer.input.value= frappe.route_options['customer']
 
@@ -263,7 +293,7 @@ Operational = Class.extend({
 						// me.changePage(1,numPages,r.message['final_data'],records_per_page,r.message['final_data'].length);
 					}
 					else{
-						me.body.html("<p class='text-muted'>"+__("There is no any operational matrix added yet.")+"</p>");
+						me.body.html("<p class='text-muted'>"+__("There is no any operational matrix is linked to any project ID aginst the current customer.")+"</p>");
 						return;
 					}
 				}
@@ -357,110 +387,53 @@ Operational = Class.extend({
 							 </div></div>\
 				 			</div></li>").appendTo($(me.body).find("#mytable"))
 
-						$("<ul id='mytab' class='nav nav-tabs' role='tablist' >\
-				      <li role='presentation' class='active'><a href='#more"+""+i+"' role='tab' id='profile-tab' style='height:35px;margin-top:-3px;' data-toggle='tab' aria-controls='profile' aria-expanded='false'><i class='icon-li icon-book'></i>&nbsp;&nbsp;Operational Matrix Details</a></li>\
-				      </ul></div>\
-				    </ul>\
-				    <div id='mytable' class='tab-content' style='background-color=#fafbfc;'>\
-				      <div role='tabpanel' class='tab-pane fade active in' style='overflow:auto;height: 110px;' id='general"+""+i+"' aria-labelledby='home-tab'>\
-				       <div class='col-md-6' style='background-color=#fafbfc;'>\
-				       <div class='row row-id'>\
-				        <div class='col-md-6 row'>\
-				       <div class='row property-row'><b>Operational Matrix ID :</b></div>\
-				       </div>\
-				       <div class='col-md-6 row'>\
-				        <div class='row property-row' id='om_id'></div>\
-				        </div>\
-				       </div>\
-				       <div class='row row-id'>\
-				        <div class='col-md-6 row'>\
-				       <div class='row property-row'><b>First Name :</b></div>\
-				       </div>\
-				       <div class='col-md-6 row'>\
-				        <div class='row property-row' id='area'></div>\
-				        </div>\
-				       </div>\
-				       <div class='row row-id'>\
-				        <div class='col-md-6 row'>\
-				       <div class='row property-row'><b>Email ID :</b></div>\
-				       </div>\
-				       <div class='col-md-6 row'>\
-				        <div class='row property-row' id='email_id'></div>\
-				        </div>\
-				       </div>\
-				       </div>\
-				       <div class='col-md-6' style='background-color=#fafbfc;'>\
-				       <div class='row row-id'>\
-				        <div class='col-md-6 row'>\
-				       <div class='row property-row'><b>Second Name :</b></div>\
-				       </div>\
-				       <div class='col-md-6 row'>\
-				        <div class='row property-row' id='property-name'></div>\
-				        </div>\
-				       </div>\
-				       <div class='row row-id'>\
-				        <div class='col-md-6 row'>\
-				       <div class='row property-row'><b>Role :</b></div>\
-				       </div>\
-				       <div class='col-md-6 row'>\
-				        <div class='row property-row' id='role'></div>\
-				        </div>\
-				       </div>\
-				       <div class='row row-id'>\
-				        <div class='col-md-6 row'>\
-				       <div class='row property-row'><b>Contact :</b></div>\
-				       </div>\
-				       <div class='col-md-6 row'>\
-				        <div class='row property-row' id='contact'></div>\
-				        </div>\
-				       </div>\
-				       </div>\
-				       </div>\
-				      </div>\
-				    </div>").appendTo($(me.body).find("#"+i+""))
+						$("<table class='table table-bordered'>\
+			<thead><tr></tr></thead>\
+			<tbody></tbody>\
+		</table>").appendTo($(me.body).find("#"+i+""))
 
 					
-					$($(me.body).find("#"+i+"")).find("#om_id").append('<div class="row property-row"><a class="pv" style="margin-left:12px;" id="'+values[i].name+'">'+values[i].name+'<a></div>')
-					$($(me.body).find("#"+i+"")).find("#area").append('<div class="row property-row">'+values[i].f_name ? values[i].f_name : ""+'</div>')
-					$($(me.body).find("#"+i+"")).find("#property-name").append('<div class="row property-row">'+values[i].s_name ? values[i].s_name : ""+'</div>')
-					$($(me.body).find("#"+i+"")).find("#email_id").append('<div class="row property-row">'+values[i].email ? values[i].email : ""+'</div>')
-					$($(me.body).find("#"+i+"")).find("#role").append('<div class="row property-row">'+values[i].role ? values[i].role : ""+'</div>')
-					$($(me.body).find("#"+i+"")).find("#contact").append('<div class="row property-row">'+values[i].contact ? values[i].contact : ""+'</div>')
+					// $($(me.body).find("#"+i+"")).find("#om_id").append('<div class="row property-row"><a class="pv" style="margin-left:12px;" id="'+values[i].name+'">'+values[i].name+'<a></div>')
+					// $($(me.body).find("#"+i+"")).find("#area").append('<div class="row property-row">'+values[i].f_name ? values[i].f_name : ""+'</div>')
+					// $($(me.body).find("#"+i+"")).find("#property-name").append('<div class="row property-row">'+values[i].s_name ? values[i].s_name : ""+'</div>')
+					// $($(me.body).find("#"+i+"")).find("#email_id").append('<div class="row property-row">'+values[i].email ? values[i].email : ""+'</div>')
+					// $($(me.body).find("#"+i+"")).find("#role").append('<div class="row property-row">'+values[i].role ? values[i].role : ""+'</div>')
+					// $($(me.body).find("#"+i+"")).find("#contact").append('<div class="row property-row">'+values[i].contact ? values[i].contact : ""+'</div>')
 
 
-					$('.pv').click(function(){
+					// $('.pv').click(function(){
 				
-						frappe.set_route("Form",'Operational Matrix',$(this).attr('id'));
-					})
+					// 	frappe.set_route("Form",'Operational Matrix',$(this).attr('id'));
+					// })
 
-					$('#new').click(function(){
-						om = new_doc('Operational Matrix');
-					})
+					// $('#new').click(function(){
+					// 	om = new_doc('Operational Matrix');
+					// })
 
-					$('#btn_prev').click(function(){
-						if (page > 1) {
-				        	page--;
-				        	$("#buttons").remove();
-				        	$("#newbuttons").remove();
-				        	$("#property").remove();
-				       		me.changePage(page,numPages,me.values,records_per_page,me.values.length);
-				    }
+					// $('#btn_prev').click(function(){
+					// 	if (page > 1) {
+				 //        	page--;
+				 //        	$("#buttons").remove();
+				 //        	$("#newbuttons").remove();
+				 //        	$("#property").remove();
+				 //       		me.changePage(page,numPages,me.values,records_per_page,me.values.length);
+				 //    }
 
-				    })
+				 //    })
 
-				    $('#btn_next').click(function(){
-				    	if (page < numPages) {
-				       	 	page++;
-				       	 	$("#buttons").remove();
-				        	$("#newbuttons").remove();
-				        	$("#property").remove();
-				       	 	// //$("#buttons").empty();
-				       	 	// $("#newbuttons").empty();
-				       	 	// $("#property").empty();
-				        	me.changePage(page,numPages,me.values,records_per_page,me.values.length);
-				    }
+				    // $('#btn_next').click(function(){
+				    // 	if (page < numPages) {
+				    //    	 	page++;
+				    //    	 	$("#buttons").remove();
+				    //     	$("#newbuttons").remove();
+				    //     	$("#property").remove();
+				    //    	 	// //$("#buttons").empty();
+				    //    	 	// $("#newbuttons").empty();
+				    //    	 	// $("#property").empty();
+				    //     	me.changePage(page,numPages,me.values,records_per_page,me.values.length);
+				    // }
 
-				    })
+				    // })
 
 				}
 			}
