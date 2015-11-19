@@ -99,118 +99,104 @@ Operational1 = Class.extend({
 
 		 for (var i = (page-1) * records_per_page; i < (page * records_per_page); i++) {
 		 	if(values[i] !=null){
+		 		console.log(values[i][0])
 				$("<li id='property_list' list-style-position: inside;><div class='col-md-12 property-div'>\
 							 <div id='details' class='col-md-12 property-main-div'>\
 							 <div id="+i+" class='col-md-12 property-id' style='border: 1px solid #d1d8dd;'>\
 							 </div></div>\
 				 			</div></li>").appendTo($(me.body).find("#mytable"))
 
-						$("<ul id='mytab' class='nav nav-tabs' role='tablist' >\
-				      <li role='presentation' class='active'><a href='#more"+""+i+"' role='tab' id='profile-tab' style='height:35px;margin-top:-3px;' data-toggle='tab' aria-controls='profile' aria-expanded='false'><i class='icon-li icon-book'></i>&nbsp;&nbsp;Operational Matrix Details</a></li>\
-				      </ul></div>\
-				    </ul>\
-				    <div id='mytable' class='tab-content' style='background-color=#fafbfc;'>\
-				      <div role='tabpanel' class='tab-pane fade active in' style='overflow:auto;height: 110px;' id='general"+""+i+"' aria-labelledby='home-tab'>\
-				       <div class='col-md-6' style='background-color=#fafbfc;'>\
-				       <div class='row row-id'>\
-				        <div class='col-md-6 row'>\
-				       <div class='row property-row'><b>Operational Matrix ID :</b></div>\
-				       </div>\
-				       <div class='col-md-6 row'>\
-				        <div class='row property-row' id='om_id'></div>\
-				        </div>\
-				       </div>\
-				       <div class='row row-id'>\
-				        <div class='col-md-6 row'>\
-				       <div class='row property-row'><b>First Name :</b></div>\
-				       </div>\
-				       <div class='col-md-6 row'>\
-				        <div class='row property-row' id='area'></div>\
-				        </div>\
-				       </div>\
-				       <div class='row row-id'>\
-				        <div class='col-md-6 row'>\
-				       <div class='row property-row'><b>Email ID :</b></div>\
-				       </div>\
-				       <div class='col-md-6 row'>\
-				        <div class='row property-row' id='email_id'></div>\
-				        </div>\
-				       </div>\
-				       </div>\
-				       <div class='col-md-6' style='background-color=#fafbfc;'>\
-				       <div class='row row-id'>\
-				        <div class='col-md-6 row'>\
-				       <div class='row property-row'><b>Second Name :</b></div>\
-				       </div>\
-				       <div class='col-md-6 row'>\
-				        <div class='row property-row' id='property-name'></div>\
-				        </div>\
-				       </div>\
-				       <div class='row row-id'>\
-				        <div class='col-md-6 row'>\
-				       <div class='row property-row'><b>Role :</b></div>\
-				       </div>\
-				       <div class='col-md-6 row'>\
-				        <div class='row property-row' id='role'></div>\
-				        </div>\
-				       </div>\
-				       <div class='row row-id'>\
-				        <div class='col-md-6 row'>\
-				       <div class='row property-row'><b>Contact :</b></div>\
-				       </div>\
-				       <div class='col-md-6 row'>\
-				        <div class='row property-row' id='contact'></div>\
-				        </div>\
-				       </div>\
-				       </div>\
-				       </div>\
-				      </div>\
-				    </div>").appendTo($(me.body).find("#"+i+""))
+						$("<div class='col-md-12 row first-row' style='margin-top:15px;' id ='first'>\
+							<div class='col-md-6' style='background-color=#fafbfc;'>\
+			        			<div class='row row-id'>\
+			        			<div class='col-md-6 row'>\
+			       				<div class='row property-row'><b>Project Id :</b></div>\
+			      				 </div>\
+			      				 <div class='col-md-6 row'>\
+			        			<div class='row property-row' id='project_id'></div>\
+			        			</div>\
+			      				 </div>\
+			       				</div>\
+			       				<div class='col-md-6' style='background-color=#fafbfc;'>\
+			        			<div class='row row-id'>\
+			        			<div class='col-md-6 row'>\
+			       				<div class='row property-row'><b>Operational Matrix :</b></div>\
+			      				 </div>\
+			      				 <div class='col-md-6 row'>\
+			        			<div class='row property-row' id='operational-id'></div>\
+			        			</div>\
+			      				 </div>\
+			       				</div>\
+			       				</div>\
+								<div class='col-md-12 table-data' style='margin-top:15px; overflow:auto;height: 100px;' id ='table-details"+""+i+"'>\
+								<div class='col-md-12'>\
+								  <div class='col-md-1' id='no' style='background-color=#fafbfc;'><b>Sr No.</b>\
+							      </div>\
+							      <div class='col-md-2' id='role' style='background-color=#fafbfc;'><b>Role</b>\
+							      </div>\
+							      <div class='col-md-3' id='name' style='background-color=#fafbfc;'><b>Name</b>\
+							      </div>\
+							      <div class='col-md-3' id='email_id' style='background-color=#fafbfc;'><b>Email ID</b>\
+							      </div>\
+							      <div class='col-md-3' id='contact' style='background-color=#fafbfc;'><b>Contact</b>\
+							      </div>\
+							      </div></div>").appendTo($(me.body).find("#"+i+""))
 
 					
-					$($(me.body).find("#"+i+"")).find("#om_id").append('<div class="row property-row"><a class="pv" style="margin-left:12px;" id="'+values[i].name+'">'+values[i].name+'<a></div>')
-					$($(me.body).find("#"+i+"")).find("#area").append('<div class="row property-row">'+values[i].f_name ? values[i].f_name : ""+'</div>')
-					$($(me.body).find("#"+i+"")).find("#property-name").append('<div class="row property-row">'+values[i].s_name ? values[i].s_name : ""+'</div>')
-					$($(me.body).find("#"+i+"")).find("#email_id").append('<div class="row property-row">'+values[i].email ? values[i].email : ""+'</div>')
-					$($(me.body).find("#"+i+"")).find("#role").append('<div class="row property-row">'+values[i].role ? values[i].role : ""+'</div>')
-					$($(me.body).find("#"+i+"")).find("#contact").append('<div class="row property-row">'+values[i].contact ? values[i].contact : ""+'</div>')
+					//$($(me.body).find("#"+i+"")).find("#project_id").append('<div class="row property-row"><a class="pv" style="margin-left:12px;" id="'+values[i].name+'">'+values[i].name+'<a></div>')
+					$($(me.body).find("#"+i+"")).find("#operational-id").append('<div class="row property-row">'+values[i][0].operational_id ? values[i][0].operational_id : ""+'</div>')
+					 $($(me.body).find("#"+i+"")).find("#project_id").append('<div class="row property-row">'+values[i][0].project_commercial ? values[i][0].project_commercial : ""+'</div>')
+					
+					if(values[i][0]['child_records']!=null){
+						$.each(values[i][0]['child_records'], function(j, k){
+							j =j+1
+							$($(me.body).find("#"+i+"")).find("#table-details"+i+"").append('<div class="col-md-12 prop-row">\
+								<div class="col-md-1" style="background-color=#fafbfc;">'+j+'</div>\
+								<div class="col-md-2" style="background-color=#fafbfc;">'+(k['role'] ? k['role'] : "")+'</div>\
+								<div class="col-md-3" style="background-color=#fafbfc;">'+(k['user_name'] ? k['user_name'] : "")+'</div>\
+								<div class="col-md-3" style="background-color=#fafbfc;">'+(k['email_id'] ? k['email_id'] : "")+'</div>\
+								<div class="col-md-3" style="background-color=#fafbfc;">'+(k['contact'] ? k['contact'] : "")+'</div>\
+								</div>')
+							})
+					}
 
-
-					$('.pv').click(function(){
+					// $('.pv').click(function(){
 				
-						frappe.set_route("Form",'Operational Matrix',$(this).attr('id'));
-					})
+					// 	frappe.set_route("Form",'Operational Matrix',$(this).attr('id'));
+					// })
 
 					$('#new').click(function(){
 						om = new_doc('Operational Matrix');
 					})
 
-					$('#btn_prev').click(function(){
-						if (page > 1) {
-				        	page--;
-				        	$("#buttons").remove();
-				        	$("#newbuttons").remove();
-				        	$("#property").remove();
-				       		me.BackchangePage(page,numPages,me.values,records_per_page,me.values.length);
-				    }
+					// $('#btn_prev').click(function(){
+					// 	if (page > 1) {
+				 //        	page--;
+				 //        	$("#buttons").remove();
+				 //        	$("#newbuttons").remove();
+				 //        	$("#property").remove();
+				 //       		me.changePage(page,numPages,me.values,records_per_page,me.values.length);
+				 //    }
 
-				    })
+				 //    })
 
-				    $('#btn_next').click(function(){
-				    	if (page < numPages) {
-				       	 	page++;
-				       	 	$("#buttons").remove();
-				        	$("#newbuttons").remove();
-				        	$("#property").remove();
-				        	me.BackchangePage(page,numPages,me.values,records_per_page,me.values.length);
-				    }
+				    // $('#btn_next').click(function(){
+				    // 	if (page < numPages) {
+				    //    	 	page++;
+				    //    	 	$("#buttons").remove();
+				    //     	$("#newbuttons").remove();
+				    //     	$("#property").remove();
+				    //    	 	// //$("#buttons").empty();
+				    //    	 	// $("#newbuttons").empty();
+				    //    	 	// $("#property").empty();
+				    //     	me.changePage(page,numPages,me.values,records_per_page,me.values.length);
+				    // }
 
-				    })
+				    // })
 
 				}
 			}
-
-	}
+		}
 
 
 })
@@ -381,34 +367,75 @@ Operational = Class.extend({
 
 		 for (var i = (page-1) * records_per_page; i < (page * records_per_page); i++) {
 		 	if(values[i] !=null){
+		 		console.log(values[i][0])
 				$("<li id='property_list' list-style-position: inside;><div class='col-md-12 property-div'>\
 							 <div id='details' class='col-md-12 property-main-div'>\
 							 <div id="+i+" class='col-md-12 property-id' style='border: 1px solid #d1d8dd;'>\
 							 </div></div>\
 				 			</div></li>").appendTo($(me.body).find("#mytable"))
 
-						$("<table class='table table-bordered'>\
-			<thead><tr></tr></thead>\
-			<tbody></tbody>\
-		</table>").appendTo($(me.body).find("#"+i+""))
+						$("<div class='col-md-12 row first-row' style='margin-top:15px;' id ='first'>\
+							<div class='col-md-6' style='background-color=#fafbfc;'>\
+			        			<div class='row row-id'>\
+			        			<div class='col-md-6 row'>\
+			       				<div class='row property-row'><b>Project Id :</b></div>\
+			      				 </div>\
+			      				 <div class='col-md-6 row'>\
+			        			<div class='row property-row' id='project_id'></div>\
+			        			</div>\
+			      				 </div>\
+			       				</div>\
+			       				<div class='col-md-6' style='background-color=#fafbfc;'>\
+			        			<div class='row row-id'>\
+			        			<div class='col-md-6 row'>\
+			       				<div class='row property-row'><b>Operational Matrix :</b></div>\
+			      				 </div>\
+			      				 <div class='col-md-6 row'>\
+			        			<div class='row property-row' id='operational-id'></div>\
+			        			</div>\
+			      				 </div>\
+			       				</div>\
+			       				</div>\
+								<div class='col-md-12 table-data' style='margin-top:15px; overflow:auto;height: 100px;' id ='table-details"+""+i+"'>\
+								<div class='col-md-12'>\
+								  <div class='col-md-1' id='no' style='background-color=#fafbfc;'><b>Sr No.</b>\
+							      </div>\
+							      <div class='col-md-2' id='role' style='background-color=#fafbfc;'><b>Role</b>\
+							      </div>\
+							      <div class='col-md-3' id='name' style='background-color=#fafbfc;'><b>Name</b>\
+							      </div>\
+							      <div class='col-md-3' id='email_id' style='background-color=#fafbfc;'><b>Email ID</b>\
+							      </div>\
+							      <div class='col-md-3' id='contact' style='background-color=#fafbfc;'><b>Contact</b>\
+							      </div>\
+							      </div></div>").appendTo($(me.body).find("#"+i+""))
 
 					
-					// $($(me.body).find("#"+i+"")).find("#om_id").append('<div class="row property-row"><a class="pv" style="margin-left:12px;" id="'+values[i].name+'">'+values[i].name+'<a></div>')
-					// $($(me.body).find("#"+i+"")).find("#area").append('<div class="row property-row">'+values[i].f_name ? values[i].f_name : ""+'</div>')
-					// $($(me.body).find("#"+i+"")).find("#property-name").append('<div class="row property-row">'+values[i].s_name ? values[i].s_name : ""+'</div>')
-					// $($(me.body).find("#"+i+"")).find("#email_id").append('<div class="row property-row">'+values[i].email ? values[i].email : ""+'</div>')
-					// $($(me.body).find("#"+i+"")).find("#role").append('<div class="row property-row">'+values[i].role ? values[i].role : ""+'</div>')
-					// $($(me.body).find("#"+i+"")).find("#contact").append('<div class="row property-row">'+values[i].contact ? values[i].contact : ""+'</div>')
-
+					//$($(me.body).find("#"+i+"")).find("#project_id").append('<div class="row property-row"><a class="pv" style="margin-left:12px;" id="'+values[i].name+'">'+values[i].name+'<a></div>')
+					$($(me.body).find("#"+i+"")).find("#operational-id").append('<div class="row property-row">'+values[i][0].operational_id ? values[i][0].operational_id : ""+'</div>')
+					 $($(me.body).find("#"+i+"")).find("#project_id").append('<div class="row property-row">'+values[i][0].project_commercial ? values[i][0].project_commercial : ""+'</div>')
+					
+					if(values[i][0]['child_records']!=null){
+						$.each(values[i][0]['child_records'], function(j, k){
+							j =j+1
+							$($(me.body).find("#"+i+"")).find("#table-details"+i+"").append('<div class="col-md-12 prop-row">\
+								<div class="col-md-1" style="background-color=#fafbfc;">'+j+'</div>\
+								<div class="col-md-2" style="background-color=#fafbfc;">'+(k['role'] ? k['role'] : "")+'</div>\
+								<div class="col-md-3" style="background-color=#fafbfc;">'+(k['user_name'] ? k['user_name'] : "")+'</div>\
+								<div class="col-md-3" style="background-color=#fafbfc;">'+(k['email_id'] ? k['email_id'] : "")+'</div>\
+								<div class="col-md-3" style="background-color=#fafbfc;">'+(k['contact'] ? k['contact'] : "")+'</div>\
+								</div>')
+							})
+					}
 
 					// $('.pv').click(function(){
 				
 					// 	frappe.set_route("Form",'Operational Matrix',$(this).attr('id'));
 					// })
 
-					// $('#new').click(function(){
-					// 	om = new_doc('Operational Matrix');
-					// })
+					$('#new').click(function(){
+						om = new_doc('Operational Matrix');
+					})
 
 					// $('#btn_prev').click(function(){
 					// 	if (page > 1) {
