@@ -7,6 +7,16 @@ import frappe
 from frappe.model.document import Document
 
 class OperationalMatrix(Document):
-	pass
+	def validate(self):
+		if self.operational_matrix_status == 'Deactive':
+			self.delink_operational_matrix()
 
+	def delink_operational_matrix(self):
+		operational_data = frappe.db.sql("""select name from `tabOperation And Project Commercial` where operational_matrix_status='Active'
+											and operational_id='%s'"""%self.name,as_list=1)
+		if(len(operational_data))>0:
+			for operationa_name in operational_data:
+				frappe.db.sql("""update `tabOperation And Project Commercial` set operational_matrix_status='Deactive'
+						where name='%s'"""%operationa_name[0])
+				frappe.db.commit()
 

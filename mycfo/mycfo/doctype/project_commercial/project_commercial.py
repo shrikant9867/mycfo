@@ -10,22 +10,31 @@ import datetime
 
 class ProjectCommercial(Document):
 	def validate(self):
-		frappe.errprint("hello")
 		if self.p_type == 'Fixed + Variable':
 			self.validate_fixed_variable_type()
 		self.validate_project_value()
+		if self.project_status == 'Terminate' or self.project_status == 'Close':
+			self.delink_projectid()
+
+		self.validate_due_date_in_childtable()
 
 	def validate_project_value(self):
 		total = 0.00
-		frappe.errprint("hello22")
 		if self.get('table_17'):
 			for d in self.get('table_17'):
-				if d.name:
+				if d.amount:
 					total+= d.amount
-		frappe.errprint(type(self.p_value))
-		frappe.errprint(type(total))
 		if flt(self.p_value) != total:
-			frappe.msgprint("Project value must be equal to the total of all amount specified in the child table.",raise_exception=1)
+			frappe.msgprint("Project value must be equal to the total of all amount specified in the amount details child table.",raise_exception=1)
+
+	def delink_projectid(self):
+		commercial_data = frappe.db.sql("""select name from `tabOperation And Project Commercial` where operational_matrix_status='Active'
+											and project_commercial='%s'"""%self.name,as_list=1)
+		if(len(commercial_data))>0:
+			for commercial_name in commercial_data:
+				frappe.db.sql("""update `tabOperation And Project Commercial` set operational_matrix_status='Deactive'
+						where name='%s'"""%commercial_name[0])
+				frappe.db.commit()
 
 	def validate_fixed_variable_type(self):
 		if self.p_value:
@@ -35,6 +44,19 @@ class ProjectCommercial(Document):
 				else:
 					frappe.errprint("else")
 					return {"status":True}
+
+
+	def validate_due_date_in_childtable(self):
+		date_list = []
+		if self.get('table_17'):
+			for d in self.get('table_17'):
+				if d.due_date:
+					if d.due_date not in date_list:
+						date_list.append(d.due_date)
+					else:
+						frappe.msgprint("No duplicate due date is allowed in amount details child table",raise_exception=1)
+						break
+
 
 
 	def get_child_details(self,months=None):
@@ -56,7 +78,7 @@ class ProjectCommercial(Document):
 				date_list.append(date)
 				final_date=date
 				frappe.errprint(date_list)
-				self.create_child_record(due_amount,date_list)
+			self.create_child_record(due_amount,date_list)
 
 
 	def get_child_details_for_fixed_variable(self,months=None):
@@ -74,11 +96,14 @@ class ProjectCommercial(Document):
 		else:
 			for i in range(1,months):
 				date=add_months(final_date,1)
-				frappe.errprint(["j",date])
 				date_list.append(date)
 				final_date=date
-				frappe.errprint(date_list)
-				self.create_child_record(due_amount,date_list)
+			self.create_child_record(due_amount,date_list)
+			if self.var_val:
+				ch = self.append('table_17', {})
+				ch.amount = self.var_val
+
+
 
 
 	def create_child_record(self,due_amount,date_list):
@@ -87,3 +112,7 @@ class ProjectCommercial(Document):
 				ch = self.append('table_17', {})
 				ch.due_date = i
 				ch.amount = due_amount
+
+
+	def clear_child_table(self):
+		self.set('table_17', [])

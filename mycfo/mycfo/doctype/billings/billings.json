@@ -26,7 +26,7 @@
    "print_hide": 0, 
    "read_only": 0, 
    "report_hide": 0, 
-   "reqd": 0, 
+   "reqd": 1, 
    "search_index": 0, 
    "set_only_once": 0, 
    "unique": 0
@@ -105,7 +105,7 @@
  "is_submittable": 0, 
  "issingle": 0, 
  "istable": 1, 
- "modified": "2015-11-18 17:49:17.766457", 
+ "modified": "2015-11-21 16:45:24.980041", 
  "modified_by": "Administrator", 
  "module": "mycfo", 
  "name": "Billings", 

@@ -6,6 +6,12 @@
 
 cur_frm.add_fetch('customer', 'customer_name', 'customer_name');
 
+cur_frm.add_fetch('p_id', 'project_id_status', 'project_id_status');
+
+cur_frm.add_fetch('customer', 'register_address', 'register_addr');
+
+// cur_frm.add_fetch('billing_address', 'register_address', 'register_addr');
+
 cur_frm.cscript.start_date= function(doc, cdt, cdn) {
 	if (doc.start_date && doc.end_date)
 	{
@@ -19,6 +25,12 @@ cur_frm.cscript.start_date= function(doc, cdt, cdn) {
 
 		if(date1>date2){
 			msgprint("Start Date must be less than End Date")
+			doc.start_date=''
+			refresh_field('start_date');
+		}
+		if(date1.getTime() === date2.getTime()){
+			console.log("date equal")
+			msgprint("Start date and end date must be diffrent")
 		}
 
 	}
@@ -38,7 +50,14 @@ cur_frm.cscript.end_date= function(doc, cdt, cdn) {
 
 		if(date2<date1){
 			msgprint("End Date must be greater than start Date")
+			doc.end_date=''
+			refresh_field('end_date');
 		}
+
+		if(date1.getTime() === date2.getTime()){
+			msgprint("Start date and end date must be diffrent")
+		}
+
 
 	}
 
@@ -68,18 +87,23 @@ cur_frm.cscript.fix_val= function(doc, cdt, cdn) {
 
 	}
 
-	if(doc.fix_val && doc.var_val){
-		return $c_obj(doc, 'validate_fixed_variable_type','',function(r, rt) {
-			var doc = locals[cdt][cdn];
-			cur_frm.refresh();
-		});
+	if(doc.fix_val<=0){
+		msgprint("Fixed value must be greater than 0")
+		doc.fix_val=''
+		refresh_field('fix_val')
 	}
-	// if(doc.fixed_pick_date && doc.fixed_type=='Monthly'){
-	// 	return $c_obj(doc, 'get_child_details',months,function(r, rt) {
-	// 		var doc = locals[cdt][cdn];
-	// 	});
-	// }
-
+	
+	if(p_type=='Fixed + Variable'){
+		if(doc.fix_val && doc.var_val){
+			return $c_obj(doc, 'validate_fixed_variable_type','',function(r, rt) {
+				var doc = locals[cdt][cdn];
+				cur_frm.refresh();
+			});
+		}
+		else{
+			msgprint("If type is Fixed + Variable then both fixed & variable value must be specified")
+		}
+	}
 
 }
 
@@ -90,86 +114,108 @@ cur_frm.cscript.var_val= function(doc, cdt, cdn) {
 
 	}
 
+	if(doc.var_val<=0){
+		msgprint("Variable value must be greater than 0")
+		doc.var_val=''
+		refresh_field('var_val')
+	}
+
 	months = cur_frm.cscript.cacluate_months(doc.start_date,doc.end_date)
 
-	if(doc.fix_val && doc.var_val){
-		return $c_obj(doc, 'validate_fixed_variable_type','',function(r, rt) {
-			var doc = locals[cdt][cdn];
-			cur_frm.refresh();
-		});
-	}
-
-}
-
-cur_frm.cscript.pick_date= function(doc, cdt, cdn) {
-	if (doc.start_date && doc.end_date)
-	{
-		var date1 = new Date(doc.start_date);
-		var date2 = new Date(doc.end_date);
-		//var date3 = new Date(doc.fixed_pick_date);
-		start_day = date1.getDate()
-		end_day = date2.getDate()
-		console.log(start_day)
-		console.log(typeof(end_day))
-		console.log(typeof(doc.pick_date))
-		if(parseInt(doc.pick_date)>start_day && doc.pick_date<end_day){
-			console.log("in between")
+	if(p_type=='Fixed + Variable'){
+		if(doc.fix_val && doc.var_val){
+			return $c_obj(doc, 'validate_fixed_variable_type','',function(r, rt) {
+				var doc = locals[cdt][cdn];
+				cur_frm.refresh();
+			});
 		}
 		else{
-			msgprint("Pick Day Must be in between the start date and end date")
-			doc.pick_date=''
-			refresh_field('pick_date');
+			msgprint("If type is Fixed + Variable then both fixed & variable value must be specified")
 		}
 	}
-	else{
-		msgprint("First Enter start date and end date")
-		doc.pick_date=''
-		refresh_field('pick_date');
-	}	
 
 }
+
+// cur_frm.cscript.pick_date= function(doc, cdt, cdn) {
+// 	if (doc.start_date && doc.end_date)
+// 	{
+// 		var date1 = new Date(doc.start_date);
+// 		var date2 = new Date(doc.end_date);
+// 		//var date3 = new Date(doc.fixed_pick_date);
+// 		start_day = date1.getDate()
+// 		end_day = date2.getDate()
+// 		console.log(start_day)
+// 		console.log(typeof(end_day))
+// 		console.log(typeof(doc.pick_date))
+// 		if(parseInt(doc.pick_date)>start_day && doc.pick_date<end_day){
+// 			console.log("in between")
+// 		}
+// 		else{
+// 			msgprint("Pick Day Must be in between the start date and end date")
+// 			doc.pick_date=''
+// 			refresh_field('pick_date');
+// 		}
+// 	}
+// 	else{
+// 		msgprint("First Enter start date and end date")
+// 		doc.pick_date=''
+// 		refresh_field('pick_date');
+// 	}	
+
+// }
 
 cur_frm.cscript.p_type= function(doc, cdt, cdn) {
 	if (!doc.p_value)
 	{
-		msgprint("First enter the project value")
+		msgprint("First enter the Project Value")
 		doc.p_type =''
 		refresh_field('p_type')
 
 	}
+	return $c_obj(doc, 'clear_child_table','',function(r, rt) {
+			var doc = locals[cdt][cdn];
+			cur_frm.refresh();
+	});
 
 }
 
+cur_frm.cscript.p_value= function(doc, cdt, cdn) {
+	if(doc.p_value<=0){
+		msgprint("Project value must be greter than 0")
+		doc.p_value=''
+		refresh_field('p_value')
 
-cur_frm.cscript.fixed_pick_date= function(doc, cdt, cdn) {
-	if (doc.start_date && doc.end_date)
-	{
-		var date1 = new Date(doc.start_date);
-		var date2 = new Date(doc.end_date);
-		//var date3 = new Date(doc.fixed_pick_date);
-		start_day = date1.getDate()
-		end_day = date2.getDate()
-		if(doc.fixed_pick_date>start_day && doc.fixed_pick_date<end_day){
-			console.log("in between")
-		}
-		else{
-			msgprint("Pick day must be in between the start day and end day")
-			doc.fixed_pick_date=''
-			refresh_field('fixed_pick_date');
-		}
 	}
-	else{
-		msgprint("First Enter start date and end date")
-		doc.fixed_pick_date=''
-		refresh_field('fixed_pick_date');
-	}	
-
 }
+
+
+// cur_frm.cscript.fixed_pick_date= function(doc, cdt, cdn) {
+// 	if (doc.start_date && doc.end_date)
+// 	{
+// 		var date1 = new Date(doc.start_date);
+// 		var date2 = new Date(doc.end_date);
+// 		//var date3 = new Date(doc.fixed_pick_date);
+// 		start_day = date1.getDate()
+// 		end_day = date2.getDate()
+// 		if(doc.fixed_pick_date>start_day){
+// 			console.log("in between")
+// 		}
+// 		else{
+// 			msgprint("Pick day must be in greater than the start day")
+// 			doc.fixed_pick_date=''
+// 			refresh_field('fixed_pick_date');
+// 		}
+// 	}
+// 	else{
+// 		msgprint("First Enter start date and end date")
+// 		doc.fixed_pick_date=''
+// 		refresh_field('fixed_pick_date');
+// 	}	
+
+// }
 
 
 cur_frm.cscript.generate_records = function(doc,cdt,cdn){
-    console.log("in generate records")
-    // if project type is fixed
     if(doc.p_type=='Fixed'){
     	if(doc.type=='Monthly'){
     		if(doc.pick_date){
@@ -177,7 +223,6 @@ cur_frm.cscript.generate_records = function(doc,cdt,cdn){
     				months = cur_frm.cscript.cacluate_months(doc.start_date,doc.end_date)
     			if(months){
     				if(doc.p_value){
-    					console.log(doc.p_value)
     					return $c_obj(doc, 'get_child_details',months,function(r, rt) {
 							var doc = locals[cdt][cdn];
 							cur_frm.refresh();
@@ -188,6 +233,9 @@ cur_frm.cscript.generate_records = function(doc,cdt,cdn){
     		else{
     			msgprint("Please enter pick day.")
     		}
+    	}
+    	else if(doc.type=='Milestone'){
+    		console.log("done")
     	}
     	else{
     		msgprint("Please specify type.")
@@ -201,12 +249,15 @@ cur_frm.cscript.generate_records = function(doc,cdt,cdn){
 	    			if(doc.start_date && doc.end_date)
 	    				months = cur_frm.cscript.cacluate_months(doc.start_date,doc.end_date)
 	    			if(months){
-	    				if(doc.fix_val){
+	    				if(doc.fix_val && doc.var_val){
 	    					console.log(doc.fix_val)
 	    					return $c_obj(doc, 'get_child_details_for_fixed_variable',months,function(r, rt) {
 								var doc = locals[cdt][cdn];
 								cur_frm.refresh();
 							});
+	    				}
+	    				else{
+	    					msgprint("Both fixed and variable value must be specified")
 	    				}
 	    			}
 	    		}
@@ -214,6 +265,8 @@ cur_frm.cscript.generate_records = function(doc,cdt,cdn){
 	    			msgprint("please enter pick day.")
 	    		}
 	    	}
+	    	else if(doc.fixed_type=='Milestone')
+	    		console.log("done")
 	    	else{
 	    		msgprint("Please specify type.")
 	    	}
@@ -252,7 +305,12 @@ cur_frm.cscript.fixed_milestone = function(doc,cdt,cdn){
 }
 
 cur_frm.cscript.milestone_based = function(doc,cdt,cdn){
-	cur_frm.fields_dict["table_17"].grid.set_column_disp("percentage", doc.milestone_based=='Percentage');
+	if(doc.milestone_based=='Percentage'){
+		cur_frm.fields_dict["table_17"].grid.set_column_disp("percentage", 1);
+	}
+	else{
+		cur_frm.fields_dict["table_17"].grid.set_column_disp("percentage", 0);
+	}
 }
 
 cur_frm.cscript.type = function(doc,cdt,cdn){
@@ -261,6 +319,11 @@ cur_frm.cscript.type = function(doc,cdt,cdn){
 		cur_frm.fields_dict["table_17"].grid.set_column_disp("percentage", 1);
 	else
 		cur_frm.fields_dict["table_17"].grid.set_column_disp("percentage", 0);
+
+	return $c_obj(doc, 'clear_child_table','',function(r, rt) {
+			var doc = locals[cdt][cdn];
+			cur_frm.refresh();
+	});
 }
 
 cur_frm.cscript.fixed_type = function(doc,cdt,cdn){
@@ -268,14 +331,13 @@ cur_frm.cscript.fixed_type = function(doc,cdt,cdn){
 		cur_frm.fields_dict["table_17"].grid.set_column_disp("percentage", 1);
 	else
 		cur_frm.fields_dict["table_17"].grid.set_column_disp("percentage", 0);
+
+	return $c_obj(doc, 'clear_child_table','',function(r, rt) {
+			var doc = locals[cdt][cdn];
+			cur_frm.refresh();
+	});
 }
 
-cur_frm.cscript.milestone_based = function(doc,cdt,cdn){
-	if(doc.milestone_based=='Milestone' && doc.milestone_based=='Percentage')
-		cur_frm.fields_dict["table_17"].grid.set_column_disp("percentage", 1);
-	else
-		cur_frm.fields_dict["table_17"].grid.set_column_disp("percentage", 1);
-}
 
 cur_frm.cscript.percentage = function(doc,cdt,cdn){
 	var d = locals[cdt][cdn]
@@ -288,6 +350,36 @@ cur_frm.cscript.percentage = function(doc,cdt,cdn){
 			msgprint("percentage value must be less than 100%")
 			d.percentage=''
 			refresh_field('table_17')
+		}
+	}
+}
+
+
+cur_frm.cscript.billing_address = function(doc,cdt,cdn){
+	if(!doc.customer){
+		msgprint("first enter the customer")
+		doc.billing_address=''
+		refresh_field('billing_address')
+	}
+	else{
+		frappe.call({
+				method: "erpnext.utilities.doctype.address.address.get_address_display",
+				args: {"address_dict": doc.billing_address },
+				callback: function(r) {
+					if(r.message){
+						doc.b_addr=r.message
+						refresh_field('b_addr')
+					}
+				}
+			})
+	}
+
+}
+cur_frm.fields_dict['billing_address'].get_query = function(doc) {
+	return {
+		filters: {
+			
+			"customer": doc.customer
 		}
 	}
 }
