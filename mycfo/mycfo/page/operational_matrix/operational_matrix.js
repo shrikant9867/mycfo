@@ -254,6 +254,8 @@ Operational = Class.extend({
 					read_only:1
 		});
 
+		$(me.filters.customer.input).attr('disabled',true)
+
 		me.filters.project_id = me.wrapper.page.add_field({
 					fieldname: "project_id",
 					label: __("Project ID"),
@@ -264,6 +266,7 @@ Operational = Class.extend({
 					"doctype": "Project Commercial",
 					"filters": {
 						"project_status": 'Active',
+						"customer":me.filters.customer.input.value
 					}
 				}
 			}

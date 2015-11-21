@@ -292,6 +292,8 @@ Project = Class.extend({
 					options: "Customer"
 		});
 
+		$(me.filters.customer.input).attr('disabled',true)
+
 		if(frappe.route_options)
 			me.filters.customer.input.value= frappe.route_options['customer']
 
