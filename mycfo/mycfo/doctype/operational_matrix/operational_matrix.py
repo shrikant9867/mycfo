@@ -10,6 +10,9 @@ class OperationalMatrix(Document):
 	def validate(self):
 		if self.operational_matrix_status == 'Deactive':
 			self.delink_operational_matrix()
+		self.validate_employee_child_table()
+		if self.get('operation_details'):
+			self.validate_duplicate_entry()
 
 	def delink_operational_matrix(self):
 		operational_data = frappe.db.sql("""select name from `tabOperation And Project Commercial` where operational_matrix_status='Active'
@@ -20,3 +23,10 @@ class OperationalMatrix(Document):
 						where name='%s'"""%operationa_name[0])
 				frappe.db.commit()
 
+
+	def validate_employee_child_table(self):
+		if not self.get('operation_details'):
+			frappe.msgprint("At least one entry is necessary in child table of operation matrix details.",raise_exception=1)
+
+	def validate_duplicate_entry(self):
+		pass
