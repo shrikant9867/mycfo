@@ -28,7 +28,8 @@ cur_frm.cscript.start_date= function(doc, cdt, cdn) {
 			doc.start_date=''
 			refresh_field('start_date');
 		}
-		if(date1==date2){
+		if(date1.getTime() === date2.getTime()){
+			console.log("date equal")
 			msgprint("Start date and end date must be diffrent")
 		}
 
@@ -53,9 +54,10 @@ cur_frm.cscript.end_date= function(doc, cdt, cdn) {
 			refresh_field('end_date');
 		}
 
-		if(date1==date2){
+		if(date1.getTime() === date2.getTime()){
 			msgprint("Start date and end date must be diffrent")
 		}
+
 
 	}
 
@@ -90,19 +92,18 @@ cur_frm.cscript.fix_val= function(doc, cdt, cdn) {
 		doc.fix_val=''
 		refresh_field('fix_val')
 	}
-
-	if(doc.fix_val && doc.var_val){
-		return $c_obj(doc, 'validate_fixed_variable_type','',function(r, rt) {
-			var doc = locals[cdt][cdn];
-			cur_frm.refresh();
-		});
+	
+	if(p_type=='Fixed + Variable'){
+		if(doc.fix_val && doc.var_val){
+			return $c_obj(doc, 'validate_fixed_variable_type','',function(r, rt) {
+				var doc = locals[cdt][cdn];
+				cur_frm.refresh();
+			});
+		}
+		else{
+			msgprint("If type is Fixed + Variable then both fixed & variable value must be specified")
+		}
 	}
-	// if(doc.fixed_pick_date && doc.fixed_type=='Monthly'){
-	// 	return $c_obj(doc, 'get_child_details',months,function(r, rt) {
-	// 		var doc = locals[cdt][cdn];
-	// 	});
-	// }
-
 
 }
 
@@ -121,11 +122,16 @@ cur_frm.cscript.var_val= function(doc, cdt, cdn) {
 
 	months = cur_frm.cscript.cacluate_months(doc.start_date,doc.end_date)
 
-	if(doc.fix_val && doc.var_val){
-		return $c_obj(doc, 'validate_fixed_variable_type','',function(r, rt) {
-			var doc = locals[cdt][cdn];
-			cur_frm.refresh();
-		});
+	if(p_type=='Fixed + Variable'){
+		if(doc.fix_val && doc.var_val){
+			return $c_obj(doc, 'validate_fixed_variable_type','',function(r, rt) {
+				var doc = locals[cdt][cdn];
+				cur_frm.refresh();
+			});
+		}
+		else{
+			msgprint("If type is Fixed + Variable then both fixed & variable value must be specified")
+		}
 	}
 
 }
@@ -210,8 +216,6 @@ cur_frm.cscript.p_value= function(doc, cdt, cdn) {
 
 
 cur_frm.cscript.generate_records = function(doc,cdt,cdn){
-    console.log("in generate records")
-    // if project type is fixed
     if(doc.p_type=='Fixed'){
     	if(doc.type=='Monthly'){
     		if(doc.pick_date){
@@ -219,7 +223,6 @@ cur_frm.cscript.generate_records = function(doc,cdt,cdn){
     				months = cur_frm.cscript.cacluate_months(doc.start_date,doc.end_date)
     			if(months){
     				if(doc.p_value){
-    					console.log(doc.p_value)
     					return $c_obj(doc, 'get_child_details',months,function(r, rt) {
 							var doc = locals[cdt][cdn];
 							cur_frm.refresh();
@@ -246,12 +249,15 @@ cur_frm.cscript.generate_records = function(doc,cdt,cdn){
 	    			if(doc.start_date && doc.end_date)
 	    				months = cur_frm.cscript.cacluate_months(doc.start_date,doc.end_date)
 	    			if(months){
-	    				if(doc.fix_val){
+	    				if(doc.fix_val && doc.var_val){
 	    					console.log(doc.fix_val)
 	    					return $c_obj(doc, 'get_child_details_for_fixed_variable',months,function(r, rt) {
 								var doc = locals[cdt][cdn];
 								cur_frm.refresh();
 							});
+	    				}
+	    				else{
+	    					msgprint("Both fixed and variable value must be specified")
 	    				}
 	    			}
 	    		}
@@ -299,7 +305,12 @@ cur_frm.cscript.fixed_milestone = function(doc,cdt,cdn){
 }
 
 cur_frm.cscript.milestone_based = function(doc,cdt,cdn){
-	cur_frm.fields_dict["table_17"].grid.set_column_disp("percentage", doc.milestone_based=='Percentage');
+	if(doc.milestone_based=='Percentage'){
+		cur_frm.fields_dict["table_17"].grid.set_column_disp("percentage", 1);
+	}
+	else{
+		cur_frm.fields_dict["table_17"].grid.set_column_disp("percentage", 0);
+	}
 }
 
 cur_frm.cscript.type = function(doc,cdt,cdn){
@@ -327,12 +338,6 @@ cur_frm.cscript.fixed_type = function(doc,cdt,cdn){
 	});
 }
 
-cur_frm.cscript.milestone_based = function(doc,cdt,cdn){
-	if(doc.milestone_based=='Milestone' && doc.milestone_based=='Percentage')
-		cur_frm.fields_dict["table_17"].grid.set_column_disp("percentage", 1);
-	else
-		cur_frm.fields_dict["table_17"].grid.set_column_disp("percentage", 1);
-}
 
 cur_frm.cscript.percentage = function(doc,cdt,cdn){
 	var d = locals[cdt][cdn]

@@ -101,7 +101,6 @@ Operational1 = Class.extend({
 
 		 for (var i = (page-1) * records_per_page; i < (page * records_per_page); i++) {
 		 	if(values[i] !=null){
-		 		console.log(["name",values[i][0]])
 				$("<li id='property_list' list-style-position: inside;><div class='col-md-12 property-div'>\
 							 <div id='details' class='col-md-12 property-main-div'>\
 							 <div id="+i+" class='col-md-12 property-id' style='border: 1px solid #d1d8dd;'>\
@@ -159,11 +158,8 @@ Operational1 = Class.extend({
 					 $($(me.body).find("#"+i+"")).find("#project_id").append('<div class="row property-row">'+values[i][0].project_commercial ? values[i][0].project_commercial : ""+'</div>')
 					
 
-					//console.log($($(me.body).find("#"+i+"")).find("#table-details"+i+"").find(".rTableBody"))
-
 					if(values[i][0]['child_records']!=null){
 						$.each(values[i][0]['child_records'], function(j, k){
-							//console.log($($(me.body).find("#"+i+"")).find("#table-details"+i+"").find(".rTableBody"))
 							j =j+1
 							$($(me.body).find("#"+i+"")).find("#table-details"+i+"").find(".rTableBody").append('<div class="rTableRow">\
 						<div class="rTableCell col-md-1">'+j+'\
@@ -213,30 +209,12 @@ Operational1 = Class.extend({
 				    })
 
 				$('.cb').click(function(){
-					console.log("hii")
-					//console.log($(this).parent().attr("id"))
 					me.deactivation_list = []
 					me.deactivation_list.push($(this).parent().attr("id"))
-					console.log(me.deactivation_list)
 					final_result = jQuery.grep(me.values, function( d ) {
-							console.log([d[0]['name']])
-								return !([d[0]['name']] in me.deactivation_list)
+							
+						return !([d[0]['name']] in me.deactivation_list)
 					});
-					console.log(final_result)
-					// else if($(this).prop('checked')==false){
-					// 	var removeItem = $(this).parent().attr("id");
-					// 	me.property_list = jQuery.grep(me.property_list, function(value) {
-					// 	  return value != removeItem;
-					// 	});
-					// 	if(me.property_list.length==0){
-					// 		$('[data-fieldname=tag]').css('display','none')
-					// 		$('[data-fieldname=share]').css('display','none')
-					// 		$('[data-fieldname=status]').css('display','none')
-					// 		e.style.display = 'none';
-					// 	}
-
-					// }
-					// me.check_property_list=me.property_list
 					
 				});
 
@@ -320,7 +298,6 @@ Operational = Class.extend({
 		
 		//change in filter project ID-----------------------------------------------------------
 		$(me.filters.project_id.input).change(function(){
-			console.log("in project_id changes")
 			if (me.filters.project_id.input.value.length!=0 && me.filters.operational_matrix.input.value.length!=0){
 				$('[data-fieldname=add]').css('display','block')
 			}
@@ -332,7 +309,6 @@ Operational = Class.extend({
 					me.get_filtered_data()
 				}
 				else if (me.filters.project_id.input.value.length!=0 && me.filters.operational_matrix.input.value.length!=0){
-					console.log("both the values available")
 					me.get_filtered_data()
 				}
 
@@ -349,14 +325,12 @@ Operational = Class.extend({
 				$('[data-fieldname=add]').css('display','block')
 			}
 			if(me.filters.project_id.input.value.length!=0 && me.filters.operational_matrix.input.value.length==0){
-				console.log("in project_id")
 				me.get_filtered_data()
 			}
 			else if (me.filters.project_id.input.value.length ==0 && me.filters.operational_matrix.input.value.length!=0){
 				me.get_filtered_data()
 			}
 			else if (me.filters.project_id.input.value.length!=0 && me.filters.operational_matrix.input.value.length!=0){
-				console.log("both the values available")
 				me.get_filtered_data()
 			}
 
@@ -374,8 +348,6 @@ Operational = Class.extend({
 		});
 
 		me.add.$input.on("click", function() {
-			console.log(me.filters.project_id.input.value)
-			console.log(me.filters.operational_matrix.input.value)
 			if (me.filters.operational_matrix.input.value.length!=0 && me.filters.operational_matrix.input.value.length!=0){
 				me.get_data()
 			}
@@ -394,7 +366,6 @@ Operational = Class.extend({
 						callback: function(r,rt) {
 							if(r.message){
 							if(r.message['final_data'].length>0) {
-								console.log(r.message['final_data'][0])
 								me.cal_for_btn_next(r.message['final_data'])
 							}
 							}
@@ -414,7 +385,6 @@ Operational = Class.extend({
 			},
 			callback: function(r,rt) {
 				if(r.message['final_data'].length>0) {
-					console.log(r.message['final_data'][0])
 					me.cal_for_btn_next(r.message['final_data'])
 					// frappe.set_route("Form", 'Lead Management', me.lead_management.$input.val());
 					// location.reload()
@@ -441,13 +411,8 @@ Operational = Class.extend({
 					if(r.message){
 						me.values = r.message['final_data']
 						me.cal_for_btn_next(me.values)
-						// var numPages=Math.ceil(r.message['final_data'].length/records_per_page)
-						// me.changePage(1,numPages,r.message['final_data'],records_per_page,r.message['final_data'].length);
 					}
-					// else{
-					// 	me.body.html("<p class='text-muted'>"+__("There is no any operational matrix is linked to any project ID aginst the current customer.")+"</p>");
-					// 	return;
-					// }
+					
 				}
 			});
 		
@@ -510,7 +475,6 @@ Operational = Class.extend({
 
 		 for (var i = (page-1) * records_per_page; i < (page * records_per_page); i++) {
 		 	if(values[i] !=null){
-		 		console.log(["name",values[i][0]])
 				$("<li id='property_list' list-style-position: inside;><div class='col-md-12 property-div'>\
 							 <div id='details' class='col-md-12 property-main-div'>\
 							 <div id="+i+" class='col-md-12 property-id' style='border: 1px solid #d1d8dd;'>\
@@ -568,11 +532,8 @@ Operational = Class.extend({
 					 $($(me.body).find("#"+i+"")).find("#project_id").append('<div class="row property-row">'+values[i][0].project_commercial ? values[i][0].project_commercial : ""+'</div>')
 					
 
-					//console.log($($(me.body).find("#"+i+"")).find("#table-details"+i+"").find(".rTableBody"))
-
 					if(values[i][0]['child_records']!=null){
 						$.each(values[i][0]['child_records'], function(j, k){
-							//console.log($($(me.body).find("#"+i+"")).find("#table-details"+i+"").find(".rTableBody"))
 							j =j+1
 							$($(me.body).find("#"+i+"")).find("#table-details"+i+"").find(".rTableBody").append('<div class="rTableRow">\
 						<div class="rTableCell col-md-1">'+j+'\
@@ -614,9 +575,7 @@ Operational = Class.extend({
 				       	 	$("#buttons").remove();
 				        	$("#newbuttons").remove();
 				        	$("#property").remove();
-				       	 	// //$("#buttons").empty();
-				       	 	// $("#newbuttons").empty();
-				       	 	// $("#property").empty();
+				       	 	
 				        	me.changePage(page,numPages,me.values,records_per_page,me.values.length);
 				    }
 
@@ -631,10 +590,7 @@ Operational = Class.extend({
 		})
 
 			$('.cb').click(function(){
-					console.log("hii")
-					console.log($(this).parent().attr("id"))
-					// me.deactivation_list = []
-					// me.deactivation_list.push($(this).parent().attr("id"))
+					
 					if($(this).parent().attr("id")){
 						return frappe.call({
 							method:'mycfo.mycfo.page.operational_matrix.operational_matrix.deactivate_records',
@@ -645,10 +601,8 @@ Operational = Class.extend({
 							callback: function(r,rt) {
 								if(r.message){
 									if(r.message['final_data'].length>0) {
-										console.log(r.message['final_data'][0])
 										me.cal_for_btn_next(r.message['final_data'])
-										// frappe.set_route("Form", 'Lead Management', me.lead_management.$input.val());
-										// location.reload()
+										
 									}
 								}
 							},

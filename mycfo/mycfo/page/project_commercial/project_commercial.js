@@ -99,7 +99,6 @@ Project1 = Class.extend({
 		<p align='left'><b>Total Documents:</b> <span id='page'></span></p></div>").appendTo(me.body);
 
 		 for (var i = (page-1) * records_per_page; i < (page * records_per_page); i++) {
-		 	//console.log(["iii222",values[i][0]['name']])
 		 	if(values[i]!=null){
 				$("<li id='property_list' list-style-position: inside;><div class='col-md-12 property-div'>\
 							 <div id='details' class='col-md-12 property-main-div'>\
@@ -380,7 +379,6 @@ Project = Class.extend({
 		<p align='left'><b>Total Documents:</b> <span id='page'></span></p></div>").appendTo(me.body);
 
 		 for (var i = (page-1) * records_per_page; i < (page * records_per_page); i++) {
-		 	//console.log(["iii222",values[i][0]['name']])
 		 	if(values[i]!=null){
 				$("<li id='property_list' list-style-position: inside;><div class='col-md-12 property-div'>\
 							 <div id='details' class='col-md-12 property-main-div'>\

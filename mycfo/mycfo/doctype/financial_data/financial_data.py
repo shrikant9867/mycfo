@@ -19,13 +19,10 @@ class FinancialData(Document):
 		fund_list = []
 		if self.get('name_of_fund'):
 			for d in self.get('name_of_fund'):
-				frappe.errprint(d.fund_type)
 				if d.fund_type not in fund_list:
 					fund_list.append(d.fund_type)
-					frappe.errprint(fund_list)
 
 				else:
-					frappe.errprint(fund_list)
 					frappe.msgprint("No duplicate fund type is allowed",raise_exception=1)
 					break
 
@@ -54,7 +51,6 @@ class FinancialData(Document):
 	def validate_fiscal_year(self):
 		#pass
 		fiscal_year = frappe.db.sql("""select value from `tabSingles` where doctype='Global Defaults' and field='current_fiscal_year'""",as_list=1)
-		frappe.errprint(fiscal_year)
 		if fiscal_year:
 			if self.financial_year >= fiscal_year[0][0]:
 				frappe.msgprint("We can not create financial data for current and future fiscal year also.")

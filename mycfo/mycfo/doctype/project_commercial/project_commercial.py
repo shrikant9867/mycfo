@@ -16,6 +16,8 @@ class ProjectCommercial(Document):
 		if self.project_status == 'Terminate' or self.project_status == 'Close':
 			self.delink_projectid()
 
+		self.validate_due_date_in_childtable()
+
 	def validate_project_value(self):
 		total = 0.00
 		if self.get('table_17'):
@@ -42,6 +44,19 @@ class ProjectCommercial(Document):
 				else:
 					frappe.errprint("else")
 					return {"status":True}
+
+
+	def validate_due_date_in_childtable(self):
+		date_list = []
+		if self.get('table_17'):
+			for d in self.get('table_17'):
+				if d.due_date:
+					if d.due_date not in date_list:
+						date_list.append(d.due_date)
+					else:
+						frappe.msgprint("No duplicate due date is allowed in amount details child table",raise_exception=1)
+						break
+
 
 
 	def get_child_details(self,months=None):
@@ -80,20 +95,20 @@ class ProjectCommercial(Document):
 			self.create_child_record(due_amount,date_list)
 		else:
 			for i in range(1,months):
-				frappe.errprint(["months",months])
 				date=add_months(final_date,1)
-				frappe.errprint(["j",date])
 				date_list.append(date)
 				final_date=date
-				frappe.errprint(["date_list",date_list])
 			self.create_child_record(due_amount,date_list)
+			if self.var_val:
+				ch = self.append('table_17', {})
+				ch.amount = self.var_val
+
+
 
 
 	def create_child_record(self,due_amount,date_list):
-		frappe.errprint("create_child_record")
 		if(len(date_list)>0):
 			for i in date_list:
-				frappe.errprint(["i",i])
 				ch = self.append('table_17', {})
 				ch.due_date = i
 				ch.amount = due_amount

@@ -8,7 +8,6 @@ import json
 
 @frappe.whitelist()
 def get_operational_matrix_data(customer=None):
-	frappe.errprint("get_operational_matrix_data")
 	om_name = frappe.db.sql("""select name from `tabOperation And Project Commercial` where customer='%s' and operational_matrix_status='Active' order by creation desc"""%customer,as_list=1)
 	final_data = []
 	if len(om_name)>0:
@@ -27,7 +26,6 @@ def get_operational_matrix_data(customer=None):
 
 
 	if len(final_data)>0:
-		frappe.errprint(["finaldata11",final_data])
 		return {"final_data": final_data}
 
 @frappe.whitelist()
@@ -81,7 +79,6 @@ def get_filtered_data(customer=None,project_id=None,operational_matrix=None):
 	
 def get_item_conditions(customer,project_id,operational_matrix):
 	conditions = []
-	frappe.errprint(project_id)
 	if customer:
 		conditions.append("customer='{0}'".format(customer))
 	if project_id:
