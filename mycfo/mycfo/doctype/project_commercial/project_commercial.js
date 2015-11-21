@@ -6,6 +6,10 @@
 
 cur_frm.add_fetch('customer', 'customer_name', 'customer_name');
 
+cur_frm.add_fetch('p_id', 'project_id_status', 'project_id_status');
+
+cur_frm.add_fetch('customer', 'register_address', 'register_addr');
+
 cur_frm.cscript.start_date= function(doc, cdt, cdn) {
 	if (doc.start_date && doc.end_date)
 	{
@@ -137,6 +141,10 @@ cur_frm.cscript.p_type= function(doc, cdt, cdn) {
 		refresh_field('p_type')
 
 	}
+	return $c_obj(doc, 'clear_child_table','',function(r, rt) {
+			var doc = locals[cdt][cdn];
+			cur_frm.refresh();
+	});
 
 }
 
@@ -189,6 +197,9 @@ cur_frm.cscript.generate_records = function(doc,cdt,cdn){
     			msgprint("Please enter pick day.")
     		}
     	}
+    	else if(doc.type=='Milestone'){
+    		console.log("done")
+    	}
     	else{
     		msgprint("Please specify type.")
     	}
@@ -214,6 +225,8 @@ cur_frm.cscript.generate_records = function(doc,cdt,cdn){
 	    			msgprint("please enter pick day.")
 	    		}
 	    	}
+	    	else if(doc.fixed_type=='Milestone')
+	    		console.log("done")
 	    	else{
 	    		msgprint("Please specify type.")
 	    	}

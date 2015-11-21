@@ -5,6 +5,42 @@ from frappe import _
 def get_data(): 
 	return [
 		
+		
+		{	
+			"label": _("Documents"),
+			"icon": "icon-star",
+			"items": [
+				{
+					"type": "doctype",
+					"name": "Customer",
+					"description": _("Customer Details")
+				},
+				
+				{
+					"type": "doctype",
+					"name": "Contact",
+					"description": _("FFWW Details"),
+					"label":_("FFWW"),
+				},
+				{
+					"type": "doctype",
+					"name": "Operational Matrix",
+					"description": _("Operational Matrix Details"),
+				},
+				{
+					"type": "doctype",
+					"name": "Project Commercial",
+					"description": _("Project Commercial Details"),
+				},
+				{
+					"type": "doctype",
+					"name": "Financial Data",
+					"description": _("Financial Details"),
+				},
+				
+			]
+		},
+
 		{
 			"label": _("Masters"),
 			"icon": "icon-star",
@@ -46,39 +82,5 @@ def get_data():
 				},
 			]
 		},	
-		{	
-			"label": _("Documents"),
-			"icon": "icon-star",
-			"items": [
-				{
-					"type": "doctype",
-					"name": "Customer",
-					"description": _("Customer Details")
-				},
-				
-				{
-					"type": "doctype",
-					"name": "Contact",
-					"description": _("FFWW Details"),
-					"label":_("FFWW"),
-				},
-				{
-					"type": "doctype",
-					"name": "Operational Matrix",
-					"description": _("Operational Matrix Details"),
-				},
-				{
-					"type": "doctype",
-					"name": "Project Commercial",
-					"description": _("Project Commercial Details"),
-				},
-				{
-					"type": "doctype",
-					"name": "Financial Data",
-					"description": _("Financial Details"),
-				},
-				
-			]
-		},
 
 	]

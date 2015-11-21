@@ -5,7 +5,7 @@
 from __future__ import unicode_literals
 import frappe
 from frappe.model.document import Document
-from erpnext.utilities.address_and_contact import load_address_and_contact
+#from erpnext.utilities.address_and_contact import load_address_and_contact
 import json
 
 class FFWW(Document):
@@ -18,6 +18,7 @@ folders = []
 single_type = []
 docnames = []
 response = []
+
 @frappe.whitelist()
 def load_address_and_contact(record,key,key1):
 	contact_details = frappe.db.sql("""select contact_type,email_id,mobile_no from `tabContact Details` where 
@@ -53,10 +54,14 @@ def load_address_and_contact(record,key,key1):
 		contact_list[0].update({'official_emailid':official_emailid})
 		contact_list[0].update({'official_mobileno':official_mobileno})
 		args = {'contact_list':contact_list}
+	else:
+		args = {'contact_list':''}
 
 	if len(addr_list)>0:
 		#args = {'address_list':address_list}
 		args['addr_list'] =  addr_list
+	else:
+		args['addr_list'] = ''
 
 	if args:
 		return args
@@ -80,7 +85,7 @@ def get_children():
 	docn = {}
 
 	if args.get('parent') == 'Designation':
-		single_types = frappe.db.sql("""Select contact_designation from `tabContact`""",as_dict=1)
+		single_types = frappe.db.sql("""Select distinct contact_designation from `tabContact` where contact_designation is not null""",as_dict=1)
 		[response.append({"value":d["contact_designation"],"expandable":1}) for d in single_types]
 		[single_type.append(d["contact_designation"]) for d in single_types]
 

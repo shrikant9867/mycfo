@@ -110,32 +110,9 @@ Project1 = Class.extend({
 						$("<ul id='mytab' class='nav nav-tabs' role='tablist' >\
 				      <li role='presentation' class='active'><a href='#more"+""+i+"' role='tab' id='profile-tab' style='height:35px;margin-top:-3px;' data-toggle='tab' aria-controls='profile' aria-expanded='false'><i class='icon-li icon-book'></i>&nbsp;&nbsp;Project Details</a></li>\
 				      <li role='presentation' class=''><a href='#amenities"+""+i+"' role='tab' id='profile-tab' data-toggle='tab'  style='height:35px;margin-top:-3px;' aria-controls='profile' aria-expanded='false'><i class='icon-li icon-building'></i>&nbsp;&nbsp;Project Value Details</a></li>\
-				      <li role='presentation' class=''><a href='#general"+""+i+"' id='home-tab' style='height:35px;margin-top:-3px;'role='tab' data-toggle='tab' aria-controls='home' aria-expanded='false'><i class='icon-li icon-file'></i>&nbsp;&nbsp;Customer Details</a></li>\
 				      </ul></div>\
 				    </ul>\
 				    <div id='mytable' class='tab-content' style='background-color=#fafbfc;'>\
-				      <div role='tabpanel' class='tab-pane fade' style='overflow:auto;height: 110px;' id='general"+""+i+"' aria-labelledby='home-tab'>\
-				       <div class='col-md-6' style='background-color=#fafbfc;'>\
-				       <div class='row row-id'>\
-				        <div class='col-md-6 row'>\
-				       <div class='row property-row'><b>Customer :</b></div>\
-				       </div>\
-				       <div class='col-md-6 row'>\
-				        <div class='row property-row' id='area'></div>\
-				        </div>\
-				       </div>\
-				       </div>\
-				       <div class='col-md-6' style='background-color=#fafbfc;'>\
-				       <div class='row row-id'>\
-				        <div class='col-md-6 row'>\
-				       <div class='row property-row'><b>Address :</b></div>\
-				       </div>\
-				       <div class='col-md-6 row'>\
-				        <div class='row property-row' id='property-name'></div>\
-				        </div>\
-				       </div>\
-				       </div>\
-				       </div>\
 				       <div role='tabpanel' class='tab-pane fade' style='overflow:auto;height: 110px;' id='amenities"+""+i+"' aria-labelledby='profile-tab'>\
 				      <div class='col-md-6' id='amenities-first' style='background-color=#fafbfc;'>\
 				      </div>\
@@ -240,11 +217,11 @@ Project1 = Class.extend({
 					$($(me.body).find("#"+i+"")).find("#age").append('<div class="row property-row">'+values[i][0]['start_date'] ? values[i][0]['start_date'] : ""+'</div>')
 					$($(me.body).find("#"+i+"")).find("#furnishing_type").append('<div class="row property-row">'+values[i][0]['end_date'] ? values[i][0]['end_date'] : ""+'</div>')
 					$($(me.body).find("#"+i+"")).find("#society_name").append('<div class="row property-row">'+values[i][0]['pro_per'] ? values[i][0]['pro_per'] : ""+'</div>')
-					$($(me.body).find("#"+i+"")).find("#area").append('<div class="row property-row">'+values[i][0]['customer'] ? values[i][0]['customer'] : ""+'</div>')
+					// $($(me.body).find("#"+i+"")).find("#area").append('<div class="row property-row">'+values[i][0]['customer'] ? values[i][0]['customer'] : ""+'</div>')
 					$($(me.body).find("#"+i+"")).find("#p_type").append('<div class="row property-row">'+values[i][0]['p_type'] ? values[i][0]['p_type'] : ""+'</div>')
 					$($(me.body).find("#"+i+"")).find("#address").append('<div class="row property-row">'+values[i][0]['p_value'] ? values[i][0]['p_value'] : ""+'</div>')
-					$($(me.body).find("#"+i+"")).find("#location").append('<div class="row property-row">'+values[i][0]['customer_name'] ? values[i][0]['customer_name'] : ""+'</div>')
-					$($(me.body).find("#"+i+"")).find("#property-name").append('<div class="row property-row">'+values[i][0]['register_addr'] ? values[i][0]['register_addr'] : ""+'</div>')
+					// $($(me.body).find("#"+i+"")).find("#location").append('<div class="row property-row">'+values[i][0]['customer_name'] ? values[i][0]['customer_name'] : ""+'</div>')
+					// $($(me.body).find("#"+i+"")).find("#property-name").append('<div class="row property-row">'+values[i][0]['register_addr'] ? values[i][0]['register_addr'] : ""+'</div>')
 
 
 					if(values[i][0]['child_records']!=null){
@@ -260,9 +237,6 @@ Project1 = Class.extend({
 						frappe.set_route("Form",'Project Commercial',$(this).attr('id'));
 					})
 
-					$('#new').click(function(){
-						new_doc('Project Commercial');
-					})
 
 					$('#btn_prev').click(function(){
 						if (page > 1) {
@@ -291,6 +265,10 @@ Project1 = Class.extend({
 
 				}
 			}
+
+			$('#new').click(function(){
+				new_doc("Project Commercial");
+			})
 
 	}
 
@@ -406,39 +384,16 @@ Project = Class.extend({
 		 	if(values[i]!=null){
 				$("<li id='property_list' list-style-position: inside;><div class='col-md-12 property-div'>\
 							 <div id='details' class='col-md-12 property-main-div'>\
-							 <div id="+i+" class='col-md-12 property-id' style='border: 1px solid #d1d8dd;'>\
+							 <div id="+i+" class='col-md-12 property-id' style='border: 1px solid #999999;'>\
 							 </div></div>\
 				 			</div></li>").appendTo($(me.body).find("#mytable"))
 
 						$("<ul id='mytab' class='nav nav-tabs' role='tablist' >\
 				      <li role='presentation' class='active'><a href='#more"+""+i+"' role='tab' id='profile-tab' style='height:35px;margin-top:-3px;' data-toggle='tab' aria-controls='profile' aria-expanded='false'><i class='icon-li icon-book'></i>&nbsp;&nbsp;Project Details</a></li>\
 				      <li role='presentation' class=''><a href='#amenities"+""+i+"' role='tab' id='profile-tab' data-toggle='tab'  style='height:35px;margin-top:-3px;' aria-controls='profile' aria-expanded='false'><i class='icon-li icon-building'></i>&nbsp;&nbsp;Project Value Details</a></li>\
-				      <li role='presentation' class=''><a href='#general"+""+i+"' id='home-tab' style='height:35px;margin-top:-3px;'role='tab' data-toggle='tab' aria-controls='home' aria-expanded='false'><i class='icon-li icon-file'></i>&nbsp;&nbsp;Customer Details</a></li>\
 				      </ul></div>\
 				    </ul>\
 				    <div id='mytable' class='tab-content' style='background-color=#fafbfc;'>\
-				      <div role='tabpanel' class='tab-pane fade' style='overflow:auto;height: 110px;' id='general"+""+i+"' aria-labelledby='home-tab'>\
-				       <div class='col-md-6' style='background-color=#fafbfc;'>\
-				       <div class='row row-id'>\
-				        <div class='col-md-6 row'>\
-				       <div class='row property-row'><b>Customer :</b></div>\
-				       </div>\
-				       <div class='col-md-6 row'>\
-				        <div class='row property-row' id='area'></div>\
-				        </div>\
-				       </div>\
-				       </div>\
-				       <div class='col-md-6' style='background-color=#fafbfc;'>\
-				       <div class='row row-id'>\
-				        <div class='col-md-6 row'>\
-				       <div class='row property-row'><b>Address :</b></div>\
-				       </div>\
-				       <div class='col-md-6 row'>\
-				        <div class='row property-row' id='property-name'></div>\
-				        </div>\
-				       </div>\
-				       </div>\
-				       </div>\
 				       <div role='tabpanel' class='tab-pane fade' style='overflow:auto;height: 110px;' id='amenities"+""+i+"' aria-labelledby='profile-tab'>\
 				      <div class='col-md-6' id='amenities-first' style='background-color=#fafbfc;'>\
 				      </div>\
@@ -543,11 +498,11 @@ Project = Class.extend({
 					$($(me.body).find("#"+i+"")).find("#age").append('<div class="row property-row">'+values[i][0]['start_date'] ? values[i][0]['start_date'] : ""+'</div>')
 					$($(me.body).find("#"+i+"")).find("#furnishing_type").append('<div class="row property-row">'+values[i][0]['end_date'] ? values[i][0]['end_date'] : ""+'</div>')
 					$($(me.body).find("#"+i+"")).find("#society_name").append('<div class="row property-row">'+values[i][0]['pro_per'] ? values[i][0]['pro_per'] : ""+'</div>')
-					$($(me.body).find("#"+i+"")).find("#area").append('<div class="row property-row">'+values[i][0]['customer'] ? values[i][0]['customer'] : ""+'</div>')
+					// $($(me.body).find("#"+i+"")).find("#area").append('<div class="row property-row">'+values[i][0]['customer'] ? values[i][0]['customer'] : ""+'</div>')
 					$($(me.body).find("#"+i+"")).find("#p_type").append('<div class="row property-row">'+values[i][0]['p_type'] ? values[i][0]['p_type'] : ""+'</div>')
 					$($(me.body).find("#"+i+"")).find("#address").append('<div class="row property-row">'+values[i][0]['p_value'] ? values[i][0]['p_value'] : ""+'</div>')
-					$($(me.body).find("#"+i+"")).find("#location").append('<div class="row property-row">'+values[i][0]['customer_name'] ? values[i][0]['customer_name'] : ""+'</div>')
-					$($(me.body).find("#"+i+"")).find("#property-name").append('<div class="row property-row">'+values[i][0]['register_addr'] ? values[i][0]['register_addr'] : ""+'</div>')
+					// $($(me.body).find("#"+i+"")).find("#location").append('<div class="row property-row">'+values[i][0]['customer_name'] ? values[i][0]['customer_name'] : ""+'</div>')
+					// $($(me.body).find("#"+i+"")).find("#property-name").append('<div class="row property-row">'+values[i][0]['register_addr'] ? values[i][0]['register_addr'] : ""+'</div>')
 
 
 					if(values[i][0]['child_records']!=null){
@@ -563,9 +518,6 @@ Project = Class.extend({
 						frappe.set_route("Form",'Project Commercial',$(this).attr('id'));
 					})
 
-					$('#new').click(function(){
-						new_doc('Project Commercial');
-					})
 
 					$('#btn_prev').click(function(){
 						if (page > 1) {
@@ -594,6 +546,10 @@ Project = Class.extend({
 
 				}
 			}
+
+			$('#new').click(function(){
+				new_doc("Project Commercial");
+			})
 		}
 })
 
