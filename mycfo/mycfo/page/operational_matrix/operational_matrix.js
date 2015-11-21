@@ -250,7 +250,8 @@ Operational = Class.extend({
 					fieldname: "customer_nm",
 					label: __("Customer"),
 					fieldtype: "Link",
-					options: "Customer"
+					options: "Customer",
+					read_only:1
 		});
 
 		me.filters.project_id = me.wrapper.page.add_field({
