@@ -18,15 +18,12 @@ class ProjectCommercial(Document):
 
 	def validate_project_value(self):
 		total = 0.00
-		frappe.errprint("hello22")
 		if self.get('table_17'):
 			for d in self.get('table_17'):
-				if d.name:
+				if d.amount:
 					total+= d.amount
-		frappe.errprint(type(self.p_value))
-		frappe.errprint(type(total))
 		if flt(self.p_value) != total:
-			frappe.msgprint("Project value must be equal to the total of all amount specified in the child table.",raise_exception=1)
+			frappe.msgprint("Project value must be equal to the total of all amount specified in the amount details child table.",raise_exception=1)
 
 	def delink_projectid(self):
 		commercial_data = frappe.db.sql("""select name from `tabOperation And Project Commercial` where operational_matrix_status='Active'
@@ -66,7 +63,7 @@ class ProjectCommercial(Document):
 				date_list.append(date)
 				final_date=date
 				frappe.errprint(date_list)
-				self.create_child_record(due_amount,date_list)
+			self.create_child_record(due_amount,date_list)
 
 
 	def get_child_details_for_fixed_variable(self,months=None):
@@ -83,17 +80,20 @@ class ProjectCommercial(Document):
 			self.create_child_record(due_amount,date_list)
 		else:
 			for i in range(1,months):
+				frappe.errprint(["months",months])
 				date=add_months(final_date,1)
 				frappe.errprint(["j",date])
 				date_list.append(date)
 				final_date=date
-				frappe.errprint(date_list)
-				self.create_child_record(due_amount,date_list)
+				frappe.errprint(["date_list",date_list])
+			self.create_child_record(due_amount,date_list)
 
 
 	def create_child_record(self,due_amount,date_list):
+		frappe.errprint("create_child_record")
 		if(len(date_list)>0):
 			for i in date_list:
+				frappe.errprint(["i",i])
 				ch = self.append('table_17', {})
 				ch.due_date = i
 				ch.amount = due_amount

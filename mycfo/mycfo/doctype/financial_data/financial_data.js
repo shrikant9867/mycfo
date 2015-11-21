@@ -39,3 +39,34 @@ cur_frm.fields_dict['shareholders_detail'].grid.get_field('shareholder_name').ge
 		}
 	}
 }
+
+
+cur_frm.cscript.ebidta = function(doc,cdt,cdn){
+	if(doc.annual_sales){
+		if(doc.ebidta>doc.annual_sales){
+			msgprint("EBIIDTA value must be less than annual sales")
+			doc.ebidta=''
+			refresh_field('ebidta');
+		}
+	}
+}
+
+cur_frm.cscript.pbt = function(doc,cdt,cdn){
+	if(doc.annual_sales){
+		if(doc.pbt>doc.annual_sales){
+			msgprint("PBT value must be less than annual sales")
+			doc.ebidta=''
+			refresh_field('ebidta');
+		}
+	}
+}
+
+cur_frm.cscript.pat = function(doc,cdt,cdn){
+	if(doc.annual_sales){
+		if(doc.pbt>doc.annual_sales){
+			msgprint("PAT value must be less than annual sales")
+			doc.ebidta=''
+			refresh_field('ebidta');
+		}
+	}
+}
