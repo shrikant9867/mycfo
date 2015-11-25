@@ -11,7 +11,6 @@ frappe.pages['FFWW'].on_page_load = function(wrapper) {
 }
 
 frappe.pages['FFWW'].on_page_show = function(wrapper) {
-	console.log("banck of ffwww page")
 	if(!frappe.route_options){
 		$("#main-div").empty();
 		wrapper.FFWW = new FFWW1(wrapper);
@@ -31,7 +30,6 @@ FFWW1 = Class.extend({
 			var ctype = 'Category';
 			
 			var customer = $('input[data-fieldname=customer_nm]').val()
-			console.log(customer)
 			return frappe.call({
 				method: 'mycfo.mycfo.doctype.ffww_details.ffww_details.get_children',
 				args: {ctype: ctype , customer: customer},
@@ -118,7 +116,6 @@ DMS = Class.extend({
 					label:__("Show Details"),
 					condition: function(node) { return node.data.type == 'contact' },
 					click: function(node) {
-						console.log(["node",node['label']])
 						me.new_node(node);
 					}
 				},	
@@ -128,8 +125,6 @@ DMS = Class.extend({
 
 	new_node: function(node) {
 		var me = this;
-		console.log("in new_node")
-		console.log(node)
 		if(node['label']){
 		frappe.call({
 			method:"mycfo.mycfo.doctype.ffww_details.ffww_details.load_address_and_contact",

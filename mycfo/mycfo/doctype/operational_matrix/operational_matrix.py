@@ -26,7 +26,7 @@ class OperationalMatrix(Document):
 
 	def validate_employee_child_table(self):
 		if not self.get('operation_details'):
-			frappe.msgprint("At least one entry is mandetory in Operation Matrix child table..",raise_exception=1)
+			frappe.msgprint("At least one entry is mandetory in Operation Matrix child table.",raise_exception=1)
 
 	def validate_duplicate_entry(self):
 		pass

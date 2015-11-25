@@ -44,7 +44,6 @@ class ProjectCommercial(Document):
 					self.var_val=''
 					frappe.msgprint("For project type Fixed + Variable,total of fixed and variable value must be equal to the project value",raise_exception=1)
 				else:
-					frappe.errprint("else")
 					return {"status":True}
 
 
@@ -76,10 +75,8 @@ class ProjectCommercial(Document):
 		else:
 			for i in range(1,months):
 				date=add_months(final_date,1)
-				frappe.errprint(["j",date])
 				date_list.append(date)
 				final_date=date
-				frappe.errprint(date_list)
 			self.create_child_record(due_amount,date_list)
 
 

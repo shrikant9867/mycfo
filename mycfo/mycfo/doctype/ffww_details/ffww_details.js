@@ -5,7 +5,6 @@
 
 frappe.ui.form.on("FFWW Details", "refresh", function(wrapper) {
 	wrapper.disable_save();
-	console.log(frappe.route_options)
 	wrapper.make_tree = function() {
 		var ctype = 'Category';
 		if(frappe.route_options)
@@ -56,7 +55,6 @@ DMS = Class.extend({
 					label:__("Show Details"),
 					condition: function(node) { return node.data.type == 'contact' },
 					click: function(node) {
-						console.log(["node",node['label']])
 						me.new_node(node);
 					}
 				},	
@@ -66,8 +64,6 @@ DMS = Class.extend({
 
 	new_node: function(node) {
 		var me = this;
-		console.log("in new_node")
-		console.log(node)
 		if(node['label']){
 		frappe.call({
 			method:"mycfo.mycfo.doctype.ffww_details.ffww_details.load_address_and_contact",

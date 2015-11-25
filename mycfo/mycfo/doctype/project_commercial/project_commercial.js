@@ -261,9 +261,6 @@ cur_frm.cscript.generate_records = function(doc,cdt,cdn){
 	    				months = cur_frm.cscript.cacluate_months(doc.start_date,doc.end_date)
 		    			if(months){
 		    				if(doc.fix_val && doc.var_val){
-		    					console.log(doc.p_value)
-		    					console.log(doc.var_val)
-		    					console.log(parseFloat(doc.fix_val) + parseFloat(doc.var_val))
 		    					if(parseFloat(doc.p_value)==(parseFloat(doc.fix_val) + parseFloat(doc.var_val))){
 			    					return $c_obj(doc, 'get_child_details_for_fixed_variable',months,function(r, rt) {
 										var doc = locals[cdt][cdn];

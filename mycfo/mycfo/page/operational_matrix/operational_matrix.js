@@ -12,7 +12,6 @@ frappe.pages['Operational Matrix'].on_page_load = function(wrapper) {
 }
 
 frappe.pages['Operational Matrix'].on_page_show = function(wrapper) {
-	console.log("operational_matrix")
 	if(!frappe.route_options){
 		$("#main-div").empty();
 		wrapper.operational = new Operational1(wrapper);

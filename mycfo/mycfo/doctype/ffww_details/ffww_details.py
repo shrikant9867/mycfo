@@ -85,7 +85,6 @@ def get_children():
 	final_response = []
 	docn = {}
 
-	#frappe.errprint(args['customer'])
 
 	if args.get('parent') == 'Category':
 		single_types = frappe.db.sql("""Select distinct name from `tabCategory` where is_child=0""",as_dict=1)
@@ -94,13 +93,11 @@ def get_children():
 
 
 	elif args.get('parent') in single_type:
-		frappe.errprint("2222222222")
 		child_list = frappe.db.sql("""select distinct contact from `tabFFWW` where customer = '%s' and name in (select parent from `tabFFWW Designation` where designation='%s')"""%(args['customer'],args.get('parent')),as_dict=1,debug=1)	
 		child_name = frappe.db.sql("""select name from `tabCategory` where is_child=1 and parent_category='%s'"""%args.get('parent'),as_dict=1,debug=1)
 		[response.append({"value":d["contact"],"expandable":0,"type":"contact"}) for d in child_list]
 		[response.append({"value":i["name"],"expandable":1,"type":"child"}) for i in child_name]
 		[doctypes.append(d["name"]) for d in child_name]
-		frappe.errprint(["2",doctypes])
 
 
 	elif args.get('parent') in doctypes:
