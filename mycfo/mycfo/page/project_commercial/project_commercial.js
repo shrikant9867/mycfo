@@ -23,8 +23,21 @@ Project1 = Class.extend({
 		this.wrapper = wrapper;
 		this.body = $(this.wrapper).find(".user-settings");
 		this.filters = {};
+		this.make();
 		this.render();
 	},
+
+	make: function() {
+		var me = this;
+
+		$("<div class='col-md-12 row' id='newbuttons' ><p  style='float:right;text-align=right'><button class='btn btn-sm btn-default btn-address'> <i class='icon-plus'></i><a id='new'> New Project Commercial</a></button></p></div>").appendTo(me.body)
+
+		$('#new').click(function(){
+			new_doc("Project Commercial");
+		})
+
+	},
+
 	render: function() {
 		var me = this;
 
@@ -89,8 +102,7 @@ Project1 = Class.extend({
 		var me = this
 		$("#buttons").remove();
 		me.property_data=values
-		$("<div class='col-md-12 row' id='newbuttons' ><p  style='float:right;text-align=right'><button class='btn btn-sm btn-default btn-address'> <i class='icon-plus'></i><a id='new'> New Project Commercial</a></button></p></div>\
-			<div id='property' class='col-md-12'>\
+		$("<div id='property' class='col-md-12'>\
 			<div class='row'><ul id='mytable'style='list-style-type:none'></ul>\
 			</div></div>\
 			<div id='buttons' >\
@@ -265,10 +277,6 @@ Project1 = Class.extend({
 				}
 			}
 
-			$('#new').click(function(){
-				new_doc("Project Commercial");
-			})
-
 	}
 
 })
@@ -297,6 +305,12 @@ Project = Class.extend({
 		if(frappe.route_options)
 			me.filters.customer.input.value= frappe.route_options['customer']
 
+		$("<div class='col-md-12 row' id='newbuttons' ><p  style='float:right;text-align=right'><button class='btn btn-sm btn-default btn-address'> <i class='icon-plus'></i><a id='new'> New Project Commercial</a></button></p></div>").appendTo(me.body)
+
+		$('#new').click(function(){
+				new_doc("Project Commercial");
+		})
+
 	},
 
 	refresh: function() {
@@ -320,10 +334,10 @@ Project = Class.extend({
 						me.values = r.message['final_data']
 						me.cal_for_btn_next()
 					}
-					else{
-						me.body.html("<p class='text-muted'>"+__("There is no any Project Commercial added yet.")+"</p>");
-						return;
-					}
+					// else{
+					// 	me.body.html("<p class='text-muted'>"+__("There is no any Project Commercial added yet.")+"</p>");
+					// 	return;
+					// }
 				}
 			});
 		
@@ -371,8 +385,7 @@ Project = Class.extend({
 		var me = this
 		$("#buttons").remove();
 		me.property_data=values
-		$("<div class='col-md-12 row' id='newbuttons' ><p  style='float:right;text-align=right'><button class='btn btn-sm btn-default btn-address'> <i class='icon-plus'></i><a id='new'> New Project Commercial</a></button></p></div>\
-			<div id='property' class='col-md-12'>\
+		$("<div id='property' class='col-md-12'>\
 			<div class='row'><ul id='mytable'style='list-style-type:none'></ul>\
 			</div></div>\
 			<div id='buttons' >\
@@ -547,9 +560,7 @@ Project = Class.extend({
 				}
 			}
 
-			$('#new').click(function(){
-				new_doc("Project Commercial");
-			})
+			
 		}
 })
 

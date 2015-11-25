@@ -18,7 +18,7 @@ def get_data():
 				
 				{
 					"type": "doctype",
-					"name": "Contact",
+					"name": "FFWW",
 					"description": _("FFWW Details"),
 					"label":_("FFWW"),
 				},
@@ -79,6 +79,11 @@ def get_data():
 					"type": "doctype",
 					"name": "Customer Segment",
 					"description": _("Customer Segments"),
+				},
+				{
+					"type": "doctype",
+					"name": "Category",
+					"description": _("Category"),
 				},
 			]
 		},	

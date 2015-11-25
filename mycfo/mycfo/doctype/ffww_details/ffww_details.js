@@ -1,96 +1,33 @@
-frappe.pages['FFWW'].on_page_load = function(wrapper) {
-	var page = frappe.ui.make_app_page({
-		parent: wrapper,
-		title: 'FFWW',
-		single_column: true
-	});
+// Copyright (c) 2015, Frappe Technologies Pvt. Ltd. and Contributors
+// License: GNU General Public License v3. See license.txt
 
-	$("<div class='user-settings' id ='main-div'></div>").appendTo(page.main);
+{% include 'controllers/js/contact_address_common.js' %};
 
-	wrapper.FFWW = new FFWW(wrapper);
-}
-
-frappe.pages['FFWW'].on_page_show = function(wrapper) {
-	if(!frappe.route_options){
-		$("#main-div").empty();
-		wrapper.FFWW = new FFWW1(wrapper);
-	}
-}
-
-FFWW1 = Class.extend({
-	init: function(wrapper) {
-		this.wrapper = wrapper;
-		this.body = $(this.wrapper).find(".user-settings");
-		this.filters = {};
-		this.render();
-	},
-	render: function(){
-		var me = this
-		me.body.make_tree = function() {
-			var ctype = 'Category';
-			
-			var customer = $('input[data-fieldname=customer_nm]').val()
-			return frappe.call({
-				method: 'mycfo.mycfo.doctype.ffww_details.ffww_details.get_children',
-				args: {ctype: ctype , customer: customer},
-				callback: function(r) {
-					var root = 'Category';
-					dms = new DMS(ctype, customer ,root,me.body);
-				}
-			});
-	}
-	me.body.make_tree();
-
-	},
-
-
-})
-
-FFWW = Class.extend({
-	init: function(wrapper) {
-		this.wrapper = wrapper;
-		this.deactivation_list = []
-		this.body = $(this.wrapper).find(".user-settings");
-		this.filters = {};
-		this.make();
-		this.refresh();
-	},
-	make: function() {
-		var me = this;
-		me.filters.customer = me.wrapper.page.add_field({
-					fieldname: "customer_nm",
-					label: __("Customer"),
-					fieldtype: "Link",
-					options: "Customer",
-					read_only:1
-		});
-
+frappe.ui.form.on("FFWW Details", "refresh", function(wrapper) {
+	wrapper.disable_save();
+	wrapper.make_tree = function() {
+		var ctype = 'Category';
 		if(frappe.route_options)
-			me.filters.customer.input.value= frappe.route_options['customer']
+			var customer = frappe.route_options['customer']
+		this.designation = $(wrapper.body).find("#designation");
 
-		$(me.filters.customer.input).attr('disabled',true)
-	},
-	refresh: function(){
-		var me = this
-		me.body.make_tree = function() {
-			var ctype = 'Category';
-			if(frappe.route_options)
-				var customer = frappe.route_options['customer']
-
-			return frappe.call({
-				method: 'mycfo.mycfo.doctype.ffww_details.ffww_details.get_children',
-				args: {ctype: ctype , customer: customer},
-				callback: function(r) {
-					var root = 'Category';
-					dms = new DMS(ctype, customer ,root,me.body);
-				}
-			});
+		return frappe.call({
+			method: 'mycfo.mycfo.doctype.ffww_details.ffww_details.get_children',
+			args: {ctype: ctype , customer: customer},
+			callback: function(r) {
+				var root = 'Category';
+				dms = new DMS(ctype, customer ,root,
+					wrapper.page.main.css({
+						"min-height": "500px",
+						"padding-bottom": "25px"
+					}));
+			}
+		});
 	}
-	me.body.make_tree();
+	wrapper.make_tree();
+	
+ });
 
-	},
-
-})
 
 DMS = Class.extend({
 	init: function(ctype, customer,root,  parent) {
@@ -98,11 +35,13 @@ DMS = Class.extend({
 		var me = this;
 		me.ctype = ctype;
 		me.customer = customer
+		me.customer
 		me.can_read = frappe.model.can_read(this.ctype);
 		me.can_create = frappe.boot.user.can_create.indexOf(this.ctype) !== -1 ||
 					frappe.boot.user.in_create.indexOf(this.ctype) !== -1;
 		me.can_write = frappe.model.can_write(this.ctype);
 		me.can_delete = frappe.model.can_delete(this.ctype);
+      
 
 		this.tree = new frappe.ui.Tree1({
 			parent: $(parent),
@@ -160,7 +99,6 @@ frappe.ui.Tree1 = Class.extend({
 	init: function(args) {
 		$.extend(this, args);
 		this.nodes = {};
-
 		this.$w = $('<div class="col-md-12 tree">\
 			<div class="col-md-4" id ="designation"></div>\
 		<div class="col-md-4" id ="contact"></div>\

@@ -23,8 +23,21 @@ Operational1 = Class.extend({
 		this.wrapper = wrapper;
 		this.body = $(this.wrapper).find(".user-settings");
 		this.filters = {};
+		this.make();
 		this.render();
 	},
+
+	make: function() {
+		var me = this;
+
+		$("<div class='col-md-12 row' id='newbuttons' ><p  style='float:right;text-align=right'><button class='btn btn-sm btn-default btn-address'> <i class='icon-plus'></i><a id='new-button'> New Operational Matrix</a></button></p></div>").appendTo(me.body)
+
+		$('#new-button').click(function(){
+			new_doc("Operational Matrix");
+		})
+
+	},
+
 	render: function() {
 		var me = this;
 		if($('input[data-fieldname=customer_nm]').val().length!=null){
@@ -87,11 +100,9 @@ Operational1 = Class.extend({
 	show_operational_matrix: function(page,numPages,values,records_per_page,length,flag) {
 		var me = this
 		$("#buttons").remove();
-		$('#newbuttons').remove();
 		$('#property').remove();
 		//me.property_data=values
-		$("<div class='col-md-12 row' id ='newbuttons' ><p  style='float:right;text-align=right'><button class='btn btn-sm btn-default btn-address'> <i class='icon-plus'></i><a id='new-button'> New Operational Matrix</a></button></p></div>\
-			<div id='property' class='col-md-12'>\
+		$("<div id='property' class='col-md-12'>\
 			<div class='row'><ul id='mytable'style='list-style-type:none'></ul>\
 			</div></div>\
 			<div id='buttons' >\
@@ -221,11 +232,6 @@ Operational1 = Class.extend({
 				}
 			}
 
-			$('#new-button').click(function(){
-			new_doc("Operational Matrix");
-		})
-
-
 		}
 
 
@@ -299,6 +305,13 @@ Operational = Class.extend({
 			me.filters.customer.input.value= frappe.route_options['customer']
 
 		$('[data-fieldname=add]').css('display','none')
+
+
+		$("<div class='col-md-12 row' id ='newbuttons' ><p  style='float:right;text-align=right'><button class='btn btn-sm btn-default btn-address'> <i class='icon-plus'></i><a id='new-button'> New Operational Matrix</a></button></p></div>").appendTo(me.body)
+
+		$('#new-button').click(function(){
+				new_doc("Operational Matrix");
+		})
 		
 		//change in filter project ID-----------------------------------------------------------
 		$(me.filters.project_id.input).change(function(){
@@ -465,11 +478,10 @@ Operational = Class.extend({
 	show_user_property_table: function(page,numPages,values,records_per_page,length,flag) {
 		var me = this
 		$("#buttons").remove();
-		$('#newbuttons').remove();
+		//$('#newbuttons').remove();
 		$('#property').remove();
 		//me.property_data=values
-		$("<div class='col-md-12 row' id ='newbuttons' ><p  style='float:right;text-align=right'><button class='btn btn-sm btn-default btn-address'> <i class='icon-plus'></i><a id='new-button'> New Operational Matrix</a></button></p></div>\
-			<div id='property' class='col-md-12'>\
+		$("<div id='property' class='col-md-12'>\
 			<div class='row'><ul id='mytable'style='list-style-type:none'></ul>\
 			</div></div>\
 			<div id='buttons' >\
@@ -588,10 +600,6 @@ Operational = Class.extend({
 
 				}
 			}
-
-			$('#new-button').click(function(){
-			new_doc("Operational Matrix");
-		})
 
 			$('.cb').click(function(){
 					

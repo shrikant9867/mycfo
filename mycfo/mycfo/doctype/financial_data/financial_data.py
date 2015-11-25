@@ -19,6 +19,9 @@ class FinancialData(Document):
 		fund_list = []
 		if self.get('name_of_fund'):
 			for d in self.get('name_of_fund'):
+				if d.fund_type:
+					if not d.name_of_fund:
+						frappe.msgprint("Please specify name of fund against the fund type '%s'"%d.fund_type,raise_exception=1)
 				if d.fund_type not in fund_list:
 					fund_list.append(d.fund_type)
 
@@ -40,12 +43,12 @@ class FinancialData(Document):
 	def validate_yearlydata_against_customer(self):
 		if frappe.db.sql("""select name from `tabFinancial Data` where name!='%s' and customer='%s' and financial_year='%s'"""%(self.name,self.customer,self.financial_year)):
 			name = frappe.db.sql("""select name from `tabFinancial Data` where name!='%s' and customer='%s' and financial_year='%s'"""%(self.name,self.customer,self.financial_year),as_list=1)
-			frappe.msgprint(" Entry for financial year '%s' against the customer = '%s' is already created"%(self.financial_year,self.customer),raise_exception=1)
+			frappe.msgprint(" Entry for Financial Year '%s' against the Customer = '%s' is already created"%(self.financial_year,self.customer),raise_exception=1)
 
 
 	def validate_fund_type(self):
 		if not len(self.get('name_of_fund'))>0:
-			frappe.msgprint("At least one fund details entry is necessary in fund child table.",raise_exception=1)
+			frappe.msgprint("At least one Fund Details entry is necessary in Fund Child table.",raise_exception=1)
 
 
 	def validate_fiscal_year(self):
@@ -53,4 +56,4 @@ class FinancialData(Document):
 		fiscal_year = frappe.db.sql("""select value from `tabSingles` where doctype='Global Defaults' and field='current_fiscal_year'""",as_list=1)
 		if fiscal_year:
 			if self.financial_year >= fiscal_year[0][0]:
-				frappe.msgprint("We can not create financial data for current and future fiscal year also.")
+				frappe.msgprint("No permission to create financial data for current and future fiscal year also.")

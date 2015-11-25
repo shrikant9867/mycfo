@@ -40,9 +40,10 @@ class ProjectCommercial(Document):
 		if self.p_value:
 			if self.fix_val and self.var_val:
 				if flt(self.p_value) != (flt(self.fix_val) + flt(self.var_val)):
+					self.fix_val=''
+					self.var_val=''
 					frappe.msgprint("For project type Fixed + Variable,total of fixed and variable value must be equal to the project value",raise_exception=1)
 				else:
-					frappe.errprint("else")
 					return {"status":True}
 
 
@@ -54,7 +55,7 @@ class ProjectCommercial(Document):
 					if d.due_date not in date_list:
 						date_list.append(d.due_date)
 					else:
-						frappe.msgprint("No duplicate due date is allowed in amount details child table",raise_exception=1)
+						frappe.msgprint("Duplicate Due Date is not allowed in Amount Details child table",raise_exception=1)
 						break
 
 
@@ -74,10 +75,8 @@ class ProjectCommercial(Document):
 		else:
 			for i in range(1,months):
 				date=add_months(final_date,1)
-				frappe.errprint(["j",date])
 				date_list.append(date)
 				final_date=date
-				frappe.errprint(date_list)
 			self.create_child_record(due_amount,date_list)
 
 

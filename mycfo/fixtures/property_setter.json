@@ -1045,19 +1045,6 @@
   "docstatus": 0, 
   "doctype": "Property Setter", 
   "doctype_or_field": "DocField", 
-  "field_name": "contact_designation", 
-  "modified": "2015-11-19 11:43:49.641643", 
-  "name": "Contact-contact_designation-previous_field", 
-  "property": "previous_field", 
-  "property_type": "Data", 
-  "value": "skype_id"
- }, 
- {
-  "default_value": null, 
-  "doc_type": "Contact", 
-  "docstatus": 0, 
-  "doctype": "Property Setter", 
-  "doctype_or_field": "DocField", 
   "field_name": "contacts", 
   "modified": "2015-11-19 11:43:54.941880", 
   "name": "Contact-contacts-previous_field", 
@@ -1116,19 +1103,6 @@
   "property": "previous_field", 
   "property_type": "Data", 
   "value": "customer_segment"
- }, 
- {
-  "default_value": null, 
-  "doc_type": "Contact", 
-  "docstatus": 0, 
-  "doctype": "Property Setter", 
-  "doctype_or_field": "DocType", 
-  "field_name": null, 
-  "modified": "2015-11-19 11:50:12.705753", 
-  "name": "Contact-read_only_onload", 
-  "property": "read_only_onload", 
-  "property_type": "Check", 
-  "value": null
  }, 
  {
   "default_value": null, 
@@ -1285,5 +1259,57 @@
   "property": "_idx", 
   "property_type": "Text", 
   "value": "[\"basic_info\", \"naming_series\", \"customer_name\", \"customer_type\", \"sector\", \"industry\", \"customer_segment\", \"pan_number\", \"register_address\", \"lead_name\", \"column_break0\", \"customer_group\", \"territory\", \"industry_group\", \"sub_industry\", \"cin_number\", \"date_of_incorporation\", \"tax_id\", \"is_frozen\", \"currency_and_price_list\", \"default_currency\", \"default_price_list\", \"column_break_14\", \"default_taxes_and_charges\", \"financial__data\", \"financial_details\", \"address_contacts\", \"address_html\", \"column_break1\", \"contact_html\", \"default_receivable_accounts\", \"accounts\", \"column_break2\", \"credit_days_based_on\", \"credit_days\", \"credit_limit\", \"more_info\", \"customer_details\", \"website\", \"sales_team_section_break\", \"default_sales_partner\", \"default_commission_rate\", \"sales_team_section\", \"sales_team\", \"communications\", \"p_details\", \"promoters_details\"]"
+ }, 
+ {
+  "default_value": null, 
+  "doc_type": "Contact", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocField", 
+  "field_name": "contact_designation", 
+  "modified": "2015-11-23 15:58:01.810026", 
+  "name": "Contact-contact_designation-previous_field", 
+  "property": "previous_field", 
+  "property_type": "Data", 
+  "value": "skype_id"
+ }, 
+ {
+  "default_value": null, 
+  "doc_type": "Contact", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocType", 
+  "field_name": null, 
+  "modified": "2015-11-23 15:59:10.648537", 
+  "name": "Contact-read_only_onload", 
+  "property": "read_only_onload", 
+  "property_type": "Check", 
+  "value": null
+ }, 
+ {
+  "default_value": null, 
+  "doc_type": "Contact", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocField", 
+  "field_name": "customer", 
+  "modified": "2015-11-23 15:59:10.761538", 
+  "name": "Contact-customer-hidden", 
+  "property": "hidden", 
+  "property_type": "Check", 
+  "value": "1"
+ }, 
+ {
+  "default_value": null, 
+  "doc_type": "Contact", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocField", 
+  "field_name": "customer_name", 
+  "modified": "2015-11-23 15:59:10.815070", 
+  "name": "Contact-customer_name-hidden", 
+  "property": "hidden", 
+  "property_type": "Check", 
+  "value": "1"
  }
 ]
