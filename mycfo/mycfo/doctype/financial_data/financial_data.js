@@ -7,6 +7,8 @@
 
 cur_frm.add_fetch('customer', 'customer_name', 'customer_name');
 
+cur_frm.add_fetch('shareholder_name', 'contact', 'contact');
+
 
 cur_frm.cscript.validate = function(doc, dt, dn) {
 	calculate_all(doc, dt, dn);
@@ -32,13 +34,13 @@ var calculate_total_shares = function(doc, dt, dn) {
 
 
 cur_frm.fields_dict['shareholders_detail'].grid.get_field('shareholder_name').get_query = function(doc, cdt, cdn) {
-	return {
-		filters: {
-			
-			"contact_designation": 'Shareholder'
-		}
-	}
+	return{	query: "mycfo.mycfo.doctype.financial_data.financial_data.get_shareholders" }
+
 }
+
+// cur_frm.fields_dict.shareholder_name = function(doc,cdt,cdn) {
+// 	return{	query: "erpnext.controllers.queries.employee_query" }
+// }
 
 
 cur_frm.cscript.ebidta = function(doc,cdt,cdn){
@@ -210,3 +212,4 @@ cur_frm.cscript.no_of_fully_qualified_cwas_or_mbas_in_f_and_a = function(doc,cdt
 		refresh_field('no_of_fully_qualified_cwas_or_mbas_in_f_and_a')
 	}
 }
+

@@ -42,7 +42,7 @@ class ProjectCommercial(Document):
 				if flt(self.p_value) != (flt(self.fix_val) + flt(self.var_val)):
 					self.fix_val=''
 					self.var_val=''
-					frappe.msgprint("For project type Fixed + Variable,total of fixed and variable value must be equal to the project value",raise_exception=1)
+					frappe.msgprint("For project type Fixed + Variable,total of Fixed and Variable Value must be equal to the Project value",raise_exception=1)
 				else:
 					return {"status":True}
 
@@ -64,11 +64,19 @@ class ProjectCommercial(Document):
 		self.set('table_17', [])
 		date_list = []
 		start_date = getdate(self.start_date)
+		start_day  =  start_date.day
 		start_month = start_date.month
 		start_year = start_date.year
+		end_date = getdate(self.end_date)
+		end_day = end_date.day
+		end_month = end_date.month
+		end_year = end_date.year
 		due_amount = flt(flt(self.p_value)/cint(months))
 		new_date = self.pick_date +'-'+ cstr(start_month) + '-' + cstr(start_year)
 		final_date = getdate(datetime.datetime.strptime(cstr(new_date),'%d-%m-%Y'))
+		# frappe.errprint(["final_date",final_date])
+		# frappe.errprint(getdate(datetime.datetime.strptime(cstr(cstr(start_day) +'-'+ cstr(start_month) + '-' + cstr(start_year)),'%d-%m-%Y')))
+		# frappe.errprint(getdate(datetime.datetime.strptime(cstr(cstr(end_day) +'-'+ cstr(end_month) + '-' + cstr(end_year)),'%d-%m-%Y')))
 		date_list.append(final_date)
 		if months == 1:
 			self.create_child_record(due_amount,date_list)

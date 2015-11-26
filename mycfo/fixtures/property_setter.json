@@ -1071,19 +1071,6 @@
   "docstatus": 0, 
   "doctype": "Property Setter", 
   "doctype_or_field": "DocField", 
-  "field_name": "skype_id", 
-  "modified": "2015-11-19 11:44:15.854572", 
-  "name": "Contact-skype_id-previous_field", 
-  "property": "previous_field", 
-  "property_type": "Data", 
-  "value": "col"
- }, 
- {
-  "default_value": null, 
-  "doc_type": "Contact", 
-  "docstatus": 0, 
-  "doctype": "Property Setter", 
-  "doctype_or_field": "DocField", 
   "field_name": "col", 
   "modified": "2015-11-19 11:44:25.255762", 
   "name": "Contact-col-previous_field", 
@@ -1103,19 +1090,6 @@
   "property": "previous_field", 
   "property_type": "Data", 
   "value": "customer_segment"
- }, 
- {
-  "default_value": null, 
-  "doc_type": "Contact", 
-  "docstatus": 0, 
-  "doctype": "Property Setter", 
-  "doctype_or_field": "DocField", 
-  "field_name": "linkedin_id", 
-  "modified": "2015-11-19 11:50:21.184180", 
-  "name": "Contact-linkedin_id-previous_field", 
-  "property": "previous_field", 
-  "property_type": "Data", 
-  "value": "mobile_no"
  }, 
  {
   "default_value": null, 
@@ -1278,19 +1252,6 @@
   "doc_type": "Contact", 
   "docstatus": 0, 
   "doctype": "Property Setter", 
-  "doctype_or_field": "DocType", 
-  "field_name": null, 
-  "modified": "2015-11-23 15:59:10.648537", 
-  "name": "Contact-read_only_onload", 
-  "property": "read_only_onload", 
-  "property_type": "Check", 
-  "value": null
- }, 
- {
-  "default_value": null, 
-  "doc_type": "Contact", 
-  "docstatus": 0, 
-  "doctype": "Property Setter", 
   "doctype_or_field": "DocField", 
   "field_name": "customer", 
   "modified": "2015-11-23 15:59:10.761538", 
@@ -1311,5 +1272,57 @@
   "property": "hidden", 
   "property_type": "Check", 
   "value": "1"
+ }, 
+ {
+  "default_value": null, 
+  "doc_type": "Contact", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocField", 
+  "field_name": "linkedin_id", 
+  "modified": "2015-11-26 13:23:37.258971", 
+  "name": "Contact-linkedin_id-previous_field", 
+  "property": "previous_field", 
+  "property_type": "Data", 
+  "value": "mobile_no"
+ }, 
+ {
+  "default_value": null, 
+  "doc_type": "Contact", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocField", 
+  "field_name": "skype_id", 
+  "modified": "2015-11-26 13:23:37.637900", 
+  "name": "Contact-skype_id-previous_field", 
+  "property": "previous_field", 
+  "property_type": "Data", 
+  "value": "col"
+ }, 
+ {
+  "default_value": null, 
+  "doc_type": "Contact", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocType", 
+  "field_name": null, 
+  "modified": "2015-11-26 18:42:54.787701", 
+  "name": "Contact-read_only_onload", 
+  "property": "read_only_onload", 
+  "property_type": "Check", 
+  "value": null
+ }, 
+ {
+  "default_value": null, 
+  "doc_type": "Contact", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocType", 
+  "field_name": null, 
+  "modified": "2015-11-26 18:42:55.546002", 
+  "name": "Contact-search_fields", 
+  "property": "search_fields", 
+  "property_type": "Data", 
+  "value": ""
  }
 ]
