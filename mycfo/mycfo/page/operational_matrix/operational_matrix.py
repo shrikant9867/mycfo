@@ -24,7 +24,8 @@ def get_operational_matrix_data(customer=None):
 			else:
 				final_data.append(om_data)
 
-
+	else:
+		return {"final_data": final_data}
 	if len(final_data)>0:
 		return {"final_data": final_data}
 
@@ -49,6 +50,7 @@ def get_operational_matrix_details(customer=None,project_id=None,operational_mat
 		frappe.db.sql("""update `tabOperation And Project Commercial` set operational_matrix_status='Active'
 						where name='%s'"""%name)
 		frappe.db.commit()
+		frappe.msgprint("Specified operation matrix '%s' is get linked for  project id '%s' and customer '%s' please check below records."%(operational_matrix,project_id,customer))
 	else:
 		frappe.msgprint("Specified operation matrix '%s' is already linked for  project id '%s' and customer '%s'."%(operational_matrix,project_id,customer))
 
@@ -98,5 +100,8 @@ def deactivate_records(operational_record=None,customer=None):
 		frappe.db.commit()
 	if customer:
 		last_final_data = get_operational_matrix_data(customer)
-	return {"final_data": last_final_data['final_data']}
+		if last_final_data:
+			return {"final_data": last_final_data['final_data']}
+		else:
+			return None
 

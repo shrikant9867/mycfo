@@ -21,7 +21,7 @@ class FinancialData(Document):
 			for d in self.get('name_of_fund'):
 				if d.fund_type:
 					if not d.name_of_fund:
-						frappe.msgprint("Please specify name of fund against the fund type '%s'"%d.fund_type,raise_exception=1)
+						frappe.msgprint("Please specify Fund Name against the Fund Type '%s'"%d.fund_type,raise_exception=1)
 				if d.fund_type not in fund_list:
 					fund_list.append(d.fund_type)
 
@@ -57,3 +57,25 @@ class FinancialData(Document):
 		if fiscal_year:
 			if self.financial_year >= fiscal_year[0][0]:
 				frappe.msgprint("No permission to create financial data for current and future fiscal year also.")
+
+def get_shareholders(doctype, txt, searchfield, start, page_len, filters):
+	# from frappe.desk.reportview import get_match_cond
+	# txt = "%{}%".format(txt)
+	return frappe.db.sql("""select distinct f.name
+		from `tabFFWW` f , `tabFFWW Designation` d
+		where f.docstatus < 2
+		and f.contact is not null
+			and f.name = d.parent
+			and f.name in (select parent from `tabFFWW Designation` where designation='Share Holder')""",as_list=1)
+
+
+
+def get_promoters(doctype, txt, searchfield, start, page_len, filters):
+	from frappe.desk.reportview import get_match_cond
+	txt = "%{}%".format(txt)
+	return frappe.db.sql("""select distinct f.name
+		from `tabFFWW` f , `tabFFWW Designation` d
+		where f.docstatus < 2
+		and f.contact is not null
+			and f.name = d.parent
+			and f.name in (select parent from `tabFFWW Designation` where designation='Promoter')""")

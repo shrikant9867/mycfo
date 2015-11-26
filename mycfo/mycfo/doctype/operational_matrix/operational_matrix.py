@@ -11,6 +11,7 @@ class OperationalMatrix(Document):
 		if self.operational_matrix_status == 'Deactive':
 			self.delink_operational_matrix()
 		self.validate_employee_child_table()
+		self.validate_child_table_duplication()
 		if self.get('operation_details'):
 			self.validate_duplicate_entry()
 
@@ -27,6 +28,21 @@ class OperationalMatrix(Document):
 	def validate_employee_child_table(self):
 		if not self.get('operation_details'):
 			frappe.msgprint("At least one entry is mandetory in Operation Matrix child table.",raise_exception=1)
+
+	def validate_child_table_duplication(self):
+		record_list = []
+		details_dict = {}
+		details = {}
+		if self.get('operation_details'):
+			for d in self.get('operation_details'):
+				details = {}
+				details[d.role] = d.user_name
+				if details not in record_list:
+					record_list.append(details)
+				else:
+					frappe.msgprint("No duplicate record is allowed to be enter in Operation Details child table",raise_exception=1)
+
+
 
 	def validate_duplicate_entry(self):
 		pass

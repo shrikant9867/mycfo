@@ -35,6 +35,10 @@ class FFWW(Document):
 					frappe.msgprint("Duplicate designation name is not allowed",raise_exception=1)
 					break
 
+	def clear_child_table(self):
+		self.set('more_contact_details', [])
+
+
 @frappe.whitelist()
 def make_address(source_name, target_doc=None):
 	return _make_address(source_name, target_doc)
@@ -55,3 +59,21 @@ def _make_address(source_name, target_doc=None, ignore_permissions=False):
 		}}, target_doc, set_missing_values, ignore_permissions=ignore_permissions)
 
 	return doclist
+
+@frappe.whitelist()
+def make_contact(contact=None):
+	contact_details = []
+	contact_details = frappe.db.get_values('Contact Details',{'parent':contact},['contact_type','email_id','mobile_no','country_code','country'])
+	if len(contact_details)>0:
+		return contact_details
+	else:
+		return contact_details
+
+def get_active_customers(doctype, txt, searchfield, start, page_len, filters):
+	from frappe.desk.reportview import get_match_cond
+	txt = "%{}%".format(txt)
+	return frappe.db.sql("""select distinct customer
+		from `tabProject Commercial`
+		where docstatus < 2
+		and customer is not null
+			and project_status='Active'""")

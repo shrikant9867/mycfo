@@ -1,4 +1,5 @@
 frappe.pages['FFWW'].on_page_load = function(wrapper) {
+	$("#main-div").remove();
 	var page = frappe.ui.make_app_page({
 		parent: wrapper,
 		title: 'FFWW',
@@ -11,6 +12,7 @@ frappe.pages['FFWW'].on_page_load = function(wrapper) {
 }
 
 frappe.pages['FFWW'].on_page_show = function(wrapper) {
+
 	if(!frappe.route_options){
 		$("#main-div").empty();
 		wrapper.FFWW = new FFWW1(wrapper);
@@ -29,7 +31,7 @@ FFWW1 = Class.extend({
 		me.body.make_tree = function() {
 			var ctype = 'Category';
 			
-			var customer = $('input[data-fieldname=customer_nm]').val()
+			var customer = $('input[data-fieldname=customer_name]').val()
 			return frappe.call({
 				method: 'mycfo.mycfo.doctype.ffww_details.ffww_details.get_children',
 				args: {ctype: ctype , customer: customer},
@@ -57,8 +59,8 @@ FFWW = Class.extend({
 	},
 	make: function() {
 		var me = this;
-		me.filters.customer = me.wrapper.page.add_field({
-					fieldname: "customer_nm",
+		me.filters.customer_name = me.wrapper.page.add_field({
+					fieldname: "customer_name",
 					label: __("Customer"),
 					fieldtype: "Link",
 					options: "Customer",
@@ -66,9 +68,9 @@ FFWW = Class.extend({
 		});
 
 		if(frappe.route_options)
-			me.filters.customer.input.value= frappe.route_options['customer']
+			me.filters.customer_name.input.value= frappe.route_options['customer']
 
-		$(me.filters.customer.input).attr('disabled',true)
+		$(me.filters.customer_name.input).attr('disabled',true)
 	},
 	refresh: function(){
 		var me = this

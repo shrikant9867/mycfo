@@ -26,10 +26,12 @@ cur_frm.cscript.start_date= function(doc, cdt, cdn) {
 		if(date1>date2){
 			msgprint("Start Date must be less than End Date")
 			doc.start_date=''
+			doc.pro_per=''
+			refresh_field('pro_per');
 			refresh_field('start_date');
 		}
 		if(date1.getTime() === date2.getTime()){
-			msgprint("Start Date and End Date must be diffrent")
+			msgprint("Start Date and End Date must be different")
 			doc.start_date=''
 			refresh_field('start_date');
 			doc.end_date=''
@@ -37,6 +39,11 @@ cur_frm.cscript.start_date= function(doc, cdt, cdn) {
 
 
 		}
+
+		return $c_obj(doc, 'clear_child_table','',function(r, rt) {
+			var doc = locals[cdt][cdn];
+			cur_frm.refresh();
+	});
 
 	}
 
@@ -56,16 +63,23 @@ cur_frm.cscript.end_date= function(doc, cdt, cdn) {
 		if(date2<date1){
 			msgprint("End Date must be greater than Start Date")
 			doc.end_date=''
+			doc.pro_per=''
+			refresh_field('pro_per');
 			refresh_field('end_date');
 		}
 
 		if(date1.getTime() === date2.getTime()){
-			msgprint("Start Date and End Date must be diffrent")
+			msgprint("Start Date and End Date must be different")
 			doc.end_date=''
 			refresh_field('end_date');
 			doc.start_date=''
 			refresh_field('start_date');
 		}
+
+		return $c_obj(doc, 'clear_child_table','',function(r, rt) {
+			var doc = locals[cdt][cdn];
+			cur_frm.refresh();
+		});
 
 
 	}
@@ -101,18 +115,15 @@ cur_frm.cscript.fix_val= function(doc, cdt, cdn) {
 		doc.fix_val=''
 		refresh_field('fix_val')
 	}
-	
-	// if(doc.p_type=='Fixed + Variable'){
-	// 	if(doc.fix_val && doc.var_val){
-	// 		return $c_obj(doc, 'validate_fixed_variable_type','',function(r, rt) {
-	// 			var doc = locals[cdt][cdn];
-	// 			cur_frm.refresh();
-	// 			// doc.fix_val=''
-	// 			refresh_field('fix_val');
-	// 			refresh_field('var_val');
-	// 		});
-	// 	}
-	// }
+
+	if(doc.fix_val && doc.var_val && doc.p_value && doc.p_type=='Fixed + Variable'){
+		if(parseFloat(doc.p_value)!=(parseFloat(doc.fix_val) + parseFloat(doc.var_val))){
+			msgprint("For project type Fixed + Variable total of Fixed and Variable value must be equal to the Project Value")
+			doc.fix_val=''
+			refresh_field('fix_val');
+		}
+
+	}
 
 	return $c_obj(doc, 'clear_child_table','',function(r, rt) {
 			var doc = locals[cdt][cdn];
@@ -136,17 +147,14 @@ cur_frm.cscript.var_val= function(doc, cdt, cdn) {
 
 	months = cur_frm.cscript.cacluate_months(doc.start_date,doc.end_date)
 
-	// if(doc.p_type=='Fixed + Variable'){
-	// 	if(doc.fix_val && doc.var_val){
-	// 		return $c_obj(doc, 'validate_fixed_variable_type','',function(r, rt) {
-	// 			var doc = locals[cdt][cdn];
-	// 			//cur_frm.refresh();
-	// 			// doc.var_val =''
-	// 			// refresh_field('var_val');
-	// 		});
-	// 	}
-		
-	// }
+	if(doc.fix_val && doc.var_val && doc.p_value  && doc.p_type=='Fixed + Variable'){
+		if(parseFloat(doc.p_value)!=(parseFloat(doc.fix_val) + parseFloat(doc.var_val))){
+			msgprint("For project type Fixed + Variable total of Fixed and Variable value must be equal to the Project Value")
+			doc.var_val=''
+			refresh_field('var_val');
+		}
+
+	}
 
 	return $c_obj(doc, 'clear_child_table','',function(r, rt) {
 			var doc = locals[cdt][cdn];
@@ -156,6 +164,14 @@ cur_frm.cscript.var_val= function(doc, cdt, cdn) {
 }
 
 cur_frm.cscript.pick_date= function(doc, cdt, cdn) {
+	return $c_obj(doc, 'clear_child_table','',function(r, rt) {
+			var doc = locals[cdt][cdn];
+			cur_frm.refresh();
+	});
+
+}
+
+cur_frm.cscript.fixed_pick_date= function(doc, cdt, cdn) {
 	return $c_obj(doc, 'clear_child_table','',function(r, rt) {
 			var doc = locals[cdt][cdn];
 			cur_frm.refresh();
@@ -179,6 +195,7 @@ cur_frm.cscript.p_type= function(doc, cdt, cdn) {
 	doc.fixed_pick_date=''
 	doc.milestone_calculation=''
 	doc.fixed_milestone=''
+	doc.milestone_based=''
 	refresh_field('fix_val');
 	refresh_field('var_val');
 	refresh_field('type');
@@ -186,7 +203,9 @@ cur_frm.cscript.p_type= function(doc, cdt, cdn) {
 	refresh_field('pick_date');
 	refresh_field('fixed_pick_date');
 	refresh_field('milestone_calculation');
+	refresh_field('milestone_based');
 	
+	cur_frm.fields_dict["table_17"].grid.set_column_disp("percentage", 0);
 
 	return $c_obj(doc, 'clear_child_table','',function(r, rt) {
 			var doc = locals[cdt][cdn];
@@ -317,10 +336,20 @@ cur_frm.cscript.onload = function(doc,cdt,cdn){
 
 cur_frm.cscript.milestone_calculation = function(doc,cdt,cdn){
 	cur_frm.fields_dict["table_17"].grid.set_column_disp("percentage", doc.milestone_calculation=='Percentage');
+
+	return $c_obj(doc, 'clear_child_table','',function(r, rt) {
+			var doc = locals[cdt][cdn];
+			cur_frm.refresh();
+	});
 }
 
 cur_frm.cscript.fixed_milestone = function(doc,cdt,cdn){
 	cur_frm.fields_dict["table_17"].grid.set_column_disp("percentage", doc.fixed_milestone=='Percentage');
+
+	return $c_obj(doc, 'clear_child_table','',function(r, rt) {
+			var doc = locals[cdt][cdn];
+			cur_frm.refresh();
+	});
 }
 
 cur_frm.cscript.milestone_based = function(doc,cdt,cdn){
@@ -366,12 +395,12 @@ cur_frm.cscript.fixed_type = function(doc,cdt,cdn){
 cur_frm.cscript.percentage = function(doc,cdt,cdn){
 	var d = locals[cdt][cdn]
 	if(d.percentage && doc.p_value){
-		if(d.percentage>0 && d.percentage<=100){
+		if(d.percentage>=0 && d.percentage<=100){
 			d.amount = doc.p_value *(d.percentage/100)
 			refresh_field('table_17');
 		}
 		else{
-			msgprint("percentage value must be less than 100%")
+			msgprint("Percentage Value must be greater than 0% and less than 100%")
 			d.percentage=''
 			refresh_field('table_17')
 		}
@@ -385,12 +414,30 @@ cur_frm.cscript.amount = function(doc,cdt,cdn){
 		refresh_field('table_17')
 	}
 	else{
-		msgprint("Please enter percentage value first.")
+		msgprint("Please enter Percentage Value first.")
 		d.amount=''
 		refresh_field('table_17')
 	}
 }
 
+cur_frm.cscript.due_date = function(doc,cdt,cdn){
+	var d = locals[cdt][cdn]
+	if(doc.start_date && doc.end_date){
+		var date1 = new Date(doc.start_date);
+		var date2 = new Date(doc.end_date);
+		var date3 = new Date(d.due_date);
+		if((date3 <= date2 && date3 >= date1))
+			console.log("OK");
+		else{
+			msgprint("Due Date must be between Start Date and End Date")
+			d.due_date=''
+			refresh_field('table_17');
+		}
+	}
+	else{
+		msgprint("First enter Start and End Date")
+	}
+}
 
 cur_frm.cscript.billing_address = function(doc,cdt,cdn){
 	if(!doc.customer){
