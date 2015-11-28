@@ -33,10 +33,10 @@ var calculate_total_shares = function(doc, dt, dn) {
 }
 
 
-cur_frm.fields_dict['shareholders_detail'].grid.get_field('shareholder_name').get_query = function(doc, cdt, cdn) {
-	return{	query: "mycfo.mycfo.doctype.financial_data.financial_data.get_shareholders" }
+// cur_frm.fields_dict['shareholders_detail'].grid.get_field('shareholder_name').get_query = function(doc, cdt, cdn) {
+// 	return{	query: "mycfo.mycfo.doctype.financial_data.financial_data.get_shareholders" }
 
-}
+// }
 
 // cur_frm.fields_dict.shareholder_name = function(doc,cdt,cdn) {
 // 	return{	query: "erpnext.controllers.queries.employee_query" }
