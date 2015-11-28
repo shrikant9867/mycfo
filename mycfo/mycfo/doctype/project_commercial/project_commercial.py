@@ -61,31 +61,53 @@ class ProjectCommercial(Document):
 
 
 	def get_child_details(self,months=None):
+		self.get_dates(months)
+
+	def get_dates(self,months):
 		self.set('table_17', [])
 		date_list = []
 		start_date = getdate(self.start_date)
 		start_day  =  start_date.day
 		start_month = start_date.month
 		start_year = start_date.year
-		end_date = getdate(self.end_date)
-		end_day = end_date.day
-		end_month = end_date.month
-		end_year = end_date.year
+
 		due_amount = flt(flt(self.p_value)/cint(months))
 		new_date = self.pick_date +'-'+ cstr(start_month) + '-' + cstr(start_year)
 		final_date = getdate(datetime.datetime.strptime(cstr(new_date),'%d-%m-%Y'))
-		# frappe.errprint(["final_date",final_date])
-		# frappe.errprint(getdate(datetime.datetime.strptime(cstr(cstr(start_day) +'-'+ cstr(start_month) + '-' + cstr(start_year)),'%d-%m-%Y')))
-		# frappe.errprint(getdate(datetime.datetime.strptime(cstr(cstr(end_day) +'-'+ cstr(end_month) + '-' + cstr(end_year)),'%d-%m-%Y')))
 		date_list.append(final_date)
-		if months == 1:
-			self.create_child_record(due_amount,date_list)
+		self.check_project_value(date_list,months,due_amount,final_date)
+
+	def check_project_value(self,date_list,months,due_amount,final_date):
+		if flt(self.p_value)%cint(months) == 0:
+			frappe.errprint("in modulo zero")
+			due_amount = due_amount
+			if months == 1:
+				self.create_child_record(due_amount,date_list)
+			else:
+				for i in range(1,months):
+					date=add_months(final_date,1)
+					date_list.append(date)
+					final_date=date
+				self.create_child_record(due_amount,date_list)
 		else:
-			for i in range(1,months):
-				date=add_months(final_date,1)
-				date_list.append(date)
-				final_date=date
-			self.create_child_record(due_amount,date_list)
+			frappe.errprint("in not mdoudlo zero")
+			modulo_value = flt(self.p_value)%cint(months)
+			monthly_amount = flt(flt(self.p_value - modulo_value)/cint(months))
+			amount_list = []
+			for i in range(0,months):
+				if i == months-1:
+					amount_list.append(flt(monthly_amount + modulo_value))
+				else:
+					amount_list.append(monthly_amount)
+			if months == 1:
+				self.create_child_record(due_amount,date_list)
+			else:
+				for i in range(1,months):
+					date=add_months(final_date,1)
+					date_list.append(date)
+					final_date=date
+				self.create_child1_record(amount_list,date_list)
+		
 
 
 	def get_child_details_for_fixed_variable(self,months=None):
@@ -98,17 +120,51 @@ class ProjectCommercial(Document):
 		new_date = self.fixed_pick_date +'-'+ cstr(start_month) + '-' + cstr(start_year)
 		final_date = getdate(datetime.datetime.strptime(cstr(new_date),'%d-%m-%Y'))
 		date_list.append(final_date)
-		if months == 1:
-			self.create_child_record(due_amount,date_list)
+		self.check_project_value_for_fix_varialble(date_list,final_date,months,due_amount)
+
+	def check_project_value_for_fix_varialble(self,date_list,final_date,months,due_amount):
+		if flt(self.fix_val)%cint(months) == 0:
+			frappe.errprint("in modulo zero")
+			due_amount = due_amount
+			if months == 1:
+				self.create_child_record(due_amount,date_list)
+				if self.var_val:
+					ch = self.append('table_17', {})
+					ch.amount = self.var_val
+			else:
+				for i in range(1,months):
+					date=add_months(final_date,1)
+					date_list.append(date)
+					final_date=date
+				self.create_child_record(due_amount,date_list)
+				if self.var_val:
+					ch = self.append('table_17', {})
+					ch.amount = self.var_val
 		else:
-			for i in range(1,months):
-				date=add_months(final_date,1)
-				date_list.append(date)
-				final_date=date
-			self.create_child_record(due_amount,date_list)
-			if self.var_val:
-				ch = self.append('table_17', {})
-				ch.amount = self.var_val
+			frappe.errprint("in not mdoudlo zero")
+			modulo_value = flt(self.fix_val)%cint(months)
+			monthly_amount = flt(flt(self.fix_val - modulo_value)/cint(months))
+			amount_list = []
+			for i in range(0,months):
+				if i == months-1:
+					amount_list.append(flt(monthly_amount + modulo_value))
+				else:
+					amount_list.append(monthly_amount)
+
+			if months == 1:
+				self.create_child_record(due_amount,date_list)
+				if self.var_val:
+					ch = self.append('table_17', {})
+					ch.amount = self.var_val
+			else:
+				for i in range(1,months):
+					date=add_months(final_date,1)
+					date_list.append(date)
+					final_date=date
+				self.create_child1_record(amount_list,date_list)
+				if self.var_val:
+					ch = self.append('table_17', {})
+					ch.amount = self.var_val
 
 
 
@@ -119,6 +175,13 @@ class ProjectCommercial(Document):
 				ch = self.append('table_17', {})
 				ch.due_date = i
 				ch.amount = due_amount
+
+	def create_child1_record(self,amount_list,date_list):
+		if(len(date_list)>0):
+			for i, date in enumerate(date_list):
+				ch = self.append('table_17', {})
+				ch.due_date = date
+				ch.amount = amount_list[i]
 
 
 	def clear_child_table(self):

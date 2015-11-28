@@ -220,6 +220,10 @@ cur_frm.cscript.p_type= function(doc, cdt, cdn) {
 
 
 cur_frm.cscript.p_value= function(doc, cdt, cdn) {
+
+	doc.p_value = Math.round(doc.p_value)
+	refresh_field('p_value');
+
 	if(doc.p_value<=0){
 		msgprint("Project value must be greater than 0")
 		doc.p_value=''
@@ -396,7 +400,7 @@ cur_frm.cscript.percentage = function(doc,cdt,cdn){
 	var d = locals[cdt][cdn]
 	if(d.percentage && doc.p_value){
 		if(d.percentage>=0 && d.percentage<=100){
-			d.amount = doc.p_value *(d.percentage/100)
+			d.amount = Math.round(doc.p_value *(d.percentage/100))
 			refresh_field('table_17');
 		}
 		else{
@@ -407,18 +411,18 @@ cur_frm.cscript.percentage = function(doc,cdt,cdn){
 	}
 }
 
-cur_frm.cscript.amount = function(doc,cdt,cdn){
-	var d = locals[cdt][cdn]
-	if(d.percentage && doc.p_value){
-		d.amount = doc.p_value * (d.percentage/100)
-		refresh_field('table_17')
-	}
-	else{
-		msgprint("Please enter Percentage Value first.")
-		d.amount=''
-		refresh_field('table_17')
-	}
-}
+// cur_frm.cscript.amount = function(doc,cdt,cdn){
+// 	var d = locals[cdt][cdn]
+// 	if(d.percentage && doc.p_value){
+// 		d.amount = doc.p_value * (d.percentage/100)
+// 		refresh_field('table_17')
+// 	}
+// 	else{
+// 		msgprint("Please enter Percentage Value first.")
+// 		d.amount=''
+// 		refresh_field('table_17')
+// 	}
+// }
 
 cur_frm.cscript.due_date = function(doc,cdt,cdn){
 	var d = locals[cdt][cdn]
