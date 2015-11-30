@@ -20,7 +20,7 @@ docnames = []
 response = []
 
 @frappe.whitelist()
-def load_address_and_contact(record,key,key1):
+def load_address_and_contact(record,key,key1,customer):
 	contact_details = frappe.db.sql("""select contact_type,email_id,mobile_no from `tabContact Details` where 
 									parent='%s'"""%record,as_dict=1)
 	personal_emailid = []
@@ -43,10 +43,12 @@ def load_address_and_contact(record,key,key1):
 
 	from erpnext.utilities.doctype.address.address import get_address_display
 
-	addr_list = [a.update({"display": get_address_display(a)}) \
-		for a in frappe.get_all("Address",
-			fields="*", filters={key1: record},
-			order_by="is_primary_address desc, modified desc")]
+	ffww = frappe.db.get_value('FFWW',{'contact':record,'customer':customer},'name')
+	if ffww:
+		addr_list = [a.update({"display": get_address_display(a)}) \
+			for a in frappe.get_all("Address",
+				fields="*", filters={key1: record,'ffww_record':ffww},
+				order_by="is_primary_address desc, modified desc")]
 
 	if len(contact_list)>0:
 		contact_list[0].update({'personal_emailid':personal_emailid})

@@ -130,7 +130,7 @@ DMS = Class.extend({
 		if(node['label']){
 		frappe.call({
 			method:"mycfo.mycfo.doctype.ffww_details.ffww_details.load_address_and_contact",
-			args:{record:node['label'],key:'name',key1:'contact'},
+			args:{record:node['label'],key:'name',key1:'contact',customer:me.customer},
 			callback: function(r) {
 				$("#contact")
 							.html(frappe.render_template("contact_list",
@@ -163,7 +163,7 @@ frappe.ui.Tree1 = Class.extend({
 		$.extend(this, args);
 		this.nodes = {};
 
-		this.$w = $('<div class="col-md-12 tree">\
+		this.$w = $('<div class="col-md-12 row" id ="newbuttons" ><p style="float:right;text-align=right"><button class="btn btn-sm btn-default btn-address"><a id="new-button">ADD FFWW / CONTACT</a></button></p></div><div class="col-md-12 tree">\
 			<div class="col-md-4" id ="designation"></div>\
 		<div class="col-md-4" id ="contact"></div>\
 		<div class="col-md-4" id ="address"></div></div>').appendTo(this.parent);
@@ -190,6 +190,10 @@ frappe.ui.Tree1 = Class.extend({
 
 		$('#new_add').click(function(){
 			new_doc('Contact');
+		})
+		
+		$('#new-button').click(function(){
+			new_doc('FFWW');
 		})
 	},
 	get_selected_node: function() {

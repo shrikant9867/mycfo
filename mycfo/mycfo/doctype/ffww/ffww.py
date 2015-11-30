@@ -14,6 +14,37 @@ class FFWW(Document):
 		self.validate_designation()
 		self.validate_ffww()
 		self.validate_dupicate_designation()
+		self.set_fww_name()
+
+	def on_update(self):
+		if self.get('more_contact_details'):
+			for d in self.get('more_contact_details'):
+				if d.ffww == 'New FFWW 1' or self.name:
+					frappe.errprint(d.name)
+					if d.contact_name:
+						contact = frappe.get_doc("Contact Details", d.contact_name)
+						contact.ffww = self.name
+						contact.save()
+					else:
+						main_contact = frappe.get_doc('Contact',self.contact)
+						ch = main_contact.append('contacts', {})
+						ch.contact_type = d.contact_type
+						ch.country_code = d.country_code
+						ch.mobile_no = d.mobile_no
+						ch.email_id = d.email_id
+						ch.landline = d.landline
+						ch.ffww = self.name
+						main_contact.save()
+						if ch.name:
+							ffww_contact = frappe.get_doc("FFWW Contact Details", d.name)
+							ffww_contact.contact_name = ch.name
+							ffww_contact.save()
+
+					if d.name and d.ffww == 'New FFWW 1':
+						ffww_contact = frappe.get_doc("FFWW Contact Details", d.name)
+						ffww_contact.ffww = self.name
+						ffww_contact.save()
+					
 
 	def validate_designation(self):
 		if not self.get('designation'):
@@ -34,6 +65,9 @@ class FFWW(Document):
 				else:
 					frappe.msgprint("Duplicate designation name is not allowed",raise_exception=1)
 					break
+
+	def set_fww_name(self):
+		self.ffww_record = self.name
 
 	def clear_child_table(self):
 		self.set('more_contact_details', [])
@@ -63,7 +97,7 @@ def _make_address(source_name, target_doc=None, ignore_permissions=False):
 @frappe.whitelist()
 def make_contact(contact=None):
 	contact_details = []
-	contact_details = frappe.db.get_values('Contact Details',{'parent':contact},['contact_type','email_id','mobile_no','country_code','country'])
+	contact_details = frappe.db.get_values('Contact Details',{'parent':contact},['contact_type','email_id','mobile_no','country_code','country','ffww','name'])
 	if len(contact_details)>0:
 		return contact_details
 	else:
