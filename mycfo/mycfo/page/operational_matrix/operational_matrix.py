@@ -60,7 +60,7 @@ def get_operational_matrix_details(customer=None,project_id=None,operational_mat
 @frappe.whitelist()
 def get_filtered_data(customer=None,project_id=None,operational_matrix=None):
 	om_name = frappe.db.sql("""select name from `tabOperation And Project Commercial`  where operational_matrix_status='Active' and  %s """
-		%get_item_conditions(customer,project_id,operational_matrix),as_list=1,debug=1)
+		%get_item_conditions(customer,project_id,operational_matrix),as_list=1)
 	final_data = []
 	if len(om_name)>0:
 		for name in om_name:
@@ -105,3 +105,8 @@ def deactivate_records(operational_record=None,customer=None):
 		else:
 			return None
 
+@frappe.whitelist()
+def get_operational_matrix(operational_matrix=None):
+	om_child_table = frappe.db.sql("""select role,user_name,email_id,contact from `tabOperation Details` where parent='%s'"""%operational_matrix,as_dict=1)
+	if len(om_child_table)>0:
+		return {'final_data': om_child_table}

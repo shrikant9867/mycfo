@@ -394,7 +394,14 @@ Operational = Class.extend({
 
 		me.add.$input.on("click", function() {
 			if (me.filters.operational_matrix.input.value.length!=0 && me.filters.operational_matrix.input.value.length!=0){
-				me.get_data()
+				me.pop_up = me.show_pop_up_dialog()
+				me.append_pop_up_dialog_body(me.pop_up);
+				me.append_se_popup_fields(me);
+				me.pop_up.show()
+				$(".modal-dialog").css("width","800px");
+				$(".modal-content").css("max-height","600px");
+				$(".modal-footer").css("text-align","center");
+				
 			}
 		})
 	},
@@ -446,6 +453,67 @@ Operational = Class.extend({
 				}
 			},
 		});	
+	},
+
+	show_pop_up_dialog: function(){
+		var me = this;
+		return new frappe.ui.Dialog({
+			title: "Operation Matrix Details",
+			no_submit_on_enter: true,
+			fields: [
+
+				{label:__("Operation Matrix"), fieldtype:"HTML", fieldname:"matrix"},
+
+				{fieldtype: "Section Break","name":"cc_sec"},
+
+				{label:__("Property Follow-Ups"), fieldtype:"HTML", fieldname:"followup"},
+			],
+
+			primary_action_label: "ADD",
+			primary_action: function() {
+				me.get_data()
+				me.pop_up.hide()
+			}
+
+		});
+		
+	},
+
+	append_pop_up_dialog_body: function(pop_up){
+		this.fd = pop_up.fields_dict;
+		this.pop_up_body = $("<div id='container_second' style='overflow: auto;max-height: 300px;'><table class='table table-bordered table-hover' id='operation_details'><thead>\
+		<th><b>Role</b></th><th><b>Name</b></th><th><b>Email ID</b></th><th><b>Contact</b></th></thead><tbody></tbody></table></div>").appendTo($(this.fd.followup.wrapper));
+
+	},
+
+	append_se_popup_fields: function(me){
+		if(me.filters.operational_matrix.input.value.length!=0){
+			frappe.call({
+				method:'mycfo.mycfo.page.operational_matrix.operational_matrix.get_operational_matrix',
+				args :{
+					"operational_matrix":me.filters.operational_matrix.input.value
+				},
+				callback: function(r,rt) {
+					if(r.message){
+						me.append_operation_matrix(r.message['final_data'])
+					}
+				},
+			});	
+
+		}
+	},
+
+	append_operation_matrix: function(data){
+		$.each(data, function(j, k){
+			$("<tr>\
+				<td align='center' id='status'>"+k['role']+"</td>\
+				<td align='center' id='status'>"+k['user_name']+"</td>\
+				<td align='center' id='status'>"+k['email_id']+"</td>\
+				<td align='center' id='status'>"+k['contact']+"</td>\
+				</tr>").appendTo($("#operation_details tbody"));
+		})
+		
+	
 	},
 
 	refresh: function() {
