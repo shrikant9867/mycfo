@@ -9,6 +9,10 @@ cur_frm.add_fetch('customer', 'customer_name', 'customer_name');
 
 cur_frm.add_fetch('shareholder_name', 'contact', 'contact');
 
+cur_frm.add_fetch('customer', 'default_currency', 'default_currency');
+
+cur_frm.add_fetch('customer', 'country', 'country');
+
 
 cur_frm.cscript.validate = function(doc, dt, dn) {
 	calculate_all(doc, dt, dn);

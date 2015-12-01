@@ -8,7 +8,7 @@ from frappe.model.document import Document
 
 class FinancialData(Document):
 	def validate(self):
-		self.validate_fund_name()
+		#self.validate_fund_name()
 		self.validate_shareholders_name()
 		self.validate_yearlydata_against_customer()
 		if self.is_pe_vc == 'Yes':

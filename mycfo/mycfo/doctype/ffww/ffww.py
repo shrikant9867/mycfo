@@ -15,6 +15,8 @@ class FFWW(Document):
 		self.validate_ffww()
 		self.validate_dupicate_designation()
 		self.set_fww_name()
+		if self.contact:
+			self.update_contact_status()
 
 	def on_update(self):
 		if self.get('more_contact_details'):
@@ -54,7 +56,7 @@ class FFWW(Document):
 		if frappe.db.sql("""select name from `tabFFWW` where customer='%s' and contact='%s' and  name!='%s'"""%(self.customer,self.contact,self.name)):
 			name = frappe.db.sql("""select name from `tabFFWW` where customer='%s' and contact='%s' 
 							and name!='%s'"""%(self.customer,self.contact,self.name),as_list=1)
-			frappe.msgprint("customer %s already linked with contact %s in record %s"%(self.customer,self.contact,name[0][0]))
+			frappe.msgprint("customer %s already linked with contact %s in record %s"%(self.customer,self.contact,name[0][0]),raise_exception=1)
 
 	def validate_dupicate_designation(self):
 		designation_list = []
@@ -65,6 +67,11 @@ class FFWW(Document):
 				else:
 					frappe.msgprint("Duplicate designation name is not allowed",raise_exception=1)
 					break
+
+	def update_contact_status(self):
+		contact = frappe.get_doc('Contact',self.contact)
+		contact.status = 'Active'
+		contact.save()
 
 	def set_fww_name(self):
 		self.ffww_record = self.name
