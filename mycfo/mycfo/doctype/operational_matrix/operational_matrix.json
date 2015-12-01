@@ -350,7 +350,7 @@
  "is_submittable": 0, 
  "issingle": 0, 
  "istable": 0, 
- "modified": "2015-12-01 10:38:25.797590", 
+ "modified": "2015-12-01 10:50:52.958996", 
  "modified_by": "Administrator", 
  "module": "mycfo", 
  "name": "Operational Matrix", 
@@ -380,7 +380,7 @@
  ], 
  "read_only": 0, 
  "read_only_onload": 0, 
- "search_fields": "operational_matrix_title", 
+ "search_fields": "", 
  "sort_field": "modified", 
  "sort_order": "DESC"
 }

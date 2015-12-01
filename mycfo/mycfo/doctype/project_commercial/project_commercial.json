@@ -924,7 +924,7 @@
  "is_submittable": 0, 
  "issingle": 0, 
  "istable": 0, 
- "modified": "2015-11-26 16:42:09.575941", 
+ "modified": "2015-12-01 10:51:06.596447", 
  "modified_by": "Administrator", 
  "module": "mycfo", 
  "name": "Project Commercial", 
@@ -954,7 +954,7 @@
  ], 
  "read_only": 0, 
  "read_only_onload": 0, 
- "search_fields": "project_status", 
+ "search_fields": "", 
  "sort_field": "modified", 
  "sort_order": "DESC"
 }
