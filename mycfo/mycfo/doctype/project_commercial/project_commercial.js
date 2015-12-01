@@ -9,6 +9,10 @@ cur_frm.add_fetch('customer', 'customer_name', 'customer_name');
 cur_frm.add_fetch('p_id', 'project_id_status', 'project_id_status');
 
 cur_frm.add_fetch('customer', 'register_address', 'register_addr');
+cur_frm.add_fetch('customer', 'default_currency', 'default_currency');
+
+cur_frm.add_fetch('customer', 'country', 'country');
+
 
 // cur_frm.add_fetch('billing_address', 'register_address', 'register_addr');
 
@@ -207,6 +211,11 @@ cur_frm.cscript.p_type= function(doc, cdt, cdn) {
 	
 	cur_frm.fields_dict["table_17"].grid.set_column_disp("percentage", 0);
 
+	if(doc.p_type == 'Fixed + Variable')
+		cur_frm.fields_dict["table_17"].grid.set_column_disp("f_type", 1);
+	else
+		cur_frm.fields_dict["table_17"].grid.set_column_disp("f_type", 0);
+
 	return $c_obj(doc, 'clear_child_table','',function(r, rt) {
 			var doc = locals[cdt][cdn];
 			cur_frm.refresh();
@@ -336,6 +345,7 @@ cur_frm.cscript.onload = function(doc,cdt,cdn){
 	cur_frm.fields_dict["table_17"].grid.set_column_disp("percentage", doc.milestone_calculation=='Percentage');
 	cur_frm.fields_dict["table_17"].grid.set_column_disp("percentage", doc.fixed_milestone=='Percentage');
 	cur_frm.fields_dict["table_17"].grid.set_column_disp("percentage", doc.milestone_based=='Percentage');
+	cur_frm.fields_dict["table_17"].grid.set_column_disp("f_type", 0);
 }
 
 cur_frm.cscript.milestone_calculation = function(doc,cdt,cdn){
@@ -389,6 +399,12 @@ cur_frm.cscript.fixed_type = function(doc,cdt,cdn){
 	else
 		cur_frm.fields_dict["table_17"].grid.set_column_disp("percentage", 0);
 
+	// if(doc.fixed_type=='Milestone' && doc.p_type=='Fixed + Variable')
+	// 	cur_frm.fields_dict["table_17"].grid.set_column_disp("type", 1);
+	// else
+	// 	cur_frm.fields_dict["table_17"].grid.set_column_disp("type", 0);
+
+
 	return $c_obj(doc, 'clear_child_table','',function(r, rt) {
 			var doc = locals[cdt][cdn];
 			cur_frm.refresh();
@@ -398,15 +414,30 @@ cur_frm.cscript.fixed_type = function(doc,cdt,cdn){
 
 cur_frm.cscript.percentage = function(doc,cdt,cdn){
 	var d = locals[cdt][cdn]
-	if(d.percentage && doc.p_value){
-		if(d.percentage>=0 && d.percentage<=100){
-			d.amount = Math.round(doc.p_value *(d.percentage/100))
-			refresh_field('table_17');
+	if(doc.p_type!='Fixed + Variable'){
+		if(d.percentage && doc.p_value){
+			if(d.percentage>=0 && d.percentage<=100){
+				d.amount = Math.round(doc.p_value *(d.percentage/100))
+				refresh_field('table_17');
+			}
+			else{
+				msgprint("Percentage Value must be greater than 0% and less than 100%")
+				d.percentage=''
+				refresh_field('table_17')
+			}
 		}
-		else{
-			msgprint("Percentage Value must be greater than 0% and less than 100%")
-			d.percentage=''
-			refresh_field('table_17')
+	}
+	else{
+		if(d.percentage && doc.fix_val){
+			if(d.percentage>=0 && d.percentage<=100){
+				d.amount = Math.round(doc.fix_val *(d.percentage/100))
+				refresh_field('table_17');
+			}
+			else{
+				msgprint("Percentage Value must be greater than 0% and less than 100%")
+				d.percentage=''
+				refresh_field('table_17')
+			}
 		}
 	}
 }

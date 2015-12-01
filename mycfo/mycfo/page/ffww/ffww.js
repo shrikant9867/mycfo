@@ -1,4 +1,5 @@
 frappe.pages['FFWW'].on_page_load = function(wrapper) {
+	console.log("in load")
 	$("#main-div").remove();
 	var page = frappe.ui.make_app_page({
 		parent: wrapper,
@@ -12,11 +13,13 @@ frappe.pages['FFWW'].on_page_load = function(wrapper) {
 }
 
 frappe.pages['FFWW'].on_page_show = function(wrapper) {
-
+	console.log("in refresh")
 	if(!frappe.route_options){
 		$("#main-div").empty();
 		wrapper.FFWW = new FFWW1(wrapper);
 	}
+	$("#main-div").empty();
+		wrapper.FFWW = new FFWW1(wrapper);
 }
 
 FFWW1 = Class.extend({
@@ -132,11 +135,14 @@ DMS = Class.extend({
 			method:"mycfo.mycfo.doctype.ffww_details.ffww_details.load_address_and_contact",
 			args:{record:node['label'],key:'name',key1:'contact',customer:me.customer},
 			callback: function(r) {
+				console.log(r)
+				console.log(r.message['ffww'])
 				$("#contact")
 							.html(frappe.render_template("contact_list",
 								r.message))
-							.find(".btn-contact").on("click", function() {
-								new_doc("Contact");
+							.find(".btn-view").on("click", function() {
+								frappe.route_options = r.message['ffww']
+								frappe.set_route("Form", "Contact",node['label']);
 							}
 				);
 
