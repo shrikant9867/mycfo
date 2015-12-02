@@ -21,8 +21,11 @@ response = []
 
 @frappe.whitelist()
 def load_address_and_contact(record,key,key1,customer):
+	ffww = frappe.db.get_value('FFWW',{'contact':record,'customer':customer},'name')
+
 	contact_details = frappe.db.sql("""select contact_type,email_id,mobile_no from `tabContact Details` where 
-									parent='%s'"""%record,as_dict=1)
+									parent='%s' and ffww='%s' and preffered=0"""%(record,ffww),as_dict=1,debug=1)
+	frappe.errprint(contact_details)
 	personal_emailid = []
 	personal_mobileno = []
 	official_emailid = []
@@ -43,7 +46,7 @@ def load_address_and_contact(record,key,key1,customer):
 
 	from erpnext.utilities.doctype.address.address import get_address_display
 
-	ffww = frappe.db.get_value('FFWW',{'contact':record,'customer':customer},'name')
+	
 	if ffww:
 		addr_list = [a.update({"display": get_address_display(a)}) \
 			for a in frappe.get_all("Address",
@@ -64,6 +67,11 @@ def load_address_and_contact(record,key,key1,customer):
 		args['addr_list'] =  addr_list
 	else:
 		args['addr_list'] = ''
+
+	if ffww:
+		args['ffww'] = ffww
+	else:
+		args['ffww'] = ''
 
 	if args:
 		return args
@@ -86,6 +94,7 @@ def get_children():
 	response = []
 	final_response = []
 	docn = {}
+
 
 
 	if args.get('parent') == 'Category':
