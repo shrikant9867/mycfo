@@ -270,11 +270,11 @@ cur_frm.cscript.generate_records = function(doc,cdt,cdn){
 	    			}
     			}
     			else{
-    				msgprint("Please enter both Start and End date")
+    				msgprint("Please enter Start Date and End Date")
     			}
     		}
     		else{
-    			msgprint("Please enter Pick Day.")
+    			msgprint("Please select Pick Day.")
     		}
     	}
     	else if(doc.type=='Milestone'){
@@ -309,11 +309,11 @@ cur_frm.cscript.generate_records = function(doc,cdt,cdn){
 		    			}
 		    		}
 		    		else{
-		    			msgprint("Please enter both Start and End Date")
+		    			msgprint("Please enter Start Date and End Date")
 		    		}
 	    		}
 	    		else{
-	    			msgprint("please enter Pick Day.")
+	    			msgprint("please select Pick Day.")
 	    		}
 	    	}
 	    	else if(doc.fixed_type=='Milestone')

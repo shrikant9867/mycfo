@@ -48,7 +48,7 @@ class FinancialData(Document):
 
 	def validate_fund_type(self):
 		if not len(self.get('name_of_fund'))>0:
-			frappe.msgprint("At least one Fund Details entry is necessary in Fund Child table.",raise_exception=1)
+			frappe.msgprint("At least one Fund Details entry is mandatory in Fund Child table.",raise_exception=1)
 
 
 	def validate_fiscal_year(self):
@@ -56,7 +56,7 @@ class FinancialData(Document):
 		fiscal_year = frappe.db.sql("""select value from `tabSingles` where doctype='Global Defaults' and field='current_fiscal_year'""",as_list=1)
 		if fiscal_year:
 			if self.financial_year >= fiscal_year[0][0]:
-				frappe.msgprint("No permission to create financial data for current and future fiscal year also.")
+				frappe.msgprint("No permission to create Financial Data for Current and Future Fiscal Year also.")
 
 def get_shareholders(doctype, txt, searchfield, start, page_len, filters):
 	# from frappe.desk.reportview import get_match_cond
