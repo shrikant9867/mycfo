@@ -46,6 +46,15 @@ var calculate_total_shares = function(doc, dt, dn) {
 // 	return{	query: "erpnext.controllers.queries.employee_query" }
 // }
 
+cur_frm.cscript.annual_sales = function(doc,cdt,cdn){
+	if(doc.annual_sales<=0){
+		msgprint("Annual Sales value must be greater than zero")
+		doc.annual_sales =''
+		refresh_field('annual_sales');
+	}
+
+}
+
 
 cur_frm.cscript.ebidta = function(doc,cdt,cdn){
 	
