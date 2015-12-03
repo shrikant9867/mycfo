@@ -1486,19 +1486,6 @@
   "doc_type": "Customer", 
   "docstatus": 0, 
   "doctype": "Property Setter", 
-  "doctype_or_field": "DocField", 
-  "field_name": "country", 
-  "modified": "2015-12-02 14:37:57.445482", 
-  "name": "Customer-country-previous_field", 
-  "property": "previous_field", 
-  "property_type": "Data", 
-  "value": "default_taxes_and_charges"
- }, 
- {
-  "default_value": null, 
-  "doc_type": "Customer", 
-  "docstatus": 0, 
-  "doctype": "Property Setter", 
   "doctype_or_field": "DocType", 
   "field_name": null, 
   "modified": "2015-12-02 14:38:03.075609", 
@@ -1540,10 +1527,23 @@
   "doctype": "Property Setter", 
   "doctype_or_field": "DocField", 
   "field_name": "currency_symbol", 
-  "modified": "2015-12-02 14:41:46.865729", 
+  "modified": "2015-12-03 16:09:56.569467", 
   "name": "Customer-currency_symbol-previous_field", 
   "property": "previous_field", 
   "property_type": "Data", 
   "value": "currency"
+ }, 
+ {
+  "default_value": null, 
+  "doc_type": "Customer", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocField", 
+  "field_name": "country", 
+  "modified": "2015-12-03 16:10:00.899422", 
+  "name": "Customer-country-previous_field", 
+  "property": "previous_field", 
+  "property_type": "Data", 
+  "value": "default_taxes_and_charges"
  }
 ]
