@@ -1,20 +1,95 @@
 // Copyright (c) 2015, Frappe Technologies Pvt. Ltd. and Contributors
 // MIT License. See license.txt
 
-{% include 'controllers/js/contact_address_common.js' %};
-
+// {% include 'controllers/js/contact_address_common.js' %};
 
 cur_frm.add_fetch('customer', 'customer_name', 'customer_name');
 
 cur_frm.add_fetch('p_id', 'project_id_status', 'project_id_status');
 
 cur_frm.add_fetch('customer', 'register_address', 'register_addr');
-cur_frm.add_fetch('customer', 'default_currency', 'default_currency');
+cur_frm.add_fetch('customer', 'currency', 'currency');
 
 cur_frm.add_fetch('customer', 'country', 'country');
 
+cur_frm.add_fetch('currency','symbol','currency_symbol');
 
-// cur_frm.add_fetch('billing_address', 'register_address', 'register_addr');
+
+frappe.ui.form.on("Project Commercial", {
+
+	onload: function(frm){
+		if(cur_frm.doc.doctype==="Project Commercial"){
+			if(frappe.route_history){
+				console.log(frappe.route_history[0])
+				var doctype = frappe.route_history[0][1],
+					docname = frappe.route_history[0][2],
+					refdoc = frappe.get_doc(doctype, docname);
+				cur_frm.set_value("customer", $('input[data-fieldname=customer_nm]').val());
+				cur_frm.set_value("currency",refdoc.currency)
+				cur_frm.set_value("country",refdoc.country)
+			}
+		}
+
+	},
+	refresh: function(frm) {
+		if(frm.doc.currency){
+			set_dynamic_labels(frm)
+		}
+	},
+	
+});
+
+var set_dynamic_labels = function(frm) {
+		var company_currency = frm.doc.currency
+		change_form_labels(frm,company_currency);
+		change_grid_labels(frm,company_currency);
+		//cur_frm.refresh_fields(["annual_sales","pbt","pat","ebidta","outstanding_p_loan","annualised_cost_of_salary_of_all_emp_in_f_and_a","total"]);
+}
+
+var change_form_labels = function(frm,currency){
+	var field_label_map = {};
+	var setup_field_label_map = function(fields_list, currency) {
+			$.each(fields_list, function(i, fname) {
+				var docfield = frappe.meta.docfield_map[frm.doc.doctype][fname];
+				if(docfield) {
+					var label = __(docfield.label || "").replace(/\([^\)]*\)/g, "");
+					field_label_map[fname] = label.trim() + " (" + currency + ")";
+				}
+			});
+	};
+	setup_field_label_map(["p_value","fix_val","var_val"], currency);
+
+	$.each(field_label_map, function(fname, label) {
+			frm.fields_dict[fname].set_label(label);
+	});
+
+}
+
+var change_grid_labels = function(frm,currency) {
+		var me = this;
+		var field_label_map = {};
+
+		var setup_field_label_map = function(fields_list, currency, parentfield) {
+			var grid_doctype = frm.fields_dict[parentfield].grid.doctype;
+			$.each(fields_list, function(i, fname) {
+				var docfield = frappe.meta.docfield_map[grid_doctype][fname];
+				if(docfield) {
+					var label = __(docfield.label || "").replace(/\([^\)]*\)/g, "");
+					field_label_map[grid_doctype + "-" + fname] =
+						label.trim() + " (" + currency + ")";
+				}
+			});
+		}
+
+		setup_field_label_map(["amount"], currency,"table_17");
+
+		$.each(field_label_map, function(fname, label) {
+			fname = fname.split("-");
+			var df = frappe.meta.get_docfield(fname[0], fname[1], frm.doc.name);
+			if(df) df.label = label;
+		});
+
+}
 
 cur_frm.cscript.start_date= function(doc, cdt, cdn) {
 	if (doc.start_date && doc.end_date)
