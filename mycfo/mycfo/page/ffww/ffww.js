@@ -1,5 +1,4 @@
 frappe.pages['FFWW'].on_page_load = function(wrapper) {
-	console.log("in load")
 	$("#main-div").remove();
 	var page = frappe.ui.make_app_page({
 		parent: wrapper,
@@ -13,7 +12,6 @@ frappe.pages['FFWW'].on_page_load = function(wrapper) {
 }
 
 frappe.pages['FFWW'].on_page_show = function(wrapper) {
-	console.log("in refresh")
 	if(!frappe.route_options){
 		$("#main-div").empty();
 		wrapper.FFWW = new FFWW1(wrapper);
