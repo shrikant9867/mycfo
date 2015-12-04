@@ -43,7 +43,7 @@ class ProjectCommercial(Document):
 				if flt(self.p_value) != (flt(self.fix_val) + flt(self.var_val)):
 					self.fix_val=''
 					self.var_val=''
-					frappe.msgprint("For project type Fixed + Variable,total of Fixed and Variable Value must be equal to the Project value",raise_exception=1)
+					frappe.msgprint("For project type Fixed + Variable,Total of Fixed and Variable Value must be equal to the Project Value",raise_exception=1)
 				else:
 					return {"status":True}
 
@@ -85,9 +85,7 @@ class ProjectCommercial(Document):
 		start_day  =  start_date.day
 		start_month = start_date.month
 		start_year = start_date.year
-		frappe.errprint(months)
 		due_amount = flt(flt(self.p_value)/cint(months))
-		frappe.errprint(due_amount)
 		new_date = self.pick_date +'-'+ cstr(start_month) + '-' + cstr(start_year)
 		final_date = getdate(datetime.datetime.strptime(cstr(new_date),'%d-%m-%Y'))
 		date_list.append(final_date)
@@ -97,7 +95,6 @@ class ProjectCommercial(Document):
 		if self.pro_per == 30 or self.pro_per == 31:
 			months-=1
 		if flt(self.p_value)%cint(months) == 0:
-			frappe.errprint("in modulo zero")
 			due_amount = due_amount
 			if months == 1:
 				self.create_child_record(due_amount,date_list)
@@ -108,7 +105,6 @@ class ProjectCommercial(Document):
 					final_date=date
 				self.create_child_record(due_amount,date_list)
 		else:
-			frappe.errprint("in not mdoudlo zero")
 			modulo_value = flt(self.p_value)%cint(months)
 			monthly_amount = flt(flt(self.p_value - modulo_value)/cint(months))
 			amount_list = []
@@ -144,7 +140,6 @@ class ProjectCommercial(Document):
 		if self.pro_per == 30 or self.pro_per == 31:
 			months-=1
 		if flt(self.fix_val)%cint(months) == 0:
-			frappe.errprint("in modulo zero")
 			due_amount = due_amount
 			if months == 1:
 				self.create_child_record(due_amount,date_list)
@@ -163,7 +158,6 @@ class ProjectCommercial(Document):
 					ch.f_type='Variable'
 					ch.amount = self.var_val
 		else:
-			frappe.errprint("in not mdoudlo zero")
 			modulo_value = flt(self.fix_val)%cint(months)
 			monthly_amount = flt(flt(self.fix_val - modulo_value)/cint(months))
 			amount_list = []

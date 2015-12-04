@@ -13,7 +13,8 @@ cur_frm.add_fetch('contact','email','email');
 cur_frm.add_fetch('contact','mobile','mobile');
 cur_frm.add_fetch('contact','landline','landline');
 
-cur_frm.add_fetch('country_code','country','country');
+cur_frm.add_fetch('country_name','country_code','country_code');
+cur_frm.add_fetch('country_name','number_of_digits_allowed','digit');
 
 
 frappe.ui.form.on("FFWW", {
@@ -105,8 +106,28 @@ cur_frm.cscript.email_id = function(doc,cdt,cdn){
 
 cur_frm.cscript.mobile_no = function(doc,cdt,cdn){
 	var d = locals[cdt][cdn];
-	if (d.mobile_no.length!=10) 
-	{
-	    msgprint('Mobile Number must be 10 digits');
+	if(isNaN(d.mobile_no)==true){
+		msgprint("Mobile number must be consist of omly digits")
+		d.mobile_no=''
+		refresh_field('more_contact_details');
+	}
+	if(d.country_name && d.mobile_no){
+		if((d.mobile_no).toString().length != parseInt(d.digit)){
+			msgprint('Mobile Number must be '+d.digit+' digits as per the country '+d.country_name+'');
+			d.mobile_no=''
+			refresh_field('more_contact_details');
+		}
+	}
+}
+
+
+cur_frm.cscript.country_name = function(doc,cdt,cdn){
+	var d = locals[cdt][cdn];
+	if(d.mobile_no){
+		if((d.mobile_no).toString().length!= parseInt(d.digit)){
+			msgprint('Mobile Number must be '+d.digit+' digits as per the country '+d.country_name+'');
+			d.mobile_no=''
+			refresh_field('more_contact_details');
+		}
 	}
 }

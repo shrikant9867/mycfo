@@ -13,6 +13,7 @@ class FFWW(Document):
 	def validate(self):
 		self.validate_designation()
 		self.validate_ffww()
+		self.validate_duplication_emailid()
 		self.validate_dupicate_designation()
 		self.set_fww_name()
 		if self.contact:
@@ -22,7 +23,6 @@ class FFWW(Document):
 		if self.get('more_contact_details'):
 			for d in self.get('more_contact_details'):
 				if d.ffww == 'New FFWW 1' or self.name:
-					frappe.errprint(d.name)
 					if d.contact_name:
 						contact = frappe.get_doc("Contact Details", d.contact_name)
 						contact.ffww = self.name
@@ -66,6 +66,16 @@ class FFWW(Document):
 					designation_list.append(d.designation)
 				else:
 					frappe.msgprint("Duplicate designation name is not allowed",raise_exception=1)
+					break
+
+	def validate_duplication_emailid(self):
+		email_list = []
+		if self.get('more_contact_details'):
+			for d in self.get('more_contact_details'):
+				if d.email_id not in email_list:
+					email_list.append(d.email_id)
+				else:
+					frappe.msgprint("Duplicate Email ID is not allowed",raise_exception=1)
 					break
 
 	def update_contact_status(self):
