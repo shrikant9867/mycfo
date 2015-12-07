@@ -554,7 +554,6 @@ Operational = Class.extend({
 		var records_per_page = 10;
 		me.values = values
 		var numPages=Math.ceil(me.values.length/records_per_page)
-		console.log(me.values.length)
 	    me.changePage(1,numPages,me.values,records_per_page,me.values.length);
 	 
 },

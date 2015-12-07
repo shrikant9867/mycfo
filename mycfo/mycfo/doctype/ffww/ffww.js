@@ -28,7 +28,6 @@ frappe.ui.form.on("FFWW", {
 			});
 
 			frm.add_custom_button(__("See Tree View"), function() {
-				console.log(frm.doc['customer'])
 				frappe.route_options = {
 											"customer": frm.doc['customer'],
 										};
@@ -41,7 +40,6 @@ frappe.ui.form.on("FFWW", {
 
 
 cur_frm.cscript.contact = function(doc,cdt,cdn){
-
 	if(doc.contact){
 		return frappe.call({
 			method: 'mycfo.mycfo.doctype.ffww.ffww.make_contact',
@@ -71,6 +69,12 @@ cur_frm.cscript.contact = function(doc,cdt,cdn){
 			}
 		});
 	}
+	else{
+		return $c_obj(doc, 'clear_child_table','',function(r, rt) {
+						var doc = locals[cdt][cdn];
+						cur_frm.refresh();
+		});
+	}
 }
 
 cur_frm.fields_dict['customer'].get_query = function(doc) {
@@ -78,15 +82,11 @@ cur_frm.fields_dict['customer'].get_query = function(doc) {
 }
 
 cur_frm.cscript.more_contact_details_add = function(doc,cdt,cdn){
-	console.log("in more_contact_details")
-	console.log(frappe.route_history[0])
 	var d = locals[cdt][cdn]
 	last_route = frappe.route_history[0];
 		if(last_route && last_route[0]==="Form") {
 			var doctype = last_route[1],
 				docname = last_route.slice(2).join("/");
-				// console.log(doctype)
-				// console.log(docname)
 				if(doctype=='FFWW'){
 					d.ffww = docname
 					refresh_field('more_contact_details')
@@ -97,17 +97,19 @@ cur_frm.cscript.more_contact_details_add = function(doc,cdt,cdn){
 
 cur_frm.cscript.email_id = function(doc,cdt,cdn){
 	var d = locals[cdt][cdn];
-	var reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+	var reg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 	if (reg.test(d.email_id) == false) 
 	{
 	    msgprint('Invalid Email Address');
+	    d.email_id=''
+	    refresh_field('more_contact_details');
 	}
 }
 
 cur_frm.cscript.mobile_no = function(doc,cdt,cdn){
 	var d = locals[cdt][cdn];
 	if(isNaN(d.mobile_no)==true){
-		msgprint("Mobile number must be consist of omly digits")
+		msgprint("Mobile number must be consist of only Digits")
 		d.mobile_no=''
 		refresh_field('more_contact_details');
 	}

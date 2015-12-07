@@ -84,7 +84,6 @@ var calculate_total_shares = function(doc, dt, dn) {
 // }
 
 cur_frm.cscript.annual_sales = function(doc,cdt,cdn){
-	console.log(doc.currency)
 	if(doc.annual_sales<=0){
 		msgprint("Annual Sales value must be greater than zero")
 		doc.annual_sales =''

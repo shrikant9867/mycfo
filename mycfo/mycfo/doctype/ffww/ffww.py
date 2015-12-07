@@ -56,7 +56,7 @@ class FFWW(Document):
 		if frappe.db.sql("""select name from `tabFFWW` where customer='%s' and contact='%s' and  name!='%s'"""%(self.customer,self.contact,self.name)):
 			name = frappe.db.sql("""select name from `tabFFWW` where customer='%s' and contact='%s' 
 							and name!='%s'"""%(self.customer,self.contact,self.name),as_list=1)
-			frappe.msgprint("customer %s already linked with contact %s in record %s"%(self.customer,self.contact,name[0][0]),raise_exception=1)
+			frappe.msgprint("Customer %s already linked with contact %s in record %s"%(self.customer,self.contact,name[0][0]),raise_exception=1)
 
 	def validate_dupicate_designation(self):
 		designation_list = []
