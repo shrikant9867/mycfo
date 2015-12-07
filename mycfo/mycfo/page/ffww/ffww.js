@@ -129,33 +129,31 @@ DMS = Class.extend({
 	new_node: function(node) {
 		var me = this;
 		if(node['label']){
-		frappe.call({
-			method:"mycfo.mycfo.doctype.ffww_details.ffww_details.load_address_and_contact",
-			args:{record:node['label'],key:'name',key1:'contact',customer:me.customer},
-			callback: function(r) {
-				console.log(r)
-				console.log(r.message['ffww'])
-				$("#contact")
-							.html(frappe.render_template("contact_list",
-								r.message))
-							.find(".btn-view").on("click", function() {
-								frappe.route_options = r.message['ffww']
-								frappe.set_route("Form", "Contact",node['label']);
-							}
-				);
+			frappe.call({
+				method:"mycfo.mycfo.doctype.ffww_details.ffww_details.load_address_and_contact",
+				args:{record:node['label'],key:'name',key1:'contact',customer:me.customer},
+				callback: function(r) {
+					$("#contact")
+								.html(frappe.render_template("contact_list",
+									r.message))
+								.find(".btn-view").on("click", function() {
+									frappe.route_options = r.message['ffww']
+									frappe.set_route("Form", "Contact",node['label']);
+								}
+					);
 
-				$("#address")
-							.html(frappe.render_template("address_list",
-								r.message))
-							.find(".btn-address").on("click", function() {
-								new_doc("Address");
-							}
-				);
-			},
-			always: function() {
-				frappe.ui.form.is_saving = false;
-			}
-	})
+					$("#address")
+								.html(frappe.render_template("address_list",
+									r.message))
+								.find(".btn-address").on("click", function() {
+									new_doc("Address");
+								}
+					);
+				},
+				always: function() {
+					frappe.ui.form.is_saving = false;
+				}
+		})
 
 	}
 	},  

@@ -20,7 +20,6 @@ frappe.ui.form.on("Project Commercial", {
 	onload: function(frm){
 		if(cur_frm.doc.doctype==="Project Commercial"){
 			if(frappe.route_history){
-				console.log(frappe.route_history[0])
 				var doctype = frappe.route_history[0][1],
 					docname = frappe.route_history[0][2],
 					refdoc = frappe.get_doc(doctype, docname);
