@@ -12,6 +12,7 @@ cur_frm.add_fetch('user_name', 'user_id', 'email_id');
 cur_frm.add_fetch('user_name', 'cell_number', 'contact');
 
 
+// Validate Email ID........................................
 cur_frm.cscript.email = function(doc,cdt,cdn){
 	var d = locals[cdt][cdn];
 	var reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;

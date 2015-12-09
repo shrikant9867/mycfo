@@ -75,6 +75,7 @@ class ProjectCommercial(Document):
 				if flt(variable_total) != flt(self.var_val):
 					frappe.msgprint("Total sum of amount for  variable type in child table must be equal to the Variable Value specified",raise_exception=1)
 
+	# Add child records................................
 	def get_child_details(self,months=None):
 		self.get_dates(months)
 
