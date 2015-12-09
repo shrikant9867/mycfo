@@ -117,17 +117,23 @@ DMS = Class.extend({
 
 				{
 					label:__("Show Details"),
-					condition: function(node) { return node.data.type == 'contact' },
+					condition: function(node) { 
+						return node.data.type == 'contact'
+							
+					},
 					click: function(node) {
 						me.new_node(node);
 					}
+
 				},	
 			]
+
 		});
 	}, 
 
 	new_node: function(node) {
 		var me = this;
+		var node = me.tree.get_selected_node();
 		if(node['label']){
 			frappe.call({
 				method:"mycfo.mycfo.doctype.ffww_details.ffww_details.load_address_and_contact",
@@ -265,32 +271,6 @@ frappe.ui.TreeNode = Class.extend({
 			setTimeout(function() { me.toolbar.find(".btn-expand").click(); }, 100);
 		});
 
-		// $('#'+this.get_label()+'').click(function(){
-		// 	frappe.call({
-		// 		method:"mycfo.mycfo.doctype.ffww_details.ffww_details.load_address_and_contact",
-		// 		args:{record:$(this).text(),key:'name',key1:'contact'},
-		// 		callback: function(r) {
-		// 			$("#contact")
-		// 						.html(frappe.render_template("contact_list",
-		// 							r.message))
-		// 						.find(".btn-contact").on("click", function() {
-		// 							new_doc("Contact");
-		// 						}
-		// 			);
-
-		// 			$("#address")
-		// 						.html(frappe.render_template("address_list",
-		// 							r.message))
-		// 						.find(".btn-address").on("click", function() {
-		// 							new_doc("Address");
-		// 						}
-		// 			);
-		// 		},
-		// 		always: function() {
-		// 			frappe.ui.form.is_saving = false;
-		// 		}
-		// })
-		// })
 	},
 	get_label: function() {
 		if(this.tree.get_label) {

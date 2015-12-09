@@ -1,6 +1,6 @@
 {
  "allow_copy": 0, 
- "allow_import": 0, 
+ "allow_import": 1, 
  "allow_rename": 0, 
  "autoname": "OM.#####", 
  "creation": "2015-10-30 19:50:39.722147", 
@@ -350,7 +350,7 @@
  "is_submittable": 0, 
  "issingle": 0, 
  "istable": 0, 
- "modified": "2015-12-01 10:50:52.958996", 
+ "modified": "2015-12-09 11:34:52.909846", 
  "modified_by": "Administrator", 
  "module": "mycfo", 
  "name": "Operational Matrix", 

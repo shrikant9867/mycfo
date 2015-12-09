@@ -16,7 +16,7 @@ cur_frm.add_fetch('contact','landline','landline');
 cur_frm.add_fetch('country_name','country_code','country_code');
 cur_frm.add_fetch('country_name','number_of_digits_allowed','digit');
 
-
+// Add two buttonns on ffww form ............................................
 frappe.ui.form.on("FFWW", {
 	refresh: function(frm) {
 		if(!frm.doc.__islocal) {
@@ -39,6 +39,7 @@ frappe.ui.form.on("FFWW", {
 });
 
 
+// Once contact is selected fetch all the corresponding contact details in ffww  form.....................
 cur_frm.cscript.contact = function(doc,cdt,cdn){
 	if(doc.contact){
 		return frappe.call({
@@ -81,6 +82,7 @@ cur_frm.fields_dict['customer'].get_query = function(doc) {
 	return{	query: "mycfo.mycfo.doctype.ffww.ffww.get_active_customers" }
 }
 
+// Trigger on ADD Row of child table to link newly added contact details aginst same contact and current FFWW record..................
 cur_frm.cscript.more_contact_details_add = function(doc,cdt,cdn){
 	var d = locals[cdt][cdn]
 	last_route = frappe.route_history[0];
@@ -95,6 +97,7 @@ cur_frm.cscript.more_contact_details_add = function(doc,cdt,cdn){
 
 }
 
+//Validate Email ID..........................................................................
 cur_frm.cscript.email_id = function(doc,cdt,cdn){
 	var d = locals[cdt][cdn];
 	var reg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -106,6 +109,7 @@ cur_frm.cscript.email_id = function(doc,cdt,cdn){
 	}
 }
 
+// Validate Mobiel No....................................................................
 cur_frm.cscript.mobile_no = function(doc,cdt,cdn){
 	var d = locals[cdt][cdn];
 	if(isNaN(d.mobile_no)==true){
@@ -122,7 +126,7 @@ cur_frm.cscript.mobile_no = function(doc,cdt,cdn){
 	}
 }
 
-
+// validate mobile number digits according to the country selected...........................
 cur_frm.cscript.country_name = function(doc,cdt,cdn){
 	var d = locals[cdt][cdn];
 	if(d.mobile_no){
