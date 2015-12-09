@@ -236,11 +236,20 @@ Project1 = Class.extend({
 
 
 					if(values[i][0]['child_records']!=null){
-						$.each(values[i][0]['child_records'], function(j, k){
-							$($(me.body).find("#"+i+"")).find("#amenities-first").append('<div class="row row-id"><div class="col-md-6 row"><div class="row property-row"><b>Due Date :</b></div></div><div class="col-md-6 row"><div class="row property-row">'+k['due_date']+'</div></div></div>')
-							$($(me.body).find("#"+i+"")).find("#amenities-second").append('<div class="row row-id"><div class="col-md-6 row"><div class="row property-row"><b>Amount:</b></div></div><div class="col-md-6 row"><div class="row property-row">'+k['amount']+'</div></div></div>')
-		
+						if(values[i][0]['p_type']!='Fixed + Variable'){
+							$.each(values[i][0]['child_records'], function(j, k){
+								$($(me.body).find("#"+i+"")).find("#amenities-first").append('<div class="row row-id"><div class="col-md-6 row"><div class="row property-row"><b>Due Date :</b></div></div><div class="col-md-6 row"><div class="row property-row">'+k['due_date']+'</div></div></div>')
+								$($(me.body).find("#"+i+"")).find("#amenities-second").append('<div class="row row-id"><div class="col-md-6 row"><div class="row property-row"><b>Amount:</b></div></div><div class="col-md-6 row"><div class="row property-row">'+k['amount']+'</div></div></div>')
+			
+								})
+							}
+						else{
+							$.each(values[i][0]['child_records'], function(j, k){
+								$($(me.body).find("#"+i+"")).find("#amenities-first").append('<div class="row row-id"><div class="col-md-6 row"><div class="row property-row"><b>Due Date :</b></div></div><div class="col-md-6 row"><div class="row property-row">'+k['due_date']+'</div></div></div>')
+								$($(me.body).find("#"+i+"")).find("#amenities-second").append('<div class="row row-id"><div class="col-md-6 row"><div class="row property-row"><b>Amount('+k['f_type']+'):</b></div></div><div class="col-md-6 row"><div class="row property-row">'+k['amount']+'</div></div></div>')
+			
 							})
+						}
 					}
 
 					$('.pv').click(function(){
@@ -519,11 +528,20 @@ Project = Class.extend({
 
 
 					if(values[i][0]['child_records']!=null){
-						$.each(values[i][0]['child_records'], function(j, k){
-							$($(me.body).find("#"+i+"")).find("#amenities-first").append('<div class="row row-id"><div class="col-md-6 row"><div class="row property-row"><b>Due Date :</b></div></div><div class="col-md-6 row"><div class="row property-row">'+k['due_date']+'</div></div></div>')
-							$($(me.body).find("#"+i+"")).find("#amenities-second").append('<div class="row row-id"><div class="col-md-6 row"><div class="row property-row"><b>Amount:</b></div></div><div class="col-md-6 row"><div class="row property-row">'+k['amount']+'</div></div></div>')
-		
+						if(values[i][0]['p_type']!='Fixed + Variable'){
+							$.each(values[i][0]['child_records'], function(j, k){
+								$($(me.body).find("#"+i+"")).find("#amenities-first").append('<div class="row row-id"><div class="col-md-6 row"><div class="row property-row"><b>Due Date :</b></div></div><div class="col-md-6 row"><div class="row property-row">'+k['due_date']+'</div></div></div>')
+								$($(me.body).find("#"+i+"")).find("#amenities-second").append('<div class="row row-id"><div class="col-md-6 row"><div class="row property-row"><b>Amount:</b></div></div><div class="col-md-6 row"><div class="row property-row">'+k['amount']+'</div></div></div>')
+			
+								})
+							}
+						else{
+							$.each(values[i][0]['child_records'], function(j, k){
+								$($(me.body).find("#"+i+"")).find("#amenities-first").append('<div class="row row-id"><div class="col-md-6 row"><div class="row property-row"><b>Due Date :</b></div></div><div class="col-md-6 row"><div class="row property-row">'+k['due_date']+'</div></div></div>')
+								$($(me.body).find("#"+i+"")).find("#amenities-second").append('<div class="row row-id"><div class="col-md-6 row"><div class="row property-row"><b>Amount ('+k['f_type']+') :</b></div></div><div class="col-md-6 row"><div class="row property-row">'+k['amount']+'</div></div></div>')
+			
 							})
+						}
 					}
 
 					$('.pv').click(function(){

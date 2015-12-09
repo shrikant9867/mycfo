@@ -9,11 +9,52 @@ cur_frm.add_fetch('customer', 'customer_name', 'customer_name');
 
 cur_frm.add_fetch('shareholder_name', 'contact', 'contact');
 
+cur_frm.add_fetch('customer', 'currency', 'currency');
+
+cur_frm.add_fetch('customer', 'country', 'country');
+
+cur_frm.add_fetch('currency','symbol','currency_symbol');
+
+
+
+frappe.ui.form.on("Financial Data", {
+	refresh: function(frm) {
+		if(frm.doc.currency){
+			set_dynamic_labels(frm)
+		}
+	},
+	
+});
+
+ var set_dynamic_labels = function(frm) {
+		var company_currency = frm.doc.currency
+		change_form_labels(frm,company_currency);
+		cur_frm.refresh_fields(["annual_sales","pbt","pat","ebidta","outstanding_p_loan","annualised_cost_of_salary_of_all_emp_in_f_and_a","total"]);
+}
+
+var change_form_labels = function(frm,currency){
+	var field_label_map = {};
+	var setup_field_label_map = function(fields_list, currency) {
+			$.each(fields_list, function(i, fname) {
+				var docfield = frappe.meta.docfield_map[frm.doc.doctype][fname];
+				if(docfield) {
+					var label = __(docfield.label || "").replace(/\([^\)]*\)/g, "");
+					field_label_map[fname] = label.trim() + " (" + currency + ")";
+				}
+			});
+	};
+	setup_field_label_map(["annual_sales","pbt","pat","ebidta","outstanding_p_loan","annualised_cost_of_salary_of_all_emp_in_f_and_a","total"], currency);
+
+	$.each(field_label_map, function(fname, label) {
+			frm.fields_dict[fname].set_label(label);
+	});
+
+}
+
 
 cur_frm.cscript.validate = function(doc, dt, dn) {
 	calculate_all(doc, dt, dn);
 }
-
 
 var calculate_all = function(doc, dt, dn) {
 	calculate_total_shares(doc, dt, dn);
@@ -41,6 +82,16 @@ var calculate_total_shares = function(doc, dt, dn) {
 // cur_frm.fields_dict.shareholder_name = function(doc,cdt,cdn) {
 // 	return{	query: "erpnext.controllers.queries.employee_query" }
 // }
+
+cur_frm.cscript.annual_sales = function(doc,cdt,cdn){
+	console.log(doc.currency)
+	if(doc.annual_sales<=0){
+		msgprint("Annual Sales value must be greater than zero")
+		doc.annual_sales =''
+		refresh_field('annual_sales');
+	}
+
+}
 
 
 cur_frm.cscript.ebidta = function(doc,cdt,cdn){

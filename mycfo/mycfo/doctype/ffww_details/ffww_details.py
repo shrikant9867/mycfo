@@ -21,21 +21,29 @@ response = []
 
 @frappe.whitelist()
 def load_address_and_contact(record,key,key1,customer):
-	contact_details = frappe.db.sql("""select contact_type,email_id,mobile_no from `tabContact Details` where 
-									parent='%s'"""%record,as_dict=1)
+	ffww = frappe.db.get_value('FFWW',{'contact':record,'customer':customer},'name')
+
+	contact_details = frappe.db.sql("""select contact_type,email_id,mobile_no,country_code from `tabContact Details` where 
+			
+									parent='%s' and ffww='%s' and preffered=0"""%(record,ffww),as_dict=1)
+	
 	personal_emailid = []
 	personal_mobileno = []
+	personal_code = []
 	official_emailid = []
 	official_mobileno = []
+	official_code = []
 
 	if len(contact_details)>0:
 		for i in contact_details:
 			if i['contact_type'] == 'Personal':
 				personal_emailid.append(i['email_id'])
 				personal_mobileno.append(i['mobile_no'])
+				personal_code.append(i['country_code'])
 			else:
 				official_emailid.append(i['email_id'])
 				official_mobileno.append(i['mobile_no'])
+				official_code.append(i['country_code'])
 
 
 	contact_list = frappe.get_all("Contact",
@@ -43,7 +51,7 @@ def load_address_and_contact(record,key,key1,customer):
 
 	from erpnext.utilities.doctype.address.address import get_address_display
 
-	ffww = frappe.db.get_value('FFWW',{'contact':record,'customer':customer},'name')
+	
 	if ffww:
 		addr_list = [a.update({"display": get_address_display(a)}) \
 			for a in frappe.get_all("Address",
@@ -53,8 +61,10 @@ def load_address_and_contact(record,key,key1,customer):
 	if len(contact_list)>0:
 		contact_list[0].update({'personal_emailid':personal_emailid})
 		contact_list[0].update({'personal_mobileno':personal_mobileno})
+		contact_list[0].update({'personal_code':personal_code})
 		contact_list[0].update({'official_emailid':official_emailid})
 		contact_list[0].update({'official_mobileno':official_mobileno})
+		contact_list[0].update({'official_code':official_code})
 		args = {'contact_list':contact_list}
 	else:
 		args = {'contact_list':''}
@@ -64,6 +74,11 @@ def load_address_and_contact(record,key,key1,customer):
 		args['addr_list'] =  addr_list
 	else:
 		args['addr_list'] = ''
+
+	if ffww:
+		args['ffww'] = ffww
+	else:
+		args['ffww'] = ''
 
 	if args:
 		return args
@@ -86,6 +101,7 @@ def get_children():
 	response = []
 	final_response = []
 	docn = {}
+
 
 
 	if args.get('parent') == 'Category':
