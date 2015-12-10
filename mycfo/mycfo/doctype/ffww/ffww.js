@@ -58,6 +58,7 @@ cur_frm.cscript.contact = function(doc,cdt,cdn){
 							d.country = item[4];
 							d.ffww = item[5];
 							d.contact_name = item[6];
+							d.country_name =item[7];
 					});
 					refresh_field('more_contact_details')
 				}
