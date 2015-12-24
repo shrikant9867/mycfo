@@ -75,6 +75,7 @@ class ProjectCommercial(Document):
 				if flt(variable_total) != flt(self.var_val):
 					frappe.msgprint("Total sum of amount for  variable type in child table must be equal to the Variable Value specified",raise_exception=1)
 
+	# Add child records................................
 	def get_child_details(self,months=None):
 		self.get_dates(months)
 
@@ -92,8 +93,11 @@ class ProjectCommercial(Document):
 		self.check_project_value(date_list,months,due_amount,final_date)
 
 	def check_project_value(self,date_list,months,due_amount,final_date):
-		if self.pro_per == 30 or self.pro_per == 31:
+
+		if self.pro_per == '30' or self.pro_per == '31':
 			months-=1
+			frappe.errprint(self.pro_per)
+			frappe.errprint(months)
 		if flt(self.p_value)%cint(months) == 0:
 			due_amount = due_amount
 			if months == 1:
@@ -137,7 +141,7 @@ class ProjectCommercial(Document):
 		self.check_project_value_for_fix_varialble(date_list,final_date,months,due_amount)
 
 	def check_project_value_for_fix_varialble(self,date_list,final_date,months,due_amount):
-		if self.pro_per == 30 or self.pro_per == 31:
+		if self.pro_per == '30' or self.pro_per == '31':
 			months-=1
 		if flt(self.fix_val)%cint(months) == 0:
 			due_amount = due_amount

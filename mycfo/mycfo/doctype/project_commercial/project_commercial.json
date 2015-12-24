@@ -1,6 +1,6 @@
 {
  "allow_copy": 0, 
- "allow_import": 0, 
+ "allow_import": 1, 
  "allow_rename": 0, 
  "autoname": "field:p_id", 
  "creation": "2015-10-31 16:18:01.267622", 
@@ -1036,7 +1036,7 @@
  "is_submittable": 0, 
  "issingle": 0, 
  "istable": 0, 
- "modified": "2015-12-02 16:33:09.972423", 
+ "modified": "2015-12-09 11:34:29.261738", 
  "modified_by": "Administrator", 
  "module": "mycfo", 
  "name": "Project Commercial", 
