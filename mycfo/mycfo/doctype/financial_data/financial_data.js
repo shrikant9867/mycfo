@@ -26,6 +26,7 @@ frappe.ui.form.on("Financial Data", {
 	
 });
 
+// Set dyanamic lables according to the customer currency
  var set_dynamic_labels = function(frm) {
 		var company_currency = frm.doc.currency
 		change_form_labels(frm,company_currency);
@@ -61,7 +62,7 @@ var calculate_all = function(doc, dt, dn) {
 	
 }
 
-
+// calculate total shareholder shares....................
 var calculate_total_shares = function(doc, dt, dn) {
 	var tbl = doc.shareholders_detail || [];
 
@@ -84,7 +85,6 @@ var calculate_total_shares = function(doc, dt, dn) {
 // }
 
 cur_frm.cscript.annual_sales = function(doc,cdt,cdn){
-	console.log(doc.currency)
 	if(doc.annual_sales<=0){
 		msgprint("Annual Sales value must be greater than zero")
 		doc.annual_sales =''

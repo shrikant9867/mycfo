@@ -20,7 +20,6 @@ frappe.ui.form.on("Project Commercial", {
 	onload: function(frm){
 		if(cur_frm.doc.doctype==="Project Commercial"){
 			if(frappe.route_history){
-				console.log(frappe.route_history[0])
 				var doctype = frappe.route_history[0][1],
 					docname = frappe.route_history[0][2],
 					refdoc = frappe.get_doc(doctype, docname);
@@ -39,6 +38,7 @@ frappe.ui.form.on("Project Commercial", {
 	
 });
 
+// set dynamic lables according to the customer currency
 var set_dynamic_labels = function(frm) {
 		var company_currency = frm.doc.currency
 		change_form_labels(frm,company_currency);
@@ -91,6 +91,7 @@ var change_grid_labels = function(frm,currency) {
 
 }
 
+// Validate Start Date..............................................
 cur_frm.cscript.start_date= function(doc, cdt, cdn) {
 	if (doc.start_date && doc.end_date)
 	{
@@ -128,6 +129,7 @@ cur_frm.cscript.start_date= function(doc, cdt, cdn) {
 
 }
 
+// Validate End Date.............................................................
 cur_frm.cscript.end_date= function(doc, cdt, cdn) {
 	if (doc.start_date && doc.end_date)
 	{
@@ -165,6 +167,7 @@ cur_frm.cscript.end_date= function(doc, cdt, cdn) {
 
 }
 
+//Validate Proposal Date.................................
 cur_frm.cscript.prop_date= function(doc, cdt, cdn) {
 	if (doc.start_date && doc.end_date)
 	{
@@ -182,6 +185,7 @@ cur_frm.cscript.prop_date= function(doc, cdt, cdn) {
 
 }
 
+// Validate Fixed value..................................................
 cur_frm.cscript.fix_val= function(doc, cdt, cdn) {
 	if (!doc.p_value)
 	{
@@ -211,6 +215,7 @@ cur_frm.cscript.fix_val= function(doc, cdt, cdn) {
 
 }
 
+// Validate Variable value..................................................
 cur_frm.cscript.var_val= function(doc, cdt, cdn) {
 	if (!doc.p_value)
 	{
@@ -329,6 +334,7 @@ cur_frm.cscript.fixed_pick_date= function(doc, cdt, cdn) {
 }
 
 
+// Click on Generate button add record in amount details child table according to the number of months and project value.
 cur_frm.cscript.generate_records = function(doc,cdt,cdn){
     if(doc.p_type=='Fixed'){
     	if(doc.type=='Monthly'){
@@ -423,6 +429,7 @@ cur_frm.cscript.onload = function(doc,cdt,cdn){
 	cur_frm.fields_dict["table_17"].grid.set_column_disp("f_type", 0);
 }
 
+// Hide and unhide  percentage field from amount details child table as per the  requirement.....
 cur_frm.cscript.milestone_calculation = function(doc,cdt,cdn){
 	cur_frm.fields_dict["table_17"].grid.set_column_disp("percentage", doc.milestone_calculation=='Percentage');
 
@@ -432,6 +439,7 @@ cur_frm.cscript.milestone_calculation = function(doc,cdt,cdn){
 	});
 }
 
+// Hide and unhide  percentage field from amount details child table as per the  requirement.....
 cur_frm.cscript.fixed_milestone = function(doc,cdt,cdn){
 	cur_frm.fields_dict["table_17"].grid.set_column_disp("percentage", doc.fixed_milestone=='Percentage');
 
@@ -441,6 +449,7 @@ cur_frm.cscript.fixed_milestone = function(doc,cdt,cdn){
 	});
 }
 
+// Hide and unhide  percentage field from amount details child table as per the  requirement.....
 cur_frm.cscript.milestone_based = function(doc,cdt,cdn){
 	if(doc.milestone_based=='Percentage'){
 		cur_frm.fields_dict["table_17"].grid.set_column_disp("percentage", 1);
@@ -455,6 +464,7 @@ cur_frm.cscript.milestone_based = function(doc,cdt,cdn){
 	});
 }
 
+// Hide and unhide  percentage field from amount details child table as per the  requirement.....
 cur_frm.cscript.type = function(doc,cdt,cdn){
 	if(doc.type=='Milestone' && doc.milestone_calculation=='Percentage') 
 
@@ -468,6 +478,7 @@ cur_frm.cscript.type = function(doc,cdt,cdn){
 	});
 }
 
+// Hide and unhide  percentage field from amount details child table as per the  requirement.....
 cur_frm.cscript.fixed_type = function(doc,cdt,cdn){
 	if(doc.fixed_type=='Milestone' && doc.fixed_milestone=='Percentage')
 		cur_frm.fields_dict["table_17"].grid.set_column_disp("percentage", 1);
@@ -486,7 +497,7 @@ cur_frm.cscript.fixed_type = function(doc,cdt,cdn){
 	});
 }
 
-
+// If percentage is specified then calculate the amount as per the percentage specified with respect to the Project  value......
 cur_frm.cscript.percentage = function(doc,cdt,cdn){
 	var d = locals[cdt][cdn]
 	if(doc.p_type!='Fixed + Variable'){

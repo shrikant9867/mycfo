@@ -1,6 +1,6 @@
 {
  "allow_copy": 0, 
- "allow_import": 0, 
+ "allow_import": 1, 
  "allow_rename": 0, 
  "autoname": "FFWW.####", 
  "creation": "2015-11-02 23:06:57.572842", 
@@ -441,7 +441,7 @@
  "is_submittable": 0, 
  "issingle": 0, 
  "istable": 0, 
- "modified": "2015-12-02 11:26:59.343013", 
+ "modified": "2015-12-09 11:33:36.440806", 
  "modified_by": "Administrator", 
  "module": "mycfo", 
  "name": "FFWW", 

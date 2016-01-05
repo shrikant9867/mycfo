@@ -1,3 +1,4 @@
+// Show list view of all operational matrix linked with current customer.....................
 frappe.pages['Operational Matrix'].on_page_load = function(wrapper) {
 	var page = frappe.ui.make_app_page({
 		parent: wrapper,
@@ -554,7 +555,6 @@ Operational = Class.extend({
 		var records_per_page = 10;
 		me.values = values
 		var numPages=Math.ceil(me.values.length/records_per_page)
-		console.log(me.values.length)
 	    me.changePage(1,numPages,me.values,records_per_page,me.values.length);
 	 
 },

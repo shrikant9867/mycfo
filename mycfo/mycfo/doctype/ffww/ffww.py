@@ -20,6 +20,7 @@ class FFWW(Document):
 			self.update_contact_status()
 
 	def on_update(self):
+		# if any extra row is added in contact details child table same data will be reflected in contact doctype against same contact.
 		if self.get('more_contact_details'):
 			for d in self.get('more_contact_details'):
 				if d.ffww == 'New FFWW 1' or self.name:
@@ -56,7 +57,7 @@ class FFWW(Document):
 		if frappe.db.sql("""select name from `tabFFWW` where customer='%s' and contact='%s' and  name!='%s'"""%(self.customer,self.contact,self.name)):
 			name = frappe.db.sql("""select name from `tabFFWW` where customer='%s' and contact='%s' 
 							and name!='%s'"""%(self.customer,self.contact,self.name),as_list=1)
-			frappe.msgprint("customer %s already linked with contact %s in record %s"%(self.customer,self.contact,name[0][0]),raise_exception=1)
+			frappe.msgprint("Customer %s already linked with contact %s in record %s"%(self.customer,self.contact,name[0][0]),raise_exception=1)
 
 	def validate_dupicate_designation(self):
 		designation_list = []
@@ -89,7 +90,7 @@ class FFWW(Document):
 	def clear_child_table(self):
 		self.set('more_contact_details', [])
 
-
+# Create address............................................
 @frappe.whitelist()
 def make_address(source_name, target_doc=None):
 	return _make_address(source_name, target_doc)

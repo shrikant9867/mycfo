@@ -1,6 +1,6 @@
 {
  "allow_copy": 0, 
- "allow_import": 0, 
+ "allow_import": 1, 
  "allow_rename": 0, 
  "autoname": "FN.#######", 
  "creation": "2015-10-30 19:39:16.147645", 
@@ -886,7 +886,7 @@
  "is_submittable": 0, 
  "issingle": 0, 
  "istable": 0, 
- "modified": "2015-12-02 16:31:51.078220", 
+ "modified": "2015-12-09 11:34:00.267406", 
  "modified_by": "Administrator", 
  "module": "mycfo", 
  "name": "Financial Data", 
