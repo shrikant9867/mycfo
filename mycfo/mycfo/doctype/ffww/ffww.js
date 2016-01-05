@@ -9,6 +9,7 @@ cur_frm.add_fetch('contact','linkedin_id','linkedin_id');
 cur_frm.add_fetch('contact','skype_id','skype_id');
 
 cur_frm.add_fetch('contact','country_code','country_code');
+cur_frm.add_fetch('contact','actual_country_code','actual_country_code');
 cur_frm.add_fetch('contact','email','email');
 cur_frm.add_fetch('contact','mobile','mobile');
 cur_frm.add_fetch('contact','landline','landline');
@@ -55,9 +56,9 @@ cur_frm.cscript.contact = function(doc,cdt,cdn){
 							d.email_id = item[1];
 							d.mobile_no = item[2];
 							d.country_code = item[3];
-							d.country = item[4];
-							d.ffww = item[5];
-							d.contact_name = item[6];
+							d.ffww = item[4];
+							d.contact_name = item[5];
+							d.country_name =item[6];
 					});
 					refresh_field('more_contact_details')
 				}

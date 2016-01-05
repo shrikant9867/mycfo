@@ -32,6 +32,7 @@ class FFWW(Document):
 						main_contact = frappe.get_doc('Contact',self.contact)
 						ch = main_contact.append('contacts', {})
 						ch.contact_type = d.contact_type
+						ch.country_name = d.country_name
 						ch.country_code = d.country_code
 						ch.mobile_no = d.mobile_no
 						ch.email_id = d.email_id
@@ -115,7 +116,7 @@ def _make_address(source_name, target_doc=None, ignore_permissions=False):
 @frappe.whitelist()
 def make_contact(contact=None):
 	contact_details = []
-	contact_details = frappe.db.get_values('Contact Details',{'parent':contact},['contact_type','email_id','mobile_no','country_code','country','ffww','name'])
+	contact_details = frappe.db.get_values('Contact Details',{'parent':contact},['contact_type','email_id','mobile_no','country_code','ffww','name','country_name'])
 	if len(contact_details)>0:
 		return contact_details
 	else:

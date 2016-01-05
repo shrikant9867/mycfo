@@ -400,22 +400,22 @@ Project = Class.extend({
 			<div id='buttons' >\
 		<p align='right'><input type='button' value='Prev' class='btn btn-default btn-sm btn-modal-close button-div' id='btn_prev'>\
 		<input type='button' value='Next' class='btn btn-default btn-sm btn-modal-close button-div' id='btn_next'></p>\
-		<p align='left'><b>Total Documents:</b> <span id='page'></span></p></div>").appendTo(me.body);
+		<p align='left' style='padding-left:55px;'><b>Total Documents:</b> <span id='page'></span></p></div>").appendTo(me.body);
 
 		 for (var i = (page-1) * records_per_page; i < (page * records_per_page); i++) {
 		 	if(values[i]!=null){
 				$("<li id='property_list' list-style-position: inside;><div class='col-md-12 property-div'>\
 							 <div id='details' class='col-md-12 property-main-div'>\
-							 <div id="+i+" class='col-md-12 property-id' style='border: 1px solid #999999;'>\
+							 <div id="+i+" class='col-md-12 property-id' style='border: 1px solid #999999; height: auto !important;'>\
 							 </div></div>\
 				 			</div></li>").appendTo($(me.body).find("#mytable"))
 
-						$("<ul id='mytab' class='nav nav-tabs' role='tablist' >\
+						$("<ul id='mytab' class='nav nav-tabs' style='padding-bottom: 1px;' role='tablist' >\
 				      <li role='presentation' class='active'><a href='#more"+""+i+"' role='tab' id='profile-tab' style='height:35px;margin-top:-3px;' data-toggle='tab' aria-controls='profile' aria-expanded='false'><i class='icon-li icon-book'></i>&nbsp;&nbsp;Project Details</a></li>\
 				      <li role='presentation' class=''><a href='#amenities"+""+i+"' role='tab' id='profile-tab' data-toggle='tab'  style='height:35px;margin-top:-3px;' aria-controls='profile' aria-expanded='false'><i class='icon-li icon-building'></i>&nbsp;&nbsp;Project Value Details</a></li>\
 				      </ul></div>\
 				    </ul>\
-				    <div id='mytable' class='tab-content' style='background-color=#fafbfc;'>\
+				    <div id='mytable' class='tab-content' style='background-color=#fafbfc;padding: 10px 10px 10px 10px;'>\
 				       <div role='tabpanel' class='tab-pane fade' style='overflow:auto;height: 110px;' id='amenities"+""+i+"' aria-labelledby='profile-tab'>\
 				      <div class='col-md-6' id='amenities-first' style='background-color=#fafbfc;'>\
 				      </div>\
