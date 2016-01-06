@@ -47,11 +47,8 @@ init_for_upload_file = function(frm ,cdt, cdn){
 			msgprint(__("Please attach a file or set a URL"));
 		},
 		callback: function(file_data) {
-			// frm.doc.file_name = file_data.file_name
-			file_name_array = file_data.file_name.split('.')
-			if (file_name_array.length != 1){
-				frm.doc.file_extension = file_name_array[file_name_array.length - 1]
-			}
+			frm.doc.file_name = file_data.file_name
+			frm.doc.file_extension = file_data.file_ext
 			frm.doc.file_data = file_data
 			me.init_for_edit_file(frm)
 			refresh_field(["file_name", "file_extension", "file_data", "request_type"])

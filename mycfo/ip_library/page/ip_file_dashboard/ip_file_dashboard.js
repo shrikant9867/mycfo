@@ -58,7 +58,7 @@ IpFileDashboard = Class.extend({
 
 		});
 		
-		me.init_for_latest();
+		// me.init_for_latest();
 		me.init_for_global_search();
 		
 	},
