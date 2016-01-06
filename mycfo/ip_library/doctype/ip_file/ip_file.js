@@ -18,7 +18,7 @@ frappe.ui.form.on("IP File", {
 		else{
 			cur_frm.set_df_property("document_type", "read_only", 1)
 			cur_frm.set_df_property("file_approver", "read_only", 1)
-			cur_frm.set_df_property("file_name", "read_only", 1)
+			// cur_frm.set_df_property("file_name", "read_only", 1)
 		}
 		cur_frm.add_custom_button(__('Upload File'), function(){ init_for_upload_file(frm, cdt, cdn) });	
 		

@@ -41,12 +41,11 @@ class IPFile(Document):
 				print self.file_data.get("file_ext")
 				base64_data = self.file_data.get("file_data").encode("utf8")				
 				base64_data = base64_data.split(',')[1]
-				base64_data = base64.b64decode(base64_data) 
-				extension = "." + self.file_extension if self.file_extension else ""
-				file_path = frappe.get_site_path("public","files", "mycfo", "edited_file", self.document_type, self.file_name + extension)
+				base64_data = base64.b64decode(base64_data)
+				file_path = frappe.get_site_path("public","files", "mycfo", "edited_file", self.document_type, self.file_name)
 				with open(file_path, "wb+") as fi_nm:
 					fi_nm.write(base64_data)
-				self.new_file_path = '/'.join(["files", "mycfo", "edited_file", self.document_type, self.file_name + extension])
+				self.new_file_path = '/'.join(["files", "mycfo", "edited_file", self.document_type, self.file_name])
 		except Exception,e:
 			print e
 			print frappe.get_traceback()
