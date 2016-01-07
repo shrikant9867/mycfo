@@ -8,6 +8,12 @@ def get_data():
 			"color": "grey",
 			"icon": "icon-th",
 			"type": "module",
-			"label": _("mycfo")
+			"label": _("Customer Details")
+		},
+		"IP Library": {
+			"color": "#8e44ad",
+			"icon": "octicon octicon-database",
+			"type": "module",
+			"label": _("IP Library")
 		}
 	}

@@ -1,0 +1,111 @@
+{% for(var i=0, l=file_data.length; i < l; i++) { %}
+<div class="panel panel-primary ip-file-panel" file-name = "{{ file_data[i].file_name }}" ip-file-name= "{{ file_data[i].name }}" file-url="{{ file_data[i].file_path }}"
+download-validity = "{{ file_data[i].download_validity_end_date }}" id="{{ i }}">
+      <div class="panel-heading panel-heading-custom2">{{ file_data[i].file_name }}
+		{% if (file_data[i].security_level == "0-Level" || frappe.datetime.str_to_obj(file_data[i].download_validity_end_date) > frappe.datetime.str_to_obj(frappe.datetime.now_datetime()) ) { %}
+		<button type="button" class="btn btn-success ip-download-button"><i class="icon-download"></i>Download</button>
+		{% } else if( file_data[i].approval_status == "Pending")  { %}
+			<button type="button" class="btn btn-success ip-request-button disabled" >Request Pending</button>
+		{% } else  { %}
+		<button type="button" class="btn btn-success ip-request-button" >Make Request</button>
+		{% } %}		
+      </div>
+      <div class="panel-body row">
+      <div class="col-xs-3">
+      	<a href="#" class="thumbnail ip-file-thumbnail">
+      		<img src="/assets/mycfo/images/default.jpg" alt="Default Image">
+    	</a>
+      </div>
+      <div class="col-xs-9">	
+		  <ul class="nav nav-tabs">
+		    <li class="active"><a data-toggle="tab" href="#home{{ i }}">Basic Information</a></li>
+		    <li><a data-toggle="tab" href="#approval-menu{{ i }}">Approval</a></li>
+		    <li><a data-toggle="tab" href="#reviews-menu{{ i }}">Reviews & Downalods</a></li>
+		    {% if(file_data[i].download_flag) { %}
+		    <li><a data-toggle="tab" href="#feedback-menu{{ i }}" class="feedback-li">Write Feedback</a></li>
+		  	{% } %}
+		  </ul>
+
+		  <div class="tab-content">
+		    <div id="home{{ i }}" class="tab-pane fade in active">
+		     <div class="row">
+		     	<div class="col-xs-6">
+		     		<div class="row ip-row">
+		     			<div class="col-xs-6"><label class="ip-label">File Name</label></div>
+		     			<div class="col-xs-6">{{ file_data[i].file_name }}</div>
+		     		</div>
+		     		<div class="row ip-row">
+		     			<div class="col-xs-6"><label class="ip-label">Project</label></div>
+		     			<div class="col-xs-6">{{ file_data[i].project }}</div>
+		     		</div>	
+		     	</div>
+		     	<div class="col-xs-6">
+		     		<div class="row ip-row">
+		     			<div class="col-xs-6"><label class="ip-label">Document Type</label></div>
+		     			<div class="col-xs-6">{{ file_data[i].document_type }}</div>
+		     		</div>
+		     		<div class="row ip-row">
+		     			<div class="col-xs-6"><label class="ip-label">Industry</label></div>
+		     			<div class="col-xs-6">{{ file_data[i].industry }}</div>
+		     		</div>
+		     	</div>
+		     </div>
+		    </div>
+		    <div id="approval-menu{{ i }}" class="tab-pane fade">
+		    	<div class="row">
+		     	<div class="col-xs-6">
+		     		<div class="row ip-row">
+		     			<div class="col-xs-6"><label class="ip-label">Type Of Security</label></div>
+		     			<div class="col-xs-6">{{ file_data[i].security_level }}</div>
+		     		</div>
+		     	</div>
+		     	<div class="col-xs-6">
+		     		<div class="row ip-row">
+		     			<div class="col-xs-6"><label class="ip-label">Approval Status</label></div>
+		     			<div class="col-xs-6" >{{ file_data[i].security_level == "0-Level" ? "Download Allowed" : file_data[i].approval_status }}</div>
+		     		</div>
+		     	</div>
+		     </div>
+		    </div>
+		    <div id="reviews-menu{{ i }}" class="tab-pane fade">
+		      	<div class="row">
+		     		<div class="col-xs-4"><label class="ip-label">Downloads</label></div>
+		     		<div class="col-xs-8">{{ file_data[i].download_count }}</div>
+		     	</div>
+		     	<div class="row">
+		     		<div class="col-xs-4"><label class="ip-label">Avg Ratings</label></div>
+		     		<div class="col-xs-8"  id ="avg-rateYo{{ i }}"></div>
+		     	</div> 
+		     	  	<div class="row">
+		     		<div class="col-xs-4"><label class="ip-label">User Comments</label></div>
+		     		<div class="col-xs-8">
+		     			<div class="row comments-row">
+			     			{% for(var j=0, k=file_data[i].comments.length; j < k; j++) { %}
+	  								<div class="panel-body">{{ file_data[i].comments[j].comments }}</div><hr>
+			     			{% } %}
+		     			</div>
+		     		</div>
+		     	</div>
+		    </div>
+		    {% if(file_data[i].download_flag) { %}
+		    <div id="feedback-menu{{ i }}" class="tab-pane fade my-feedback">
+		    	<div class="row">
+		     		<div class="col-xs-4"><label class="ip-label">Your Rating</label></div>
+		     		<div class="col-xs-8 rateYo"></div>
+		     	</div>
+		     	<div class="row">
+		     		<div class="col-xs-4"><label class="ip-label">Your Feedback</label></div>
+		     		<div class="col-xs-8">
+		     		<textarea type="text" class="input-with-feedback form-control ip-text-area"></textarea></div>
+		     	</div>
+		     	<div class="row">
+		     		<button type="button" class="btn btn-primary submit-review">Submit</button>
+		     	</div>
+		     </div>
+		    {% } %} 
+		    </div>
+	  	  </div>
+	  </div>
+	</div>
+</div>
+{% } %}
