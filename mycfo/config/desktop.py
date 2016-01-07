@@ -8,7 +8,7 @@ def get_data():
 			"color": "grey",
 			"icon": "icon-th",
 			"type": "module",
-			"label": _("Mycfo")
+			"label": _("Customer Details")
 		},
 		"IP Library": {
 			"color": "#8e44ad",

@@ -264,5 +264,12 @@
   "modified": "2016-01-05 18:03:23.393019", 
   "name": "EL", 
   "role_name": "EL"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2016-01-07 18:47:18.457746", 
+  "name": "Mycfo User", 
+  "role_name": "Mycfo User"
  }
 ]
