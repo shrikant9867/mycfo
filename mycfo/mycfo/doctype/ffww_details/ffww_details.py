@@ -26,14 +26,13 @@ def load_address_and_contact(record,key,key1,customer):
 	contact_details = frappe.db.sql("""select contact_type,email_id,mobile_no,country_code from `tabContact Details` where 
 			
 									parent='%s' and ffww='%s' and preffered=0"""%(record,ffww),as_dict=1)
-	
 	personal_emailid = []
 	personal_mobileno = []
 	personal_code = []
 	official_emailid = []
 	official_mobileno = []
 	official_code = []
-
+	
 	if len(contact_details)>0:
 		for i in contact_details:
 			if i['contact_type'] == 'Personal':
