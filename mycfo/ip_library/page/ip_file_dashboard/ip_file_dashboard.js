@@ -33,8 +33,45 @@ IpFileDashboard = Class.extend({
 	},
 	init_for_latest:function(){
 		var me = this;
+		this.get_latest_upload_count();
+		this.init_for_pending_requests();
+		this.init_for_my_downloads();
 		this.filters.latest_uploads.$input.click(function(){
-			me.init_for_latest_upload_count();
+			me.filters.search_type.input.value = "Latest Uploads";
+			me.empty_dashboard_and_footer();
+			me.init_for_latest_uploads(0, me);
+		})
+	},
+	get_latest_upload_count:function(){
+		frappe.call({
+			freeze: true,
+			freeze_message:"Please wait ..............",
+			module:"mycfo.ip_library",
+			page: "ip_file_dashboard",
+			method: "get_latest_upload_count",
+			callback:function(r){
+				console.log(r.message)
+				$("button[data-fieldname=latest_uploads]").append("<span class ='badge custom-badge'>{0}</span>".replace('{0}', r.message.latest_records));
+				$("button[data-fieldname=my_requests]").append("<span class ='badge custom-badge'>{0}</span>".replace('{0}', r.message.pending_requests));
+				$("button[data-fieldname=my_downloads]").append("<span class ='badge custom-badge'>{0}</span>".replace('{0}', r.message.total_downloads));
+
+			}
+		})
+	},
+	init_for_pending_requests:function(){
+		var me = this;
+		this.filters.my_requests.$input.click(function(){
+			me.filters.search_type.input.value = "My Requests";
+			me.empty_dashboard_and_footer();
+			me.get_my_pending_requests(0, me);
+		})
+	},
+	init_for_my_downloads:function(){
+		var me = this;
+		this.filters.my_downloads.$input.click(function(){
+			me.filters.search_type.input.value = "My Downloads";
+			me.empty_dashboard_and_footer();
+			me.get_my_downloads(0, me);
 		})
 	},
 	init_for_filter_rendering:function(){
@@ -43,8 +80,11 @@ IpFileDashboard = Class.extend({
 			id='global_search' class ='form-control' placeholder='Search IP File'></div>")
 		search_filters = [
 					{"name":"search", "fieldname":"search", "label":"Search", "fieldtype":"Button", "options":"" , "icon":"icon-search"},
-					{"name":"search_type", "fieldname":"search_type", "label":"", "fieldtype":"Data", "options":"" , "icon":""},	
-					{"name":"latest_uploads", "fieldname":"latest_uploads", "label":"Search Latest Uploads", "fieldtype":"Button", "options":"" , "icon":"icon-search"}
+					{"name":"latest_uploads", "fieldname":"latest_uploads", "label":"Latest Uploads", "fieldtype":"Button", "options":"" , "icon":"icon-search"},
+					{"name":"my_requests", "fieldname":"my_requests", "label":"Pending Requests", "fieldtype":"Button", "options":"" },
+					{"name":"my_downloads", "fieldname":"my_downloads", "label":"My Downloads", "fieldtype":"Button", "options":"" ,"input_css": {"background-color":"#1B8D1B"}},
+					{"name":"search_type", "fieldname":"search_type", "label":"", "fieldtype":"Data", "options":"" , "icon":""}
+
 				]
 
 		 $.each(search_filters, function(index, filter){
@@ -53,42 +93,43 @@ IpFileDashboard = Class.extend({
 				label: __(filter.label),
 				fieldtype: filter.fieldtype,
 				options: filter.options,
-				icon: filter.icon
+				icon: filter.icon/*,
+				input_css:filter.input_css*/
 			});
 
 		});
 		
+		$("[data-fieldname=search_type]").css("display", "none")
 		me.init_for_latest();
 		me.init_for_global_search();
 		
 	},
 	init_for_global_search:function(){
-		$("#global_search").autocomplete()
-		$("#global_search").keyup(function(){
-			return frappe.call({
-				module:"mycfo.ip_library",
-				page: "ip_file_dashboard",
-				method: "get_global_search_suggestions",
-				args:{"filters":$(this).val()},
-				callback:function(r){
-					console.log(r.message)
-					$("#global_search").autocomplete({
-						source:r.message
-					})
-				}
-			})
-		})
-
+		console.log("in global search")
+		$("#global_search").autocomplete({
+			source:function(request, response){
+				frappe.call({
+					module:"mycfo.ip_library",
+					page: "ip_file_dashboard",
+					method: "get_global_search_suggestions",
+					args:{"filters":request.term},
+					callback:function(r){
+						console.log(r.message)
+						response(r.message)
+					}
+				})
+			}
+		});
 	},
-	init_for_latest_upload_count:function(){
-		var me = this;
+	init_for_latest_uploads:function(page_no, outer_this){
+		var me = outer_this;
 		return frappe.call({
 			freeze: true,
 			freeze_message:"Please wait ..............",
 			module:"mycfo.ip_library",
 			page: "ip_file_dashboard",
 			method: "get_latest_uploaded_documents",
-			args:{"search_filters":{"page_no":0}},
+			args:{"search_filters":{"page_no":page_no}},
 			callback:function(r){
 				me.run_post_search_operation(r)
 			}
@@ -102,6 +143,9 @@ IpFileDashboard = Class.extend({
 	render_pagination:function(total_pages){
 		console.log("footer")
 		var me = this
+		console.log(this)		
+		var pagination_mapper = {"Normal Search":me.get_ip_files, "Latest Uploads":me.init_for_latest_uploads, 
+		 							"My Requests":me.get_my_pending_requests, "My Downloads":me.get_my_downloads}
 		if (total_pages == 0){
 			msgprint("No IP File found against specified criteria.")
 		}
@@ -114,8 +158,12 @@ IpFileDashboard = Class.extend({
 				initiateStartPageClick:false,
 				onPageClick: function (event, page) {
 					console.log(["In pagination", page])
-					me.get_ip_files(page - 1)
-					$('#page-content').text('Page ' + page);
+					
+					search_type = me.filters.search_type.input.value
+					console.log(search_type)
+					// me.get_ip_files(page - 1)
+					pagination_mapper[search_type](page - 1 , me)
+	
 				}
 			});
 			this.paginaiton = $('#pagination-demo').data();
@@ -138,15 +186,18 @@ IpFileDashboard = Class.extend({
 		var me = this;
 		me.filters.search.$input.on("click", function() {
 			console.log("in search");
-			me.filters.search_type.input.value = "Normal Search";
-			me.search_filters = me.get_search_filters()	
+			me.filters.search_type.input.value = "Normal Search";	
+			me.search_filters = { "filters":$("#global_search").val() }
 			me.empty_dashboard_and_footer();
-			me.get_ip_files(0);
+			me.get_ip_files(0, me);
 		
 		});
 	},
-	get_ip_files:function(page_no){
-		var me = this;
+	get_ip_files:function(page_no, outer_this){
+		var me = outer_this;
+		console.log(["get_ip_files", page_no])
+		console.log(this)
+		console.log(me.search_filters);
 		me.search_filters["page_no"] = page_no;
 		return frappe.call({
 			freeze: true,
@@ -155,6 +206,37 @@ IpFileDashboard = Class.extend({
 			page: "ip_file_dashboard",
 			method: "get_published_ip_file",
 			args:{"search_filters":me.search_filters},
+			callback:function(r){
+				me.run_post_search_operation(r)
+							
+			}
+		})
+	},
+	get_my_pending_requests:function(page_no, outer_this){
+		var me = outer_this;
+		return frappe.call({
+			freeze: true,
+			freeze_message:"Please wait ..............",
+			module:"mycfo.ip_library",
+			page: "ip_file_dashboard",
+			method: "get_my_pending_requests",
+			args:{"search_filters":{"page_no":page_no}},
+			callback:function(r){
+				me.run_post_search_operation(r)
+							
+			}
+		})
+
+	},
+	get_my_downloads:function(page_no, outer_this){
+		var me = outer_this;
+		return frappe.call({
+			freeze: true,
+			freeze_message:"Please wait ..............",
+			module:"mycfo.ip_library",
+			page: "ip_file_dashboard",
+			method: "get_my_download",
+			args:{"search_filters":{"page_no":page_no}},
 			callback:function(r){
 				me.run_post_search_operation(r)
 							
@@ -174,8 +256,7 @@ IpFileDashboard = Class.extend({
 		$(".rateYo").rateYo({
 	    	precision: 2,
 	    	starWidth: "20px"
-	  	});
-	  	
+	  	});  	
 
 	},
 	render_avg_ratings:function(file_data){
@@ -194,6 +275,7 @@ IpFileDashboard = Class.extend({
 		$(".ip-file-footer").html("");
 	},
 	get_search_filters:function(){
+		console.log("in search filters")
 		return {
 			"filters":$("#global_search").val()
 		}

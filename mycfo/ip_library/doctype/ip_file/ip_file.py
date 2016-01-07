@@ -12,10 +12,6 @@ import os
 
 
 class IPFile(Document):
-
-	def autoname(self):
-		self.name = frappe.generate_hash("", 15)
-
 	
 	def validate(self):
 		self.validate_for_file_data()
@@ -69,6 +65,7 @@ class IPFile(Document):
 			ipa = frappe.new_doc("IP Approver")
 			ipa.request_type = self.request_type
 			ipa.file_name = self.file_name
+			ipa.file_extension = self.file_extension
 			ipa.file_description = self.description
 			ipa.file_type = self.document_type
 			ipa.project = self.project

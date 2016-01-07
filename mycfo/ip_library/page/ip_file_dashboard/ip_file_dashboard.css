@@ -5,6 +5,12 @@
 
 }*/
 
+.custom-badge{
+	margin-left: 10px;
+	background-color: rgba(94, 100, 255, 0.49) !important;
+	color:black !important;
+}
+
 .ip-file-panel{
 	margin: 10px 10px 10px 10px;
 }

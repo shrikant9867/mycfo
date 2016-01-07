@@ -75,15 +75,29 @@ def get_request_download_status(response_data):
 def get_latest_uploaded_documents(search_filters):
 	search_filters = json.loads(search_filters)
 	limit_query = "LIMIT 2 OFFSET {0}".format(search_filters.get("page_no") * 2 )
-	my_query = """ select * from `tabIP File` ipf 
-						where ipf.file_status in ('Published', 'Republished') 
-						and DATEDIFF(CURDATE(), ipf.uploaded_date) < 15 """
+	my_query = get_latest_query()
 	total_records = get_total_records(my_query)
 	response_data = frappe.db.sql(my_query + limit_query, as_dict=True)
 	get_request_download_status(response_data)
 	total_pages = math.ceil(total_records[0].get("count",0)/2.0)
 	return response_data, total_pages 
 
+
+def get_latest_query():
+	return """ select * from `tabIP File` ipf 
+						where ipf.file_status in ('Published', 'Republished') 
+						and DATEDIFF(CURDATE(), ipf.uploaded_date) < 15 order by uploaded_date desc """
+
+@frappe.whitelist()
+def get_latest_upload_count():
+	counts = {}
+	latest_query = get_latest_query()
+	counts["latest_records"] = get_total_records(latest_query)[0]["count"]
+	pending_requests_query = get_pending_request_query()
+	counts["pending_requests"] = len(pending_requests_query)
+	downloads_query = get_downloads_query()
+	counts["total_downloads"] = len(downloads_query)
+	return counts
 
 # """
 # 	Return request status for ip document
@@ -212,3 +226,57 @@ def create_ip_download_log(file_name):
 	idl.save(ignore_permissions=True)
 
 
+@frappe.whitelist()
+def get_my_download(search_filters):
+	search_filters = json.loads(search_filters)
+	result = get_downloads_query()
+	response_data, total_pages = prepare_response_data(search_filters, result)
+	print "in get download"
+	print response_data
+	return response_data, total_pages 	
+
+def get_downloads_query():
+	return frappe.db.sql(""" select name, file_name, approval_status, validity_end_date from `tabIP Download Approval` 
+					where approval_status="Download Allowed" and ip_file_requester=%s 
+					and validity_end_date > %s
+					order by creation desc """,(frappe.session.user, now()), as_dict=1, debug=1)
+
+
+
+def get_request_status(response_data, result_data):
+	for response in response_data:
+		result = filter(lambda record: record.get("file_name") == response.get("file_name"), result_data)
+		response["download_validity_end_date"] = result[0].get("validity_end_date") if result else ""
+		response["approval_status"] = result[0].get("approval_status") if result else ""
+		response["download_count"] = frappe.get_list("IP Download Log", fields=["count(*)"], filters={ "file_name":response.get("file_name") }, as_list=True)[0][0] 
+		response["avg_ratings"] = frappe.get_list("IP Review", fields=["ifnull(avg(ratings),0.0)"], filters={ "file_name":response.get("file_name") }, as_list=True)[0][0]
+		response["comments"] = frappe.db.sql(""" select user_id, comments, ratings  from `tabIP Review` where  file_name = %s""",(response.get("file_name")),as_dict=1)	 
+		response["download_flag"] = frappe.db.get_value("IP Download Log", {"file_name":response.get("file_name"), "user_id":frappe.session.user}, "name")
+
+
+@frappe.whitelist()
+def get_my_pending_requests(search_filters):
+	search_filters = json.loads(search_filters)
+	result = get_pending_request_query()
+	response_data, total_pages = prepare_response_data(search_filters, result)
+	frappe.errprint(response_data)
+	return response_data, total_pages
+
+
+def prepare_response_data(search_filters, result):
+	response_data, total_pages = [], 0
+	file_name = ','.join('"{0}"'.format(record.get("file_name")) for record in result )
+	if file_name:
+		my_query = "select * from `tabIP File` where file_name in ({0}) ".format(file_name)
+		limit_query = "LIMIT 2 OFFSET {0}".format(search_filters.get("page_no") * 2 )
+		total_records = get_total_records(my_query)
+		response_data = frappe.db.sql(my_query + limit_query, as_dict=True)
+		get_request_status(response_data, result)
+		total_pages = math.ceil(total_records[0].get("count",0)/2.0)
+	return response_data, total_pages 	
+
+
+def get_pending_request_query():
+	return frappe.db.sql(""" select name, file_name, approval_status, validity_end_date from `tabIP Download Approval` 
+					where approval_status="Pending" and ip_file_requester=%s 
+					order by creation desc """,(frappe.session.user), as_dict=1, debug=1)

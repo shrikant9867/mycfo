@@ -4,8 +4,6 @@ from frappe import _
 
 def get_data(): 
 	return [
-		
-		
 		{	
 			"label": _("Documents"),
 			"icon": "icon-star",
@@ -13,17 +11,21 @@ def get_data():
 				{
 					"type": "doctype",
 					"name": "IP File",
-					"description": _("Upload Intellectual Property File Content")
+					"description": _("Upload IP File Content from here.")
 				},
 				{
 					"type": "doctype",
 					"name": "IP Approver",
-					"description": _("Intellectual Property Approver")
+					"description": _("Publish/Republish IP File.")
+				},
+				{
+					"type": "doctype",
+					"name": "IP Download Approval",
+					"description": _("Approve Download request of IP File.")
 				}
 				
 			]
 		},
-
 		{
 			"label": _("Masters"),
 			"icon": "icon-star",
@@ -44,6 +46,20 @@ def get_data():
 					"description": _("Skill Matrix 120"),
 				}
 			]
-		},	
+		},
+		{
+			"label": _("Page"),
+			"icon": "icon-star",
+			"items": [
+				{
+					"type": "page",
+					"name": "ip-file-dashboard",
+					"icon": "icon-sitemap",
+					"label": _("Global IP File Search Dashboard"),
+					"route": "ip-file-dashboard",
+					"description": _("Search Ip File from here")
+				}
+			]
+		}	
 
 	]
