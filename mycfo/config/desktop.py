@@ -9,5 +9,11 @@ def get_data():
 			"icon": "icon-th",
 			"type": "module",
 			"label": _("mycfo")
+		},
+		"Checklist":{
+			"color": "blue",
+			"icon": "icon-th",
+			"type": "module",
+			"label": _("Checklist")
 		}
 	}
