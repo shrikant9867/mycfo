@@ -8,7 +8,7 @@ from frappe.model.document import Document
 import shutil
 import subprocess
 from frappe.utils import today
-from wand.image import Image
+#from wand.image import Image
 
 class IPApprover(Document):
 	
