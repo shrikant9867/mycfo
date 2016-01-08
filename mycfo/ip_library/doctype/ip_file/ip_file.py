@@ -62,6 +62,7 @@ class IPFile(Document):
 
 	def create_request_for_ip_approval(self):
 		if not self.approver_link and self.file_data:
+			status_dict = {"New":"New Upload Pending", "Edit":"Edit Pending"}
 			ipa = frappe.new_doc("IP Approver")
 			ipa.request_type = self.request_type
 			ipa.file_name = self.file_name
@@ -81,23 +82,27 @@ class IPFile(Document):
 			ipa.save(ignore_permissions=True)
 			self.approver_link = ipa.name
 			self.file_data = ""
+			self.file_status = status_dict.get(self.request_type)
 			self.prepare_for_approver_notification()
 		elif self.file_data:
+			status_dict = {"New":"New Upload Pending", "Edit":"Edit Pending"}
 			ipa = frappe.get_doc("IP Approver", self.approver_link)		
 			ipa.file_path = self.new_file_path
 			ipa.save(ignore_permissions=True)
 			self.file_data = ""
+			self.file_status = status_dict.get(self.request_type)
 			self.prepare_for_approver_notification()
 		
 	
 	def update_file_status(self):
-		if self.approver_link:
-			request_type, docstatus = frappe.db.get_value("IP Approver", self.approver_link, ["request_type", "docstatus"])	
-			if not docstatus:
-				status_dict = {"New":"New Upload Pending", "Edit":"Edit Pending"}
-			else:
-				status_dict = {"New":"Published", "Edit":"Republished"}
-			self.file_status = status_dict.get(request_type)
+		pass
+		# if self.approver_link:
+		# 	request_type, docstatus = frappe.db.get_value("IP Approver", self.approver_link, ["request_type", "docstatus"])	
+		# 	if not docstatus:
+		# 		status_dict = {"New":"New Upload Pending", "Edit":"Edit Pending"}
+		# 	else:
+		# 		status_dict = {"New":"Published", "Edit":"Republished"}
+		# 	self.file_status = status_dict.get(request_type)
 
 	
 	
@@ -115,12 +120,6 @@ class IPFile(Document):
 		args = {"user_name":frappe.session.user, "file_name":self.file_name}
 		frappe.sendmail(recipients=email, sender=None, subject=subject,
 			message=frappe.get_template(template).render(args))		
-
-
-
-
-
-
 
 
 

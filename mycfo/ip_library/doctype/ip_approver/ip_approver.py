@@ -8,7 +8,6 @@ from frappe.model.document import Document
 import shutil
 import subprocess
 from frappe.utils import today
-from wand.image import Image
 
 class IPApprover(Document):
 	
@@ -19,14 +18,27 @@ class IPApprover(Document):
 
 	def on_update(self):
 		self.check_if_file_rejected()
+		self.set_current_status_of_approval()
+		self.update_ip_file_status()
 
 	
 	def check_if_file_rejected(self):
 		if self.approver_status == "Rejected" and self.file_rejected != "Yes":
 			approver = frappe.db.get_value("Employee", self.approver, ["user_id"])
-			self.process_data_before_notification(approver, self.approver_comments)
-		elif self.central_delivery_status == "Rejected" and self.file_rejected != "Yes":
-			self.process_data_before_notification(self.central_delivery, self.central_delivery_comments)	
+			self.process_data_before_notification(approver, self.approver_comments)		
+
+	
+	def set_current_status_of_approval(self):
+		if self.approver_status == "Approved":
+			self.current_status = "Approved by Approver"
+		elif self.approver_status == "Rejected":
+			self.current_status = "Rejected by Approver"
+
+	
+	def update_ip_file_status(self):
+		file_status = self.get_file_status()
+		self.update_ip_file({"file_status":file_status})
+					
 	
 
 	def process_data_before_notification(self, approver, comments):
@@ -47,16 +59,19 @@ class IPApprover(Document):
 
 		
 	
-	def on_submit(self):
-		if self.approver_status!= "Approved" or self.central_delivery_status!= "Approved":
-			frappe.throw("Approver Status & Central Delivery Status must be Approved to publish the document")
-		extension = "." + self.file_extension if self.file_extension else ""	 
-		shutil.move(frappe.get_site_path("public", self.file_path), frappe.get_site_path("public", "files", "mycfo", "published_file", self.file_type, self.file_name + extension))
-		self.prepare_for_published_notification()
-		self.update_ip_file(extension)
-		request_type = {"New":"published", "Edit":"Republished"}
-		frappe.msgprint("Document {0} {1} successfully.".format(self.file_name, request_type.get(self.request_type)))	
-
+	def before_submit(self):
+		if self.central_delivery_status == "Approved":
+			extension = "." + self.file_extension if self.file_extension else ""	 
+			shutil.move(frappe.get_site_path("public", self.file_path), frappe.get_site_path("public", "files", "mycfo", "published_file", self.file_type, self.file_name + extension))
+			self.prepare_for_published_notification()
+			self.current_status = "Published"
+			self.init_update_ip_file(extension)
+			request_type = {"New":"Published", "Edit":"Republished"}
+			frappe.msgprint("Document {0} {1} successfully.".format(self.file_name, request_type.get(self.request_type)))	
+		else:
+			self.process_data_before_notification(self.central_delivery, self.central_delivery_comments)
+			self.current_status = "Rejected by CD"
+			self.update_ip_file({"file_status":"Rejected by CD"})	
 	
 	
 	
@@ -72,6 +87,52 @@ class IPApprover(Document):
 		args = {"file_name":self.file_name, "first_name":first_name, "last_name":last_name}
 		return args, email
 
+
+	def init_update_ip_file(self, extension):
+		file_path = '/'.join(["files", "mycfo", "published_file", self.file_type, self.file_name + extension])
+		new_path = ""
+		request_type = {"New":"Published", "Edit":"Republished"}
+		file_status = request_type.get(self.request_type)
+		ip_file_dict = self.get_updated_ip_file_dict(file_path, file_status)
+		self.update_ip_file(ip_file_dict)
+		# frappe.db.sql(""" update `tabIP File` set 
+		# 					approver_link = "", file_path = %s, new_file_path = "", 
+		# 					validity_end_date = %s, file_status = %s , security_level = %s, 
+		# 					uploaded_date = %s where name = %s """, 
+		# 					(file_path, self.validity_end_date, request_type.get(self.request_type), self.level_of_approval, today(), self.ip_file))
+
+	
+	def get_file_status(self):
+		if self.request_type == "New":
+			return self.approver_status if self.approver_status else "New Upload Pending"
+		else:
+			my_dict = {"Approved":"Approved by Approver (Edit)", "Rejected":"Rejected by Approver (Edit)"}	
+			return my_dict.get(self.approver_status, "Edit Pending")	
+
+	def get_updated_ip_file_dict(self, file_path, file_status):
+		return {
+			"approver_link":""
+			"new_file_path":""
+			"skill_matrix_120":self.skill_matrix_120
+			"skill_matrix_18":self.skill_matrix_18
+			"industry":self.industry
+			"project":self.project
+			"source":self.source
+			"description":self.file_description
+			"validity_end_date":self.validity_end_date
+			"security_level":self.level_of_approval
+			"file_path":file_path
+			"file_status":file_status
+			"uploaded_date":today()
+
+		}
+
+
+	def update_ip_file(self, ip_file_dict):
+		ipf = frappe.get_doc("IP File", self.ip_file)
+		ipf.update(ip_file_dict)
+		ipf.save()		
+	
 
 	# def create_document_thumbnail(self):
 	# 	try:
@@ -95,19 +156,7 @@ class IPApprover(Document):
 
 	# def create_directory(self):
 	# 	if not os.path.exists(frappe.get_site_path("public", "files", "mycfo", "mycfo_thumbnails")):
-	# 		os.mkdir(frappe.get_site_path("public", "files", "mycfo", "mycfo_thumbnails"))		
-
-
-	def update_ip_file(self, extension):
-		file_path = '/'.join(["files", "mycfo", "published_file", self.file_type, self.file_name + extension])
-		new_path = ""
-		request_type = {"New":"Published", "Edit":"Republished"}
-		frappe.db.sql(""" update `tabIP File` set 
-							approver_link = "", file_path = %s, new_file_path = "", 
-							validity_end_date = %s, file_status = %s , security_level = %s, 
-							uploaded_date = %s where name = %s """, 
-							(file_path, self.validity_end_date, request_type.get(self.request_type), self.level_of_approval, today(), self.ip_file))
-		
+	# 		os.mkdir(frappe.get_site_path("public", "files", "mycfo", "mycfo_thumbnails"))
 
 
 
