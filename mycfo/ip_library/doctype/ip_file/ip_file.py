@@ -185,7 +185,7 @@ def init_for_archive_request(doc):
 
 
 def validate_for_archive_request(doc):
-	if doc.get("file_status") not in ["Published", "Republished", "Rejected by CD (Archive)", "Rejected by CD (Edit)"]:
+	if doc.get("file_status") not in ["Published", "Republished", "Rejected by CD (Archive)", "Rejected by CD (Edit)", "Rejected by CD (Validity)", "Validity Upgraded"]:
 		frappe.throw("File Status must be published or republished to archive document.")
 
 
@@ -221,3 +221,11 @@ def send_archive_notification(doc):
 	frappe.sendmail(recipients=central_delivery, sender=None, subject=subject,
 			message=frappe.get_template(template).render(args), cc=cc)	
 
+
+def get_permission_query_conditions(user):
+	roles = frappe.get_roles()
+	if "Central Delivery" not in roles and frappe.session.user != "Administrator":
+		emp_name = frappe.db.get_value("Employee",{"user_id":frappe.session.user}, "name")
+		ip_files = frappe.db.sql(""" select name from `tabIP File` where owner = '{0}' or file_approver = '{1}' """.format(frappe.session.user, emp_name),as_dict=1)
+		ip_files = "', '".join([ipf.get("name") for ipf in ip_files if ipf])
+		return """(`tabIP File`.name in ('{files}') )""".format(files = ip_files)	

@@ -78,4 +78,14 @@ class IPDownloadApproval(Document):
 	
 	def send_notification(self, subject, email, template, args):
 		frappe.sendmail(recipients=email, sender=None, subject=subject,
-			message=frappe.get_template(template).render(args))			  
+			message=frappe.get_template(template).render(args))
+
+
+def get_permission_query_conditions(user):
+	roles = frappe.get_roles()
+	emp_name = frappe.db.get_value("Employee",{"user_id":frappe.session.user}, "name")
+	if "Central Delivery" not in roles and frappe.session.user != "Administrator":
+		cond = " where approver = '{0}' ".format(emp_name)
+		ip_files = frappe.db.sql(""" select name from `tabIP Download Approval` {0} """.format(cond), as_dict=1)
+		ip_files = "', '".join([ipf.get("name") for ipf in ip_files if ipf])
+		return """(`tabIP Download Approval`.name in ('{files}') )""".format(files = ip_files)			  

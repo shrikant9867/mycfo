@@ -233,8 +233,6 @@ def get_my_download(search_filters):
 	search_filters = json.loads(search_filters)
 	result = get_downloads_query()
 	response_data, total_pages = prepare_response_data(search_filters, result)
-	print "in get download"
-	print response_data
 	return response_data, total_pages 	
 
 def get_downloads_query():

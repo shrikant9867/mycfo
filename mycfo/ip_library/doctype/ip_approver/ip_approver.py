@@ -211,3 +211,14 @@ def get_user_with_el_roles(doctype, txt, searchfield, start, page_len, filters):
 							and (emp.name like %(txt)s
 								 or emp.employee_name like %(txt)s )
 							limit 20 """, {"project":filters.get("project_id"), "txt": "%%%s%%" % txt})
+
+
+
+def get_permission_query_conditions(user):
+	roles = frappe.get_roles()
+	emp_name = frappe.db.get_value("Employee",{"user_id":frappe.session.user}, "name")
+	if "Central Delivery" not in roles and frappe.session.user != "Administrator":
+		cond = " where approver = '{0}' ".format(emp_name)
+		ip_files = frappe.db.sql(""" select name from `tabIP Approver` {0} """.format(cond), as_dict=1)
+		ip_files = "', '".join([ipf.get("name") for ipf in ip_files if ipf])
+		return """(`tabIP Approver`.name in ('{files}') )""".format(files = ip_files)

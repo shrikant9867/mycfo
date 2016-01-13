@@ -20,11 +20,12 @@ frappe.ui.form.on("IP File", {
 			cur_frm.set_df_property("file_approver", "read_only", 1)
 			cur_frm.set_df_property("file_name", "read_only", 1)
 		}
-		cur_frm.add_custom_button(__('Upload File'), function(){ init_for_upload_file(frm, cdt, cdn) });	
+			
 		if (inList(["Published", "Republished", "Rejected by CD (Archive)", "Rejected by CD (Edit)", "Validity Upgraded", "Rejected by CD (Validity)"], frm.doc.file_status)){
 			init_for_archive_file(frm)
 			init_for_validity_upgrade(frm)
 		}
+		prepare_for_edit_file(frm)
 			
 	}
 });
@@ -71,10 +72,8 @@ init_for_upload_file = function(frm ,cdt, cdn){
 
 
 init_for_edit_file = function(frm){
-	console.log("edit file")
-	console.log(cur_frm)
 	if(inList(["Published", "Edit Pending", "Republished", "Rejected by CD (Edit)", 
-				"Approved by Approver (Edit)", "Rejected by Approver (Edit)", "Rejected by CD (Edit)"], frm.doc.file_status) ){
+				"Approved by Approver (Edit)", "Rejected by Approver (Edit)", "Rejected by CD (Edit)", "Rejected by CD (Validity)", "Validity Upgraded"], frm.doc.file_status) ){
 		frm.doc.request_type = "Edit"
 		console.log("In edit if")
 	}
@@ -163,3 +162,11 @@ validity_upgrade = Class.extend({
 	}
 
 })
+
+
+prepare_for_edit_file = function(frm){
+	if(! inList(["Archive Pending", "Upgrade Validity Pending"], frm.doc.file_status) ){
+		cur_frm.add_custom_button(__('Upload File'), function(){ init_for_upload_file(frm, cdt, cdn) });	
+	}
+	
+}
