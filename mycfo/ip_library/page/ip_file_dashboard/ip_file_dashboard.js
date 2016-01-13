@@ -34,8 +34,6 @@ IpFileDashboard = Class.extend({
 	init_for_latest:function(){
 		var me = this;
 		this.get_latest_upload_count();
-		this.init_for_pending_requests();
-		this.init_for_my_downloads();
 		this.filters.latest_uploads.$input.click(function(){
 			me.filters.search_type.input.value = "Latest Uploads";
 			me.empty_dashboard_and_footer();
@@ -43,6 +41,7 @@ IpFileDashboard = Class.extend({
 		})
 	},
 	get_latest_upload_count:function(){
+		var me = this;
 		frappe.call({
 			freeze: true,
 			freeze_message:"Please wait ..............",
@@ -51,16 +50,16 @@ IpFileDashboard = Class.extend({
 			method: "get_latest_upload_count",
 			callback:function(r){
 				console.log(r.message)
-				$("button[data-fieldname=latest_uploads]").append("<span class ='badge custom-badge'>{0}</span>".replace('{0}', r.message.latest_records));
-				$("button[data-fieldname=my_requests]").append("<span class ='badge custom-badge'>{0}</span>".replace('{0}', r.message.pending_requests));
-				$("button[data-fieldname=my_downloads]").append("<span class ='badge custom-badge'>{0}</span>".replace('{0}', r.message.total_downloads));
-
+				$("button[data-fieldname=latest_uploads]").append("<span class ='badge pull-right custom-badge'>{0}</span>".replace('{0}', r.message.latest_records));
+				$("div.page-form.row").append(frappe.render_template("ip_file_filters", {"pending_requests":r.message.pending_requests, "my_downloads":r.message.total_downloads}));				
+				me.init_for_pending_requests();
+				me.init_for_my_downloads();	
 			}
 		})
 	},
 	init_for_pending_requests:function(){
 		var me = this;
-		this.filters.my_requests.$input.click(function(){
+		$("#pending-requests").click(function(){
 			me.filters.search_type.input.value = "My Requests";
 			me.empty_dashboard_and_footer();
 			me.get_my_pending_requests(0, me);
@@ -68,7 +67,7 @@ IpFileDashboard = Class.extend({
 	},
 	init_for_my_downloads:function(){
 		var me = this;
-		this.filters.my_downloads.$input.click(function(){
+		$("#my-downloads").click(function(){
 			me.filters.search_type.input.value = "My Downloads";
 			me.empty_dashboard_and_footer();
 			me.get_my_downloads(0, me);
@@ -76,13 +75,11 @@ IpFileDashboard = Class.extend({
 	},
 	init_for_filter_rendering:function(){
 		var me = this;
-		$("div.page-form.row").append("<div class='form-group frappe-control col-xs-4' id='global-search-div'><input type='text'\
+		$("div.page-form.row").append("<div class='form-group frappe-control col-xs-4 col-xs-offset-1' id='global-search-div'><input type='text'\
 			id='global_search' class ='form-control' placeholder='Search IP File'></div>")
 		search_filters = [
 					{"name":"search", "fieldname":"search", "label":"Search", "fieldtype":"Button", "options":"" , "icon":"icon-search"},
 					{"name":"latest_uploads", "fieldname":"latest_uploads", "label":"Latest Uploads", "fieldtype":"Button", "options":"" , "icon":"icon-search"},
-					{"name":"my_requests", "fieldname":"my_requests", "label":"Pending Requests", "fieldtype":"Button", "options":"" },
-					{"name":"my_downloads", "fieldname":"my_downloads", "label":"My Downloads", "fieldtype":"Button", "options":"" ,"input_css": {"background-color":"#1B8D1B"}},
 					{"name":"search_type", "fieldname":"search_type", "label":"", "fieldtype":"Data", "options":"" , "icon":""}
 
 				]
@@ -102,6 +99,7 @@ IpFileDashboard = Class.extend({
 		$("[data-fieldname=search_type]").css("display", "none")
 		me.init_for_latest();
 		me.init_for_global_search();
+		me.init_for_my_requests_downloads();
 		
 	},
 	init_for_global_search:function(){
@@ -120,6 +118,9 @@ IpFileDashboard = Class.extend({
 				})
 			}
 		});
+	},
+	init_for_my_requests_downloads:function(){
+		$("div.page-form.row").append(``);
 	},
 	init_for_latest_uploads:function(page_no, outer_this){
 		var me = outer_this;
@@ -151,7 +152,7 @@ IpFileDashboard = Class.extend({
 		}
 		else if (!$('#pagination-demo').length && total_pages){
 			console.log("in if")
-			$('<div class="row"><div class="col-xs-11 col-xs-offset-1"><ul id="pagination-demo" class="pagination-sm"></ul></div></div>').appendTo(this.footer)
+			$('<div class="row"><div class="col-xs-10 col-xs-offset-2"><ul id="pagination-demo" class="pagination-sm"></ul></div></div>').appendTo(this.footer)
 			$('#pagination-demo').twbsPagination({
 				totalPages:total_pages,
 				visiblePages: 3,
@@ -330,22 +331,65 @@ IpFileDashboard = Class.extend({
 			console.log("in request trigger")
 			ip_file_name = $(this).closest(".panel").attr("ip-file-name")
 			file_name = $(this).closest(".panel").attr("file-name")
-			me.make_download_request(ip_file_name, file_name, this);
+			me.init_for_projects_el_pop_up(ip_file_name, file_name, this);
+			// me.make_download_request(ip_file_name, file_name, this);
 		})
 	},
-	make_download_request:function(ip_file_name, file_name, request_button){
+	init_for_projects_el_pop_up:function(ip_file_name, file_name, request_button){
+		var me = this;
+		// console.log(this)
+		this.dialog = new frappe.ui.Dialog({
+						title: "Make Download Request",
+						fields: [
+								{"fieldtype": "Link", "label": __("Project"), "fieldname": "project", "reqd": 1, "options":"Project Commercial"},
+								{"fieldtype": "Link", "label": __("Employee"), "fieldname": "employee_id", "reqd": 1, "options":"Employee"},
+							],
+						primary_action_label: "Make Request",
+						primary_action: function(doc) {
+								project_id = me.dialog.fields_dict.project.input.value
+								employee_id = me.dialog.fields_dict.employee_id.input.value	
+								if (project_id && employee_id){
+									my_dict = {"ip_file_name":ip_file_name, "project":project_id, "approver":employee_id}
+									me.make_download_request(file_name, request_button, my_dict)
+									me.dialog.hide();
+								}else{
+									frappe.msgprint("Mandatory Field Project & Employee")
+								}
+							}							
+						})
+		this.dialog.show();
+		this.init_for_project_employee_get_query()
+	},
+	init_for_project_employee_get_query:function(){
+		var me = this;
+		this.dialog.fields_dict.project.get_query = function(){
+			console.log("in project")
+			return {
+				query:"mycfo.ip_library.page.ip_file_dashboard.ip_file_dashboard.get_projects_of_user",
+				filters:{}	
+			}						
+		};
+		this.dialog.fields_dict.employee_id.get_query = function(){
+			return{
+				query: "mycfo.ip_library.doctype.ip_file.ip_file.get_approver_list",
+				filters: { "project":me.dialog.fields_dict.project.input.value }
+			}
+		}	
+	},
+	make_download_request:function(file_name, request_button, my_dict){
+		var me = this
 		return frappe.call({
 			freeze: true,
 			freeze_message:"Please wait ..............",
 			module:"mycfo.ip_library",
 			page: "ip_file_dashboard",
 			method: "create_ip_download_request",
-			args:{"ip_file_name":ip_file_name},
+			args:my_dict,
 			callback:function(r){
 				console.log(r.message)
 				if(r.message){
 					$(request_button).attr("disabled",true)
-					msgprint("IP document {0} download request created successfully.".replace("{0}",file_name));	
+					msgprint("IP document {0} download request created successfully.".replace("{0}",file_name));					
 				}
 					
 			}
@@ -394,8 +438,6 @@ IpFileDashboard = Class.extend({
 				if(!($(panel).find(".tab-content div.my-feedback").length)){
 					console.log("in if")
 					index = $(panel).attr("id")
-					console.log(index)
-					console.log($(panel).find("ul"))
 					$(panel).find("ul").append('<li><a data-toggle="tab" href="#feedback-menu{0}" class="feedback-li">Write Feedback</a></li>'.replace("{0}", index));
 					$(panel).find(".tab-content").append(frappe.render_template("ip_file_feedback_tab", {"index":index }));
 					me.render_ratings();

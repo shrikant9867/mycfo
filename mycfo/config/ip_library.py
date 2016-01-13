@@ -22,6 +22,11 @@ def get_data():
 					"type": "doctype",
 					"name": "IP Download Approval",
 					"description": _("Approve Download request of IP File.")
+				},
+				{
+					"type": "doctype",
+					"name": "IP Archiver",
+					"description": _("Archive IP File from here.")
 				}
 				
 			]
