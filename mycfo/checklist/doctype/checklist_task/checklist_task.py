@@ -5,15 +5,19 @@
 from __future__ import unicode_literals
 import frappe
 from frappe import _
+import json
 from frappe.utils import getdate, date_diff, add_days, cstr
 from frappe.model.document import Document
 
 class ChecklistTask(Document):
-	
 
 	def validate(self):
 		self.validate_status()
 		self.validate_dates()
+	
+	def on_submit(self):
+		if(self.status != "Closed"):
+			frappe.throw(_("Task Status is Not Closed So Cannot Submit Task."))			
 
 	def validate_dates(self):
 		if self.expected_start_date and self.expected_end_date and getdate(self.expected_start_date) > getdate(self.expected_end_date):
@@ -38,3 +42,9 @@ class ChecklistTask(Document):
 		self.actual_start_date= tl.start_date
 		self.actual_end_date= tl.end_date
 
+@frappe.whitelist()
+def get_timelog(doc):
+	current_doc = json.loads(doc)
+	timelog = frappe.db.sql("""select name from `tabChecklist Time Log` where task = '{0}'""".format(current_doc['name']),as_list=1)
+	if(not timelog):
+		return "Not Allowed Without Create Time Log Cannot Closed Task" 

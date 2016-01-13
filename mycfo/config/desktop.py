@@ -12,7 +12,7 @@ def get_data():
 		},
 		"Checklist":{
 			"color": "blue",
-			"icon": "icon-th",
+			"icon": "icon-list",
 			"type": "module",
 			"label": _("Checklist")
 		}
