@@ -1,0 +1,10 @@
+<h3>{{_("IP Document Notification")}}</h3>
+<p>{{_("Dear User")}},</p>
+<p>{{_("Your archive request for intellectual property document {0} has been  {1} by central delivery.").format(file_name, status)}}
+{% if status == "Rejected" %}
+<p>Comments By CD:</p>
+<p style="margin-left:50px">{{ comments }}</p>
+{% endif %}	
+</p>
+<p>{{_("Thank you")}}.<br></p>
+<p>Team MyCFO</p>
