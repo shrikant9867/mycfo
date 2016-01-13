@@ -88,6 +88,10 @@ scheduler_events = {
 	]
 }
 
+permission_query_conditions = {
+	"Customer":"mycfo.mycfo.doctype.project_commercial.project_commercial.get_permission_query_conditions"
+}
+
 # Testing
 # -------
 
