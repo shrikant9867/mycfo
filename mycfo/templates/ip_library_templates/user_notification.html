@@ -1,0 +1,9 @@
+<h3>{{_("IP Document Notification")}}</h3>
+<p>{{_("Dear")}} {{ first_name }}{% if last_name %} {{ last_name}}{% endif %},</p>
+<p>{{_("Your Intellectual property document {0} has been rejected by approver {1}.Please read the comments given by approver.").format(file_name, approver)}}
+</p>
+<p>Comments By Approver:</p>
+<p style="margin-left:50px">{{ comments }}</p>
+<br>
+<p>{{_("Thank you")}}</p>
+<p>Team MyCFO</p>

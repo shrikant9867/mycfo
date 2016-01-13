@@ -14,8 +14,8 @@ app_version = "0.0.1"
 # ------------------
 
 # include js, css files in header of desk.html
-app_include_css = "/assets/mycfopoc/css/mycfo.css"
-# app_include_js = "/assets/mycfopoc/js/mycfopoc.js"
+app_include_css = ["/assets/mycfo/css/jquery.rateyo.min.css", "/assets/mycfo/css/mycfo.css"]
+app_include_js = ["/assets/mycfo/js/jquery.rateyo.min.js","/assets/mycfo/js/jquery.twbsPagination.min.js"]
 
 # include js, css files in header of web template
 # web_include_css = "/assets/mycfo/css/mycfo.css"
@@ -50,7 +50,7 @@ app_include_css = "/assets/mycfopoc/css/mycfo.css"
 
 # notification_config = "mycfo.notifications.get_notification_config"
 
-fixtures = ['Custom Field', 'Property Setter']
+fixtures = ['Custom Field', 'Property Setter', "Role"]
 # Permissions
 # -----------
 # Permissions evaluated in scripted ways
@@ -78,23 +78,15 @@ fixtures = ['Custom Field', 'Property Setter']
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# 	"all": [
-# 		"mycfo.tasks.all"
-# 	],
-# 	"daily": [
-# 		"mycfo.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"mycfo.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"mycfo.tasks.weekly"
-# 	]
-# 	"monthly": [
-# 		"mycfo.tasks.monthly"
-# 	]
-# }
+scheduler_events = {
+	"hourly": [
+		"mycfo.ip_library.scheduler_tasks.update_ip_download_approval_status"
+	],
+	"daily":[
+		"mycfo.ip_library.scheduler_tasks.send_notification_for_expiry_of_document",
+		"mycfo.ip_library.scheduler_tasks.archive_document"
+	]
+}
 
 # Testing
 # -------
