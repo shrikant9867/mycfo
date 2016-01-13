@@ -55,9 +55,11 @@ fixtures = ['Custom Field', 'Property Setter', "Role"]
 # -----------
 # Permissions evaluated in scripted ways
 
-# permission_query_conditions = {
-# 	"Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
-# }
+permission_query_conditions = {
+	"IP File": "mycfo.ip_library.doctype.ip_file.ip_file.get_permission_query_conditions",
+	"IP Approver":"mycfo.ip_library.doctype.ip_approver.ip_approver.get_permission_query_conditions",
+	"IP Download Approval":"mycfo.ip_library.doctype.ip_download_approval.ip_download_approval.get_permission_query_conditions"
+}
 #
 # has_permission = {
 # 	"Event": "frappe.desk.doctype.event.event.has_permission",

@@ -3,6 +3,7 @@ frappe.ui.form.on("IP Approver", {
 	onload: function(frm) {
 	},
 	refresh:function(frm){
+		console.log("refresh")
 		if(frm.doc.docstatus == 0 && !frm.doc.__islocal) {
 			cur_frm.add_custom_button(__('Download'), function(){ 
 				var file_url = frm.doc.file_path;
@@ -31,6 +32,12 @@ frappe.ui.form.on("IP Approver", "approver_status", function(frm){
 		frm.doc.file_rejected =  "";
 		refresh_field(["file_rejected"])
 	}
+	if (frm.doc.approver_status != frm.doc.comment_flag){
+		frm.doc.comment_flag = "";
+		refresh_field(["comment_flag"])
+	
+	}
+	
 
 })
 
@@ -48,3 +55,8 @@ cur_frm.set_query("central_delivery", function() {
    		query:"mycfo.ip_library.doctype.ip_approver.ip_approver.get_central_delivery_user"
    	}
 });
+
+cur_frm.cscript.validate = function(doc) {
+	console.log("in validate")
+	// refresh_field(["current_status"])
+} 
