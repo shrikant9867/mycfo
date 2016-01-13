@@ -10,6 +10,12 @@ def get_data():
 			"type": "module",
 			"label": _("Customer Details")
 		},
+		"Checklist":{
+			"color": "blue",
+			"icon": "icon-list",
+			"type": "module",
+			"label": _("Checklist")
+		},
 		"IP Library": {
 			"color": "#8e44ad",
 			"icon": "octicon octicon-database",
