@@ -1,0 +1,65 @@
+/*#global-search-div{
+	margin-top: 10px;
+	margin-left: 10px;
+	margin-bottom: 10px;
+
+}*/
+
+.ip-file-panel{
+	margin: 10px 10px 10px 10px;
+}
+
+.ip-file-thumbnail{
+	max-height:150px;
+	max-width: 200px;
+}
+
+.ip-row{
+	margin-top:5px;
+}
+
+.ip-text-area{
+	max-height: 75px;
+	margin-top:10px;
+	min-width: 350px;
+	max-width:350px;
+}
+
+.ip-download-button{
+	float:right;
+	height: 26px
+}
+
+.ip-request-button{
+	float:right;
+	height: 26px
+}
+
+.pager_button{
+	 background-color: rgba(0, 16, 205, 0.15) !important;
+}
+
+.pager{
+	margin-left: 30px;
+	margin-right: 30px;
+}
+
+.submit-review{
+	margin-left: 300px;
+	margin-top: 5px;
+}
+/*.panel>.panel-heading-custom2 {
+    background: #8674A6 !important;
+    border-color: #8674A6 !important;
+    color: #fff;
+}*/
+
+.comments-row{
+	height:100px; 
+	overflow-y: auto;
+	margin-right:50px;
+}
+
+.tab-hide{
+	visibility: hidden;
+}
