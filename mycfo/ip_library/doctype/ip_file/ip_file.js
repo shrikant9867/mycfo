@@ -18,14 +18,14 @@ frappe.ui.form.on("IP File", {
 		else{
 			cur_frm.set_df_property("document_type", "read_only", 1)
 			cur_frm.set_df_property("file_approver", "read_only", 1)
-			// cur_frm.set_df_property("file_name", "read_only", 1)
+			cur_frm.set_df_property("file_name", "read_only", 1)
 		}
 			
 		if (inList(["Published", "Republished", "Rejected by CD (Archive)", "Rejected by CD (Edit)", "Validity Upgraded", "Rejected by CD (Validity)"], frm.doc.file_status)){
 			init_for_archive_file(frm)
 			init_for_validity_upgrade(frm)
 		}
-		prepare_for_edit_file(frm)
+		prepare_for_edit_file(frm, cdt, cdn)
 			
 	}
 });
@@ -51,8 +51,11 @@ init_for_upload_file = function(frm ,cdt, cdn){
 			msgprint(__("Please attach a file or set a URL"));
 		},
 		callback: function(file_data) {
-			frm.doc.file_name = file_data.file_name
-			frm.doc.file_extension = file_data.file_ext
+			// frm.doc.file_name = file_data.file_name
+			file_name_array = file_data.file_name.split('.')
+			if (file_name_array.length != 1){
+				frm.doc.file_extension = file_name_array[file_name_array.length - 1]
+			}
 			frm.doc.file_data = file_data
 			me.init_for_edit_file(frm)
 			refresh_field(["file_name", "file_extension", "file_data", "request_type"])
@@ -161,7 +164,7 @@ validity_upgrade = Class.extend({
 })
 
 
-prepare_for_edit_file = function(frm){
+prepare_for_edit_file = function(frm, cdt, cdn){
 	if(! inList(["Archive Pending", "Upgrade Validity Pending"], frm.doc.file_status) ){
 		cur_frm.add_custom_button(__('Upload File'), function(){ init_for_upload_file(frm, cdt, cdn) });	
 	}

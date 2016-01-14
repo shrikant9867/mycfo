@@ -11,6 +11,9 @@ from frappe.model.document import Document
 
 class ChecklistTask(Document):
 
+	def get_feed(self):
+		return '{0}: {1}'.format(_(self.status), self.title)
+
 	def validate(self):
 		self.validate_status()
 		self.validate_dates()
