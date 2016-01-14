@@ -22,9 +22,9 @@ frappe.ui.form.on("Checklist Requisition","refresh",function(frm){
 			callback: function(r) {
 				console.log(r.message)
 				if(r.message){
+					console.log()
 					cur_frm.doc.task_closed = r.message
 					refresh_field("task_closed")
-					/*cur_frm.update()*/
 				}
 			}
 		})
@@ -52,7 +52,7 @@ frappe.ui.form.on("Checklist Requisition","checklist_name",function(frm){
 		})
 	}
 })
-cur_frm.add_fetch('checklist_name', 'counter', 'counter');				
+/*cur_frm.add_fetch('checklist_name', 'counter', 'counter');*/				
 
 frappe.ui.form.on("Requisition Task","end_date",function(frm,cdt,cdn){
 	var d  = locals[cdt][cdn];	

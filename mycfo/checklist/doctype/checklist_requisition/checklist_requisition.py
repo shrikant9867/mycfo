@@ -17,30 +17,14 @@ class ChecklistRequisition(Document):
 		if self.checklist_status == "Open":
 			self.name = make_autoname(self.checklist_name.upper()+ ' - ' +'.#####')
 
-	def onload(self):
-		if not self.get("cr_task"):
-			for task in self.get_tasks():
-				self.append("cr_task", {
-					"task_name": task.title,
-					"status": task.status,
-					"start_date": task.expected_start_date,
-					"end_date": task.expected_end_date,
-					"task_id": task.name,
-					"des": task.des
-				})
-		self.update_checklist_requisition()
-
-	def __setup__(self):
-
-		self.onload()
-
 	def get_tasks(self):
 		return frappe.get_all("Checklist Task", "*", {"project": self.name}, order_by="expected_start_date asc")
 	
 
 	def validate(self):
 		self.sync_tasks()
-		self.cr_task = []
+		# self.fetch_task_id(	)
+		# self.cr_task = []
 
 	def sync_tasks(self):
 		if self.flags.dont_sync_tasks: return
@@ -68,16 +52,22 @@ class ChecklistRequisition(Document):
 			task_names.append(task.name)
 
 	def update_checklist_requisition(self):
-		for t in self.cr_task:
-			if t.task_id:
-				task = frappe.get_doc("Checklist Task", t.task_id)
-				if(task.actual_start_date):
-					t.actual_start_date = task.actual_start_date;
-					t.actual_end_date = task.actual_end_date;
-					t.actual_time = task.actual_time;		
-					t.status = task.status;
-					t.des = task.final_comments				
-					
+		print "update_checklist_requisition"
+		# if self.cr_task:
+		# 	for task in self.cr_task:
+		# 		tl = frappe.db.sql("""select actual_start_date,actual_end_date,actual_time from `tabChecklist Task` where name ={0}""".format(task.task_name))
+		# 		print tl
+		# 		task.actual_start_date = tl.start_date,
+		# 		task.actual_end_date = tl.end_date,
+		# 		task.actual_time = tl.time
+
+	# def fetch_task_id(self):
+	# 	t_id = frappe.db.sql("""select name,title as task_id from `tabChecklist Task` where project = '{0}'""".format(self.name),as_dict=1)			
+	# 	print t_id
+	# 	if self.cr_task:
+	# 		for task in self.cr_task:
+	# 			task.task_id = t_id.task_id	
+
 	def get_tasks_detail(self):
 		checklist_doc = frappe.get_doc("Checklist",self.checklist_name)
 		checklist_list = []
@@ -88,7 +78,7 @@ class ChecklistRequisition(Document):
 	def get_end_date(self,tat):
 		due_date = datetime.now() + timedelta(hours=tat)
 		holiday	= self.get_holiday(due_date)
-		tat_with_holiday = holiday*24 + tat - 24
+		tat_with_holiday = holiday*24 + tat
 		due_date_with_holiday = datetime.now() + timedelta(hours=tat_with_holiday)
 		return due_date_with_holiday.strftime("%Y-%m-%d")	
 
@@ -115,5 +105,7 @@ class ChecklistRequisition(Document):
 		status_of_all = frappe.db.sql("""select status from `tabChecklist Task`t1 where t1.project = '{0}'""".format(self.name),as_list=1)
 		chain = itertools.chain(*status_of_all)
 		sot =  list(chain)
+		number_of_task = frappe.db.sql("""select count(*) from `tabChecklist Task`t1 where t1.project = '{0}'""".format(self.name),as_dict=1)
+		self.counter = number_of_task[0]['count(*)']
 		closed_task = "{1} / {0} Closed".format(self.counter,sot.count("Closed"))
-		return closed_task		
+		return closed_task
