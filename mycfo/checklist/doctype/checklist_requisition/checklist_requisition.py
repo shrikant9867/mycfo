@@ -16,11 +16,7 @@ class ChecklistRequisition(Document):
 	
 	def autoname(self):
 		if self.checklist_status == "Open":
-			self.name = make_autoname(self.checklist_name.upper()+ ' - ' +'.#####')
-
-	def get_feed(self):
-		return '{0}: {1}'.format(_(self.checklist_status), self.name)		
-			
+			self.name = make_autoname(self.checklist_name.upper()+ ' - ' +'.#####')		
 	def onload(self):
 		"""Load project tasks for quick view"""
 		if not self.get("cr_task"):
@@ -74,7 +70,7 @@ class ChecklistRequisition(Document):
 		print "update_checklist_requisition"
 		if self.cr_task:
 			for task in self.cr_task:
-				tl = frappe.db.sql("""select actual_start_date,actual_end_date,actual_time from `tabChecklist Task` where name ={0}""".format(task.task_id))
+				tl = frappe.db.sql("""select actual_start_date,actual_end_date,actual_time from `tabChecklist Task` where name = '{0}'""".format(task.task_id),as_list=1)
 				print tl
 				task.actual_start_date = tl.start_date,
 				task.actual_end_date = tl.end_date,
