@@ -73,10 +73,19 @@ upload = {
 			upload.upload_file(fileobj, opts.args, opts);
 		});
 	},
+	check_extension:function(filename){
+		return (/\.(gif|jpg|jpeg|tiff|png|svg|doc|docx|xlsx|xls|ppt|pptx|pdf|txt|csv)$/i).test(filename);
+	},
 	upload_file: function(fileobj, args, opts) {
 		if(!fileobj && !args.file_url) {
 			console.log("just code")
 			msgprint(__("Please attach a file or set a URL"));
+			return;
+		}
+		else if (! (upload.check_extension(fileobj.name))){
+			console.log("extension check")
+			msgprint(__("File with extension gif, jpg, jpeg, tiff, png, svg, doc, docx, xlsx, xls, ppt, \
+				pptx, pdf, txt, odt, odp, odf & csv are allowed in IP Library "))
 			return;
 		}
 		var me = this

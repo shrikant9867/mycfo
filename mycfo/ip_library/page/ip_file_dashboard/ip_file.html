@@ -4,7 +4,7 @@ download-validity = "{{ file_data[i].download_validity_end_date }}" id="{{ i }}"
       <div class="panel-heading panel-heading-custom2">{{ file_data[i].file_name }}
 		{% if (file_data[i].security_level == "0-Level" || frappe.datetime.str_to_obj(file_data[i].download_validity_end_date) > frappe.datetime.str_to_obj(frappe.datetime.now_datetime()) ) { %}
 		<button type="button" class="btn btn-success ip-download-button"><i class="icon-download"></i>Download</button>
-		{% } else if( file_data[i].approval_status == "Pending")  { %}
+		{% } else if( file_data[i].approval_status == "Pending" || file_data[i].approval_status == "Rejected by Approver" || file_data[i].approval_status == "Approved by Approver" )  { %}
 			<button type="button" class="btn btn-success ip-request-button disabled" >Request Pending</button>
 		{% } else  { %}
 		<button type="button" class="btn btn-success ip-request-button" >Make Request</button>

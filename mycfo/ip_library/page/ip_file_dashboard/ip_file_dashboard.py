@@ -10,7 +10,7 @@ import re
 
 @frappe.whitelist()
 def get_global_search_suggestions(filters):
-	query = """  select  file_name from `tabIP File` where file_status in ('Published', 'Republished')
+	query = """  select  file_name from `tabIP File` where published_flag = 1
 						and file_name like '%{0}%' 
 						union select name from `tabSkill Matrix 18` where name like '%{0}%'
 						union select name from `tabSkill Matrix 120` where name like '%{0}%'
@@ -31,10 +31,10 @@ def get_published_ip_file(search_filters):
 	search_filters = json.loads(search_filters)
 	limit_query = "LIMIT 2 OFFSET {0}".format(search_filters.get("page_no") * 2 )
 	my_query = """ select * from `tabIP File` ipf
-						where ipf.file_status in ('Published', 'Republished') 
+						where ipf.published_flag = 1 
 						and ( ipf.skill_matrix_18 like '%{0}%' or ipf.file_name like '%{0}%' 
 						or ipf.project like '%{0}%' or ipf.security_level like '%{0}%' 
-						or ipf.skill_matrix_120 like '%{0}%' )  """.format(search_filters.get("filters"))
+						or ipf.skill_matrix_120 like '%{0}%' )  order by ipf.uploaded_date desc """.format(search_filters.get("filters"))
 	
 	total_records = get_total_records(my_query)
 	response_data = frappe.db.sql(my_query + limit_query, as_dict=True)
@@ -44,7 +44,7 @@ def get_published_ip_file(search_filters):
 
 
 def get_total_records(my_query):
-	return frappe.db.sql(my_query.replace("*", "count(*) as count", 1), as_dict=1, debug=1)
+	return frappe.db.sql(my_query.replace("*", "count(*) as count", 1), as_dict=1)
 
 
 
@@ -75,15 +75,29 @@ def get_request_download_status(response_data):
 def get_latest_uploaded_documents(search_filters):
 	search_filters = json.loads(search_filters)
 	limit_query = "LIMIT 2 OFFSET {0}".format(search_filters.get("page_no") * 2 )
-	my_query = """ select * from `tabIP File` ipf 
-						where ipf.file_status in ('Published', 'Republished') 
-						and DATEDIFF(CURDATE(), ipf.uploaded_date) < 15 """
+	my_query = get_latest_query()
 	total_records = get_total_records(my_query)
-	response_data = frappe.db.sql(my_query + limit_query, as_dict=True)
+	response_data = frappe.db.sql(my_query + limit_query, as_dict=True, debug=1)
 	get_request_download_status(response_data)
 	total_pages = math.ceil(total_records[0].get("count",0)/2.0)
 	return response_data, total_pages 
 
+
+def get_latest_query():
+	return """ select * from `tabIP File` ipf 
+						where ipf.published_flag = 1 
+						and DATEDIFF(CURDATE(), ipf.uploaded_date) < 15 order by uploaded_date desc """
+
+@frappe.whitelist()
+def get_latest_upload_count():
+	counts = {}
+	latest_query = get_latest_query()
+	counts["latest_records"] = get_total_records(latest_query)[0]["count"]
+	pending_requests_query = get_pending_request_query()
+	counts["pending_requests"] = len(pending_requests_query)
+	downloads_query = get_downloads_query()
+	counts["total_downloads"] = len(downloads_query)
+	return counts
 
 # """
 # 	Return request status for ip document
@@ -140,7 +154,7 @@ def create_ip_file_feedback(request_data):
 
 
 @frappe.whitelist()
-def create_ip_download_request(ip_file_name):
+def create_ip_download_request(ip_file_name, project, approver):
 	file_data = frappe.db.get_value("IP File", {"name":ip_file_name}, '*', as_dict=True)
 	if not frappe.db.get_value("IP Download Approval", {"file_name":file_data.get("file_name"), 
 								"ip_file_requester":frappe.session.user, "approval_status":"Pending"}, "name"):
@@ -148,23 +162,25 @@ def create_ip_download_request(ip_file_name):
 		ipa.file_name = file_data.get("file_name")
 		ipa.file_description = file_data.get("file_description")
 		ipa.file_type = file_data.get("file_type")
-		ipa.project = file_data.get("project")
+		ipa.project = project
 		ipa.industry = file_data.get("industry")
 		ipa.department = file_data.get("department")
 		ipa.skill_matrix_18 = file_data.get("skill_matrix_18")
 		ipa.skill_matrix_120 = file_data.get("skill_matrix_120")
 		ipa.file_path = file_data.get("file_path")
-		ipa.approver = ""
+		ipa.approver = approver
 		ipa.ip_file_requester = frappe.session.user
 		ipa.level_of_approval = file_data.get("security_level")
 		ipa.approval_status = "Pending" 
 		ipa.save(ignore_permissions=True)
-		prepare_for_todo_creation(file_data)
+		prepare_for_todo_creation(file_data, approver)
 		return "success"
 
 
-def prepare_for_todo_creation(file_data):
-	users = get_user_with_el_roles(file_data.get("project"))
+def prepare_for_todo_creation(file_data, emp_id):
+	users = []
+	user_id = frappe.db.get_value("Employee", emp_id, 'user_id')
+	users.append(user_id)
 	if file_data.get("security_level") ==  "2-Level":
 		central_delivery = frappe.get_list("UserRole", filters={"role":"Central Delivery","parent":["!=", "Administrator"]}, fields=["parent"])
 		central_delivery = [user.get("parent") for user in central_delivery]
@@ -212,3 +228,72 @@ def create_ip_download_log(file_name):
 	idl.save(ignore_permissions=True)
 
 
+@frappe.whitelist()
+def get_my_download(search_filters):
+	search_filters = json.loads(search_filters)
+	result = get_downloads_query()
+	response_data, total_pages = prepare_response_data(search_filters, result)
+	return response_data, total_pages 	
+
+def get_downloads_query():
+	return frappe.db.sql(""" select ipd.name, ipd.file_name, ipd.approval_status, ipd.validity_end_date from `tabIP Download Approval` ipd
+					join `tabIP File` ipf 
+					on ipf.name = ipd.file_name
+					where ipd.approval_status="Download Allowed" and ipd.ip_file_requester=%s 
+					and ipd.validity_end_date > %s and ipf.published_flag = 1
+					order by ipd.creation desc """,(frappe.session.user, now()), as_dict=1)
+
+
+
+def get_request_status(response_data, result_data):
+	for response in response_data:
+		result = filter(lambda record: record.get("file_name") == response.get("file_name"), result_data)
+		response["download_validity_end_date"] = result[0].get("validity_end_date") if result else ""
+		response["approval_status"] = result[0].get("approval_status") if result else ""
+		response["download_count"] = frappe.get_list("IP Download Log", fields=["count(*)"], filters={ "file_name":response.get("file_name") }, as_list=True)[0][0] 
+		response["avg_ratings"] = frappe.get_list("IP Review", fields=["ifnull(avg(ratings),0.0)"], filters={ "file_name":response.get("file_name") }, as_list=True)[0][0]
+		response["comments"] = frappe.db.sql(""" select user_id, comments, ratings  from `tabIP Review` where  file_name = %s""",(response.get("file_name")),as_dict=1)	 
+		response["download_flag"] = frappe.db.get_value("IP Download Log", {"file_name":response.get("file_name"), "user_id":frappe.session.user}, "name")
+
+
+@frappe.whitelist()
+def get_my_pending_requests(search_filters):
+	search_filters = json.loads(search_filters)
+	result = get_pending_request_query()
+	response_data, total_pages = prepare_response_data(search_filters, result)
+	frappe.errprint(response_data)
+	return response_data, total_pages
+
+
+def prepare_response_data(search_filters, result):
+	response_data, total_pages = [], 0
+	file_name = ','.join('"{0}"'.format(record.get("file_name")) for record in result )
+	if file_name:
+		my_query = "select * from `tabIP File` where file_name in ({0}) and published_flag = 1 ".format(file_name)
+		limit_query = "LIMIT 2 OFFSET {0}".format(search_filters.get("page_no") * 2 )
+		total_records = get_total_records(my_query)
+		response_data = frappe.db.sql(my_query + limit_query, as_dict=True)
+		get_request_status(response_data, result)
+		total_pages = math.ceil(total_records[0].get("count",0)/2.0)
+	return response_data, total_pages 	
+
+
+def get_pending_request_query():
+	return frappe.db.sql(""" select ipd.name, ipd.file_name, ipd.approval_status, ipd.validity_end_date from `tabIP Download Approval` ipd
+							join `tabIP File` ipf 
+							on ipf.name = ipd.file_name
+							where ipd.approval_status in ("Pending", "Approved by Approver", "Rejected by Approver") and ipd.ip_file_requester=%s
+							and ipf.published_flag = 1
+							order by ipd.creation desc """,(frappe.session.user), as_dict=1)
+
+
+
+@frappe.whitelist()
+def get_projects_of_user(doctype, txt, searchfield, start, page_len, filters):
+	query = """ select distinct(opc.project_commercial) from 
+						`tabOperation And Project Commercial` opc left join
+						`tabOperation And Project Details` opd 
+						on opc.name = opd.parent
+						where opd.email_id = '{0}'
+						and opc.project_commercial like '%{1}%' limit 20""".format(frappe.session.user, txt)
+	return frappe.db.sql(query, as_list=1)
