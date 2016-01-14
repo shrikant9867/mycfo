@@ -5,6 +5,7 @@
 from __future__ import unicode_literals
 import frappe
 import itertools
+from frappe import _
 from frappe.model.naming import make_autoname
 from frappe.utils import nowdate, getdate
 from frappe.model.document import Document
@@ -17,14 +18,32 @@ class ChecklistRequisition(Document):
 		if self.checklist_status == "Open":
 			self.name = make_autoname(self.checklist_name.upper()+ ' - ' +'.#####')
 
+	def get_feed(self):
+		return '{0}: {1}'.format(_(self.checklist_status), self.name)		
+			
+	def onload(self):
+		"""Load project tasks for quick view"""
+		if not self.get("cr_task"):
+			for task in self.get_tasks():
+				self.append("cr_task", {
+					"task_name": task.title,
+					"status": task.status,
+					"start_date": task.expected_start_date,
+					"end_date": task.expected_end_date,
+					"task_id": task.name,
+					"des": task.des
+				})
+
+	def __setup__(self):
+		self.onload()
+
 	def get_tasks(self):
 		return frappe.get_all("Checklist Task", "*", {"project": self.name}, order_by="expected_start_date asc")
 	
 
 	def validate(self):
 		self.sync_tasks()
-		# self.fetch_task_id(	)
-		# self.cr_task = []
+		self.cr_task = []
 
 	def sync_tasks(self):
 		if self.flags.dont_sync_tasks: return
@@ -53,20 +72,13 @@ class ChecklistRequisition(Document):
 
 	def update_checklist_requisition(self):
 		print "update_checklist_requisition"
-		# if self.cr_task:
-		# 	for task in self.cr_task:
-		# 		tl = frappe.db.sql("""select actual_start_date,actual_end_date,actual_time from `tabChecklist Task` where name ={0}""".format(task.task_name))
-		# 		print tl
-		# 		task.actual_start_date = tl.start_date,
-		# 		task.actual_end_date = tl.end_date,
-		# 		task.actual_time = tl.time
-
-	# def fetch_task_id(self):
-	# 	t_id = frappe.db.sql("""select name,title as task_id from `tabChecklist Task` where project = '{0}'""".format(self.name),as_dict=1)			
-	# 	print t_id
-	# 	if self.cr_task:
-	# 		for task in self.cr_task:
-	# 			task.task_id = t_id.task_id	
+		if self.cr_task:
+			for task in self.cr_task:
+				tl = frappe.db.sql("""select actual_start_date,actual_end_date,actual_time from `tabChecklist Task` where name ={0}""".format(task.task_id))
+				print tl
+				task.actual_start_date = tl.start_date,
+				task.actual_end_date = tl.end_date,
+				task.actual_time = tl.time	
 
 	def get_tasks_detail(self):
 		checklist_doc = frappe.get_doc("Checklist",self.checklist_name)
