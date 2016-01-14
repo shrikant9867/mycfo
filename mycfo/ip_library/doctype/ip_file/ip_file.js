@@ -25,7 +25,7 @@ frappe.ui.form.on("IP File", {
 			init_for_archive_file(frm)
 			init_for_validity_upgrade(frm)
 		}
-		prepare_for_edit_file(frm)
+		prepare_for_edit_file(frm, cdt, cdn)
 			
 	}
 });
@@ -161,7 +161,7 @@ validity_upgrade = Class.extend({
 })
 
 
-prepare_for_edit_file = function(frm){
+prepare_for_edit_file = function(frm, cdt, cdn){
 	if(! inList(["Archive Pending", "Upgrade Validity Pending"], frm.doc.file_status) ){
 		cur_frm.add_custom_button(__('Upload File'), function(){ init_for_upload_file(frm, cdt, cdn) });	
 	}
