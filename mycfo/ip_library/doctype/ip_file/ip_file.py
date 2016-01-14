@@ -39,11 +39,12 @@ class IPFile(Document):
 				print self.file_data.get("file_ext")
 				base64_data = self.file_data.get("file_data").encode("utf8")				
 				base64_data = base64_data.split(',')[1]
-				base64_data = base64.b64decode(base64_data)
-				file_path = frappe.get_site_path("public","files", "mycfo", "edited_file", self.document_type, self.file_name)
+				base64_data = base64.b64decode(base64_data) 
+				extension = "." + self.file_extension if self.file_extension else ""
+				file_path = frappe.get_site_path("public","files", "mycfo", "edited_file", self.document_type, self.file_name + extension)
 				with open(file_path, "wb+") as fi_nm:
 					fi_nm.write(base64_data)
-				self.new_file_path = '/'.join(["files", "mycfo", "edited_file", self.document_type, self.file_name])
+				self.new_file_path = '/'.join(["files", "mycfo", "edited_file", self.document_type, self.file_name + extension])
 		except Exception,e:
 			print e
 			print frappe.get_traceback()
@@ -227,4 +228,4 @@ def get_permission_query_conditions(user):
 		emp_name = frappe.db.get_value("Employee",{"user_id":frappe.session.user}, "name")
 		ip_files = frappe.db.sql(""" select name from `tabIP File` where owner = '{0}' or file_approver = '{1}' """.format(frappe.session.user, emp_name),as_dict=1)
 		ip_files = "', '".join([ipf.get("name") for ipf in ip_files if ipf])
-		return """(`tabIP File`.name in ('{files}') )""".format(files = ip_files)	
+		return """(`tabIP File`.name in ('{files}') )""".format(files = ip_files)
