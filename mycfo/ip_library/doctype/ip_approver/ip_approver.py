@@ -9,6 +9,7 @@ import shutil
 import subprocess
 from frappe.utils import today
 
+
 class IPApprover(Document):		
 
 	def validate(self):
@@ -57,10 +58,8 @@ class IPApprover(Document):
 	
 	def send_notification(self, subject, email, template, args):
 		frappe.sendmail(recipients=email, sender=None, subject=subject,
-			message=frappe.get_template(template).render(args))		
+			message=frappe.get_template(template).render(args))
 
-		
-	
 	def before_submit(self):
 		if self.request_type != "Upgrade Validity":
 			self.check_for_edit_and_new_request()

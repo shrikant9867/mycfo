@@ -8,7 +8,13 @@ def get_data():
 			"color": "grey",
 			"icon": "icon-th",
 			"type": "module",
-			"label": _("Mycfo")
+			"label": _("Customer Details")
+		},
+		"Checklist":{
+			"color": "blue",
+			"icon": "icon-list",
+			"type": "module",
+			"label": _("Checklist")
 		},
 		"IP Library": {
 			"color": "#8e44ad",

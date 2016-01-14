@@ -14,7 +14,7 @@ app_version = "0.0.1"
 # ------------------
 
 # include js, css files in header of desk.html
-app_include_css = "/assets/mycfo/css/jquery.rateyo.min.css"
+app_include_css = ["/assets/mycfo/css/jquery.rateyo.min.css", "/assets/mycfo/css/mycfo.css"]
 app_include_js = ["/assets/mycfo/js/jquery.rateyo.min.js","/assets/mycfo/js/jquery.twbsPagination.min.js"]
 
 # include js, css files in header of web template
@@ -50,7 +50,7 @@ app_include_js = ["/assets/mycfo/js/jquery.rateyo.min.js","/assets/mycfo/js/jque
 
 # notification_config = "mycfo.notifications.get_notification_config"
 
-fixtures = ['Custom Field', 'Property Setter']
+fixtures = ['Custom Field', 'Property Setter', "Role"]
 # Permissions
 # -----------
 # Permissions evaluated in scripted ways
@@ -88,6 +88,10 @@ scheduler_events = {
 		"mycfo.ip_library.scheduler_tasks.send_notification_for_expiry_of_document",
 		"mycfo.ip_library.scheduler_tasks.archive_document"
 	]
+}
+
+permission_query_conditions = {
+	"Customer":"mycfo.mycfo.doctype.project_commercial.project_commercial.get_permission_query_conditions"
 }
 
 # Testing
