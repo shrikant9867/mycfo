@@ -56,4 +56,5 @@ class Checklist(Document):
 		number_of_task = frappe.db.sql("""select count(*) from `tabProcess Task` where parent = '{0}' """.format(self.name),as_dict=1)
 		print number_of_task[0]['count(*)']
 		self.counter = number_of_task[0]['count(*)']
+		# frappe.db.set_value("Checklist",self.name,"counter",number_of_task[0]['count(*)'])
 		print self.counter

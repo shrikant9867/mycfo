@@ -30,6 +30,10 @@ class ChecklistTimeLog(Document):
 			task = frappe.get_doc("Checklist Task", self.task)
 			task.update_time()
 			task.save()
+		if self.requisition_id:
+			requisition = frappe.get_doc("Checklist Requisition",self.requisition_id)
+			requisition.update_checklist_requisition()
+			requisition.save()	
 
 		# elif self.project:
 		# 	frappe.get_doc("Checklist Requisition", self.project).update_project()
