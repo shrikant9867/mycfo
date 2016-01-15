@@ -46,4 +46,10 @@ def get_timelog(doc):
 	current_doc = json.loads(doc)
 	timelog = frappe.db.sql("""select name from `tabChecklist Time Log` where task = '{0}'""".format(current_doc['name']),as_list=1)
 	if(not timelog):
-		return "Not Allowed Without Create Time Log Cannot Closed Task" 
+		return "Not Allowed Without Create Time Log Cannot Closed Task"
+
+# @frappe.whitelist()
+# def get_close_date(doc):
+# 	Date = datetime.datetime.now()
+# 	return Date		
+		 
