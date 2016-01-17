@@ -7,7 +7,6 @@ cur_frm.add_fetch("file_approver", "employee_name", "employee_name")
 
 frappe.ui.form.on("IP File", {
 	onload: function(frm) {
-		console.log("in onload")
 	},
 	refresh:function(frm, cdt, cdn){
 		if (frm.doc.__islocal){
@@ -33,7 +32,6 @@ frappe.ui.form.on("IP File", {
 
 
 init_for_upload_file = function(frm ,cdt, cdn){
-	console.log(frm)
 	var me = this;
 	this.dialog = new frappe.ui.Dialog({
 		title: __(__("Upload")),
@@ -52,14 +50,17 @@ init_for_upload_file = function(frm ,cdt, cdn){
 		},
 		callback: function(file_data) {
 			// frm.doc.file_name = file_data.file_name
-			file_name_array = file_data.file_name.split('.')
-			if (file_name_array.length != 1){
-				frm.doc.file_extension = file_name_array[file_name_array.length - 1]
+			if (!frm.doc.__islocal && frm.doc.file_name + '.' + frm.doc.file_extension == file_data.file_name){
+				me.init_after_file_upload(frm, me, file_data)
+
+			}else if(frm.doc.__islocal){
+				me.init_after_file_upload(frm, me, file_data)
+
+			} 
+			else{
+				msgprint("Different IP File detected while uploading document.")
 			}
-			frm.doc.file_data = file_data
-			me.init_for_edit_file(frm)
-			refresh_field(["file_name", "file_extension", "file_data", "request_type"])
-			me.dialog.hide();
+			
 		},
 		onerror: function() {
 			me.dialog.hide();
@@ -71,11 +72,23 @@ init_for_upload_file = function(frm ,cdt, cdn){
 },
 
 
+
+init_after_file_upload = function(frm, me, file_data){
+	file_name_array = file_data.file_name.split('.')
+	if (file_name_array.length != 1){
+		frm.doc.file_extension = file_name_array[file_name_array.length - 1]
+	}
+		frm.doc.file_data = file_data
+		me.init_for_edit_file(frm)
+		refresh_field(["file_name", "file_extension", "file_data", "request_type"])
+		me.dialog.hide();
+
+}
+
 init_for_edit_file = function(frm){
 	if(inList(["Published", "Edit Pending", "Republished", "Rejected by CD (Edit)", 
-				"Approved by Approver (Edit)", "Rejected by Approver (Edit)", "Rejected by CD (Edit)", "Rejected by CD (Validity)", "Validity Upgraded"], frm.doc.file_status) ){
+				"Approved by Approver (Edit)", "Rejected by Approver (Edit)", "Rejected by CD (Edit)", "Rejected by CD (Validity)", "Validity Upgraded", "Rejected by CD (Archive)"], frm.doc.file_status) ){
 		frm.doc.request_type = "Edit"
-		console.log("In edit if")
 	}
 
 }
@@ -136,7 +149,6 @@ validity_upgrade = Class.extend({
 						primary_action_label: "Upgrade Validity",
 						primary_action: function(doc) {
 								validity = me.dialog.fields_dict.validity.input.value
-								console.log(me.frm.doc)
 								me.frm.doc.new_validity = validity
 								if (validity){
 										me.dialog.hide();
@@ -165,7 +177,7 @@ validity_upgrade = Class.extend({
 
 
 prepare_for_edit_file = function(frm, cdt, cdn){
-	if(! inList(["Archive Pending", "Upgrade Validity Pending"], frm.doc.file_status) ){
+	if(! inList(["Archive Pending", "Upgrade Validity Pending", "Archived"], frm.doc.file_status) ){
 		cur_frm.add_custom_button(__('Upload File'), function(){ init_for_upload_file(frm, cdt, cdn) });	
 	}
 	

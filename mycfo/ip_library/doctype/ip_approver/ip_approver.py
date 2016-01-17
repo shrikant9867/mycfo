@@ -7,7 +7,7 @@ import frappe
 from frappe.model.document import Document
 import shutil
 import subprocess
-from frappe.utils import today
+from frappe.utils import today, getdate
 
 class IPApprover(Document):		
 
@@ -27,10 +27,8 @@ class IPApprover(Document):
 	def set_current_status_of_approval(self):
 		if self.approver_status == "Approved":
 			self.current_status = "Approved by Approver"
-			# frappe.db.set_value("IP Approver", self.name, "current_status", "Approved by Approver")
 		elif self.approver_status == "Rejected":
 			self.current_status = "Rejected by Approver"
-			# frappe.db.set_value("IP Approver", self.name, "current_status", "Rejected by Approver")
 
 	
 	def update_ip_file_status(self):
@@ -62,12 +60,21 @@ class IPApprover(Document):
 		
 	
 	def before_submit(self):
+		self.validate_validity_end_date()
+		self.validate_for_central_delivery()
 		if self.request_type != "Upgrade Validity":
 			self.check_for_edit_and_new_request()
 		else:
 			self.check_for_validity_upgrade()
 
-	
+	def validate_validity_end_date(self):
+		if getdate(self.validity_end_date) < getdate(today()):
+			frappe.throw("Validity end date must be greater than current date.")
+
+	def validate_for_central_delivery(self):
+		if not self.central_delivery or not self.central_delivery_status:
+			frappe.throw("Central delivery & Central Delivery status is mandatory to submit document.")		
+
 	def check_for_edit_and_new_request(self):
 		if self.central_delivery_status == "Approved":
 			extension = "." + self.file_extension if self.file_extension else ""
