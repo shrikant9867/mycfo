@@ -13,10 +13,15 @@ frappe.ui.form.on("IP Download Approval", {
 			})
 		}
 		cd_fields = []
+		
 		if (!inList(user_roles, "Central Delivery")){
-			cd_fields = ["central_delivery_status", "central_delivery", "central_delivery_comments"]
-			
+			cd_fields = ["central_delivery_status", "central_delivery", "central_delivery_comments"]			
 		}
+		else{
+			frm.doc.central_delivery = frappe.user.name
+			refresh_field(["central_delivery"])
+		}
+
 		$.each(cd_fields, function(index, value){
 				cur_frm.set_df_property(value, "read_only", 1);	
 		})

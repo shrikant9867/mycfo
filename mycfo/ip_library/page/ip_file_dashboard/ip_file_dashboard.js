@@ -6,7 +6,6 @@ frappe.pages['ip-file-dashboard'].on_page_load = function(wrapper) {
 	});
 	frappe.breadcrumbs.add("IP Library");
 	$("<div class='ip-file-dashboard'</div>").appendTo(page.body);
-	console.log(page)
 	new IpFileDashboard(wrapper, page);
 }
 
@@ -22,8 +21,6 @@ IpFileDashboard = Class.extend({
 	},
 	make:function(){
 		this.render_search_filters();
-		console.log(this.body);
-		console.log(this.footer);
 	},
 	render_search_filters:function(){
 		var me = this;	
@@ -49,7 +46,6 @@ IpFileDashboard = Class.extend({
 			page: "ip_file_dashboard",
 			method: "get_latest_upload_count",
 			callback:function(r){
-				console.log(r.message)
 				$("button[data-fieldname=latest_uploads]").append("<span class ='badge pull-right custom-badge'>{0}</span>".replace('{0}', r.message.latest_records));
 				$("div.page-form.row").append(frappe.render_template("ip_file_filters", {"pending_requests":r.message.pending_requests, "my_downloads":r.message.total_downloads}));				
 				me.init_for_pending_requests();
@@ -103,8 +99,7 @@ IpFileDashboard = Class.extend({
 		
 	},
 	init_for_global_search:function(){
-		console.log("in global search")
-		$("#global_search").autocomplete({
+		$(this.wrapper).find("#global_search").autocomplete({
 			source:function(request, response){
 				frappe.call({
 					module:"mycfo.ip_library",
@@ -138,37 +133,29 @@ IpFileDashboard = Class.extend({
 	},
 	init_for_pagination:function(total_pages){
 		var me = this;
-		console.log("in init_for_pagination if loop")
 		this.render_pagination(total_pages);			
 	},
 	render_pagination:function(total_pages){
-		console.log("footer")
-		var me = this
-		console.log(this)		
+		var me = this	
 		var pagination_mapper = {"Normal Search":me.get_ip_files, "Latest Uploads":me.init_for_latest_uploads, 
 		 							"My Requests":me.get_my_pending_requests, "My Downloads":me.get_my_downloads}
 		if (total_pages == 0){
 			msgprint("No IP File found against specified criteria.")
 		}
 		else if (!$('#pagination-demo').length && total_pages){
-			console.log("in if")
 			$('<div class="row"><div class="col-xs-10 col-xs-offset-2"><ul id="pagination-demo" class="pagination-sm"></ul></div></div>').appendTo(this.footer)
 			$('#pagination-demo').twbsPagination({
 				totalPages:total_pages,
 				visiblePages: 3,
 				initiateStartPageClick:false,
-				onPageClick: function (event, page) {
-					console.log(["In pagination", page])
-					
+				onPageClick: function (event, page) {					
 					search_type = me.filters.search_type.input.value
-					console.log(search_type)
 					// me.get_ip_files(page - 1)
 					pagination_mapper[search_type](page - 1 , me)
 	
 				}
 			});
 			this.paginaiton = $('#pagination-demo').data();
-			console.log(this.paginaiton)
 			this.paginaiton.twbsPagination.options.initiateStartPageClick = true;
 			
 
@@ -186,7 +173,6 @@ IpFileDashboard = Class.extend({
 	init_for_search_trigger:function(){
 		var me = this;
 		me.filters.search.$input.on("click", function() {
-			console.log("in search");
 			me.filters.search_type.input.value = "Normal Search";	
 			me.search_filters = { "filters":$("#global_search").val() }
 			me.empty_dashboard_and_footer();
@@ -196,9 +182,6 @@ IpFileDashboard = Class.extend({
 	},
 	get_ip_files:function(page_no, outer_this){
 		var me = outer_this;
-		console.log(["get_ip_files", page_no])
-		console.log(this)
-		console.log(me.search_filters);
 		me.search_filters["page_no"] = page_no;
 		return frappe.call({
 			freeze: true,
@@ -276,7 +259,6 @@ IpFileDashboard = Class.extend({
 		$(".ip-file-footer").html("");
 	},
 	get_search_filters:function(){
-		console.log("in search filters")
 		return {
 			"filters":$("#global_search").val()
 		}
@@ -287,7 +269,6 @@ IpFileDashboard = Class.extend({
 	init_for_submit_button:function(){
 		var me = this
 		$(".submit-review").click(function(){
-			console.log("in submit review")
 			my_parent =  $(this).closest(".tab-pane")
 			my_ratings = $(my_parent).find(".rateYo").rateYo("rating");
 			comments =  $(my_parent).find(".ip-text-area").val()
@@ -313,7 +294,6 @@ IpFileDashboard = Class.extend({
 			method: "create_ip_file_feedback",
 			args:{"request_data":request_data},
 			callback:function(r){
-				console.log(r.message)
 				msgprint("IP document {0} review submitted successfully.".replace("{0}",request_data.file_name))			
 			}
 
@@ -328,7 +308,6 @@ IpFileDashboard = Class.extend({
 	trigger_for_download_request:function(){
 		var me = this;
 		$(".ip-request-button").click(function(){
-			console.log("in request trigger")
 			ip_file_name = $(this).closest(".panel").attr("ip-file-name")
 			file_name = $(this).closest(".panel").attr("file-name")
 			me.init_for_projects_el_pop_up(ip_file_name, file_name, this);
@@ -386,7 +365,6 @@ IpFileDashboard = Class.extend({
 			method: "create_ip_download_request",
 			args:my_dict,
 			callback:function(r){
-				console.log(r.message)
 				if(r.message){
 					$(request_button).attr("disabled",true)
 					msgprint("IP document {0} download request created successfully.".replace("{0}",file_name));					
@@ -425,18 +403,17 @@ IpFileDashboard = Class.extend({
 	},
 	make_download_entry:function(ip_file_name, panel){
 		var me = this
+		var download_form = $(panel).attr("download-form")
+		var validity = $(panel).attr("download-validity")
 		return frappe.call({
 			freeze: true,
 			freeze_message:"Please wait ..............",
 			module:"mycfo.ip_library",
 			page: "ip_file_dashboard",
 			method: "create_ip_download_log",
-			args:{"file_name":ip_file_name},
+			args:{"file_name":ip_file_name, "download_form":download_form, "validity":validity},
 			callback:function(r){
-				console.log("in callback")
-				console.log($(panel))
 				if(!($(panel).find(".tab-content div.my-feedback").length)){
-					console.log("in if")
 					index = $(panel).attr("id")
 					$(panel).find("ul").append('<li><a data-toggle="tab" href="#feedback-menu{0}" class="feedback-li">Write Feedback</a></li>'.replace("{0}", index));
 					$(panel).find(".tab-content").append(frappe.render_template("ip_file_feedback_tab", {"index":index }));
