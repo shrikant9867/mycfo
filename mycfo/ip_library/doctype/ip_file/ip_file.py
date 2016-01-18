@@ -25,18 +25,12 @@ class IPFile(Document):
 	def validate_for_file_data(self):
 		if not self.file_data and cint(self.get("__islocal")):
 			frappe.throw("Please upload the IP document for publishing.")
-		# elif not self.new_file_path and not cint(self.get("__islocal")):
-		# 	frappe.throw("Please upload the IP document for publishing.")
 				
-
 
 	def store_document(self):
 		self.create_directory()
 		try:
-			if self.file_data:
-				print "in ip file data"
-				print self.file_extension
-				print self.file_data.get("file_ext")
+			if self.file_data and self.request_type not in ["Archive", "Upgrade Validity"]:
 				base64_data = self.file_data.get("file_data").encode("utf8")				
 				base64_data = base64_data.split(',')[1]
 				base64_data = base64.b64decode(base64_data) 
@@ -46,8 +40,6 @@ class IPFile(Document):
 					fi_nm.write(base64_data)
 				self.new_file_path = '/'.join(["files", "mycfo", "edited_file", self.document_type, self.file_name + extension])
 		except Exception,e:
-			print e
-			print frappe.get_traceback()
 			frappe.throw("File Upload Error")
 
 			
@@ -64,21 +56,21 @@ class IPFile(Document):
 
 	def create_request_for_ip_approval(self):
 		status_dict = {"New":"New Upload Pending", "Edit":"Edit Pending"}
-		if not self.approver_link and self.file_data:
+		if not self.approver_link and self.file_data and self.request_type not in ["Archive", "Upgrade Validity"]:
 			ipa = self.create_ip_approver_form(self.validity_end_date, self.new_file_path)
 			self.approver_link = ipa.name
-			self.file_data = ""
 			self.file_status = status_dict.get(self.request_type)
 			self.prepare_for_approver_notification()
 			self.init_for_add_comment()
-		elif self.file_data:
+		elif self.file_data and self.approver_link:
 			ipa = frappe.get_doc("IP Approver", self.approver_link)		
 			ipa.file_path = self.new_file_path
 			ipa.save(ignore_permissions=True)
-			self.file_data = ""
 			self.file_status = status_dict.get(self.request_type)
 			self.init_for_add_comment()
 			self.prepare_for_approver_notification()
+		self.file_data = ""
+
 		
 	
 	def init_for_validity_upgradation(self):
@@ -107,6 +99,7 @@ class IPFile(Document):
 		ipa.skill_matrix_120 = self.skill_matrix_120
 		if self.request_type != "Upgrade Validity":
 			ipa.approver = self.file_approver
+			ipa.employee_name = self.employee_name
 		else:
 			ipa.approver = ""
 			ipa.level_of_approval = self.security_level
@@ -114,6 +107,7 @@ class IPFile(Document):
 		ipa.file_path = self.new_file_path
 		ipa.ip_file_requester = frappe.session.user
 		ipa.ip_file = self.name
+		ipa.level_of_approval = self.security_level
 		ipa.flags.ignore_mandatory = True
 		ipa.save(ignore_permissions=True)
 		return ipa	

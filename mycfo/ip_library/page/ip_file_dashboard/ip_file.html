@@ -1,9 +1,21 @@
 {% for(var i=0, l=file_data.length; i < l; i++) { %}
-<div class="panel panel-primary ip-file-panel" file-name = "{{ file_data[i].file_name }}" ip-file-name= "{{ file_data[i].name }}" file-url="{{ file_data[i].file_path }}"
-download-validity = "{{ file_data[i].download_validity_end_date }}" id="{{ i }}">
+<div class="{{ file_data[i].panel_class }}" file-name = "{{ file_data[i].file_name }}" ip-file-name= "{{ file_data[i].name }}" file-url="{{ file_data[i].file_path }}"
+download-validity = "{{ file_data[i].download_validity_end_date }}" id="{{ i }}" download-form= "{{ file_data[i].download_form }}">
       <div class="panel-heading panel-heading-custom2">{{ file_data[i].file_name }}
-		{% if (file_data[i].security_level == "0-Level" || frappe.datetime.str_to_obj(file_data[i].download_validity_end_date) > frappe.datetime.str_to_obj(frappe.datetime.now_datetime()) ) { %}
-		<button type="button" class="btn btn-success ip-download-button"><i class="icon-download"></i>Download</button>
+		{% if (file_data[i].security_level == "0-Level" || file_data[i].approval_status == "Download Allowed"  ) { %}
+			
+			{% if (file_data[i].download_validity_end_date) { %}
+				
+				{% if ( frappe.datetime.str_to_obj(file_data[i].download_validity_end_date) > frappe.datetime.str_to_obj(frappe.datetime.now_datetime()) ) { %}
+					<button type="button" class="btn btn-success ip-download-button"><i class="icon-download"></i>Download</button>
+				{% } else { %}
+					<button type="button" class="btn btn-success ip-request-button" >Make Request</button>
+				{% } %}
+
+			{% }  else { %}
+				<button type="button" class="btn btn-success ip-download-button"><i class="icon-download"></i>Download</button>
+			{% } %}
+
 		{% } else if( file_data[i].approval_status == "Pending" || file_data[i].approval_status == "Rejected by Approver" || file_data[i].approval_status == "Approved by Approver" )  { %}
 			<button type="button" class="btn btn-success ip-request-button disabled" >Request Pending</button>
 		{% } else  { %}
@@ -13,7 +25,7 @@ download-validity = "{{ file_data[i].download_validity_end_date }}" id="{{ i }}"
       <div class="panel-body row">
       <div class="col-xs-3">
       	<a href="#" class="thumbnail ip-file-thumbnail">
-      		<img src="/assets/mycfo/images/default.jpg" alt="Default Image">
+      		<img src="/assets/mycfo/images/default.jpg"  alt="Default Image">
     	</a>
       </div>
       <div class="col-xs-9">	
@@ -81,7 +93,10 @@ download-validity = "{{ file_data[i].download_validity_end_date }}" id="{{ i }}"
 		     		<div class="col-xs-8">
 		     			<div class="row comments-row">
 			     			{% for(var j=0, k=file_data[i].comments.length; j < k; j++) { %}
-	  								<div class="panel-body">{{ file_data[i].comments[j].comments }}</div><hr>
+	  								<div class="my-comment">
+	  									<div class="comment-by">{{ file_data[i].comments[j].full_name }}</div>
+	  									<div class="comment-text">{{ file_data[i].comments[j].comments }}</div>
+	  								</div>
 			     			{% } %}
 		     			</div>
 		     		</div>
