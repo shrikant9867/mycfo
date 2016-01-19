@@ -21,5 +21,11 @@ def get_data():
 			"icon": "octicon octicon-database",
 			"type": "module",
 			"label": _("IP Library")
+		},
+		"Trainings":{
+			"color": "#4aa3df",
+			"icon": "octicon octicon-device-camera-video",
+			"type": "module",
+			"label": _("Trainings")
 		}
 	}
