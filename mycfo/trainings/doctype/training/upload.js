@@ -20,6 +20,7 @@ upload = Class.extend({
 		this.$file_input.on("change", function() {
 			if (this.files.length > 0) {
 				var me = this;
+				var file_length = this.files.length
 				$.each(this.files, function(index, file_data){
 					var fileobj = me.files[index];
 					var freader = new FileReader();
@@ -28,19 +29,22 @@ upload = Class.extend({
 						console.log(index)
 						args = { "file_name":fileobj.name, "file_src":freader.result }
 						$(frappe.render_template("upload_file", args)).appendTo($(outer_me.wrapper).find(".uploaded-filename"));
+		 				if( file_length == index + 1){
+		 					outer_me.init_for_file_remove();
+		 				}
 		 			};
 		 			freader.readAsDataURL(fileobj);	
 
 				})				
-				outer_me.init_for_file_remove();
+				
 			}
 		});
 
 	},
 	init_for_file_remove:function(){
-		$(this.wrapper).on("click", $(this.wrapper).find(".uploaded-file-remove") ,function(event) {
+		$(this.wrapper).find(".uploaded-file-remove").click(function() {
 			console.log("remove")
-			$(event.target).closest(".file-row").remove()
+			$(this).closest(".file-row").remove()
 		});
 	},
 	init_for_attach_button:function(opts){
