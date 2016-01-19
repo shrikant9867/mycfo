@@ -213,7 +213,7 @@ class ProjectCommercial(Document):
 
 
 #if ("System Manager" not in frappe.get_roles(user)) and (user!="Administrator"):def get_permission_query_conditions(user):
-def get_permission_query_conditions(user):
+def get_permission_query_conditions_for_customer(user):
 	if not user: user = frappe.session.user
 	"""
 		If the user type is mycfo user then show him only the customers that he is linked with.
@@ -225,3 +225,33 @@ def get_permission_query_conditions(user):
 			WHERE name in (SELECT parent from `tabOperation And Project Details` WHERE email_id ='{0}')""".format(user),as_list=1)
 		name_list = "', '".join([customer[0] for customer in customer_list])
 		return """(`tabCustomer`.name in ('{name_list}'))""".format(name_list=name_list)
+
+
+
+def get_permission_query_conditions_for_project(user):
+	if not user: user = frappe.session.user
+	"""
+		If the user type is mycfo user then show him only the project that he is linked with.
+	"""
+	#pass
+	if "Mycfo User" in frappe.get_roles(user) and not user == "Administrator":
+		customer_list  = frappe.db.sql("""SELECT DISTINCT(project_commercial) 
+			from `tabOperation And Project Commercial` 
+			WHERE name in (SELECT parent from `tabOperation And Project Details` WHERE email_id ='{0}')""".format(user),as_list=1)
+		name_list = "', '".join([customer[0] for customer in customer_list])
+		return """(`tabProject Commercial`.name in ('{name_list}'))""".format(name_list=name_list)
+
+
+
+def get_permission_query_conditions_for_om(user):
+	if not user: user = frappe.session.user
+	"""
+		If the user type is mycfo user then show him only the operation matrix that he is linked with.
+	"""
+	#pass
+	if "Mycfo User" in frappe.get_roles(user) and not user == "Administrator":
+		customer_list  = frappe.db.sql("""SELECT DISTINCT(operational_id) 
+			from `tabOperation And Project Commercial` 
+			WHERE name in (SELECT parent from `tabOperation And Project Details` WHERE email_id ='{0}')""".format(user),as_list=1)
+		name_list = "', '".join([customer[0] for customer in customer_list])
+		return """(`tabOperational Matrix`.name in ('{name_list}'))""".format(name_list=name_list)
