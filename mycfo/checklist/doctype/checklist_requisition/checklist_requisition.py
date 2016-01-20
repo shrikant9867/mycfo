@@ -19,7 +19,6 @@ class ChecklistRequisition(Document):
 			self.name = make_autoname(self.checklist_name.upper()+ ' - ' +'.#####')		
 	def onload(self):
 		"""Load project tasks for quick view"""
-		print "onload"
 		if not self.get("cr_task"):
 			for task in self.get_tasks():
 				self.append("cr_task", {
@@ -29,7 +28,10 @@ class ChecklistRequisition(Document):
 					"end_date": task.expected_end_date,
 					"task_id": task.name,
 					"des": task.des,
-					"assignee": task.assignee
+					"assignee": task.assignee,
+					"user":task.user,
+					"actual_end_date":task.end_date,
+					"actual_time":task.actual_time
 				})
 
 	def __setup__(self):
@@ -39,7 +41,6 @@ class ChecklistRequisition(Document):
 		return frappe.get_all("Checklist Task", "*", {"project": self.name}, order_by="expected_start_date asc")	
 
 	def validate(self):
-		print "validate"
 		self.sync_tasks()
 		self.make_todo()
 		self.cr_task = []
@@ -63,6 +64,7 @@ class ChecklistRequisition(Document):
 				"expected_end_date": t.end_date,
 				"des": t.des,
 				"assignee":t.assignee,
+				"user":t.user,
 				"to_be_processed_for":self.to_be_processed_for,
 				"process_description":self.process_description,
 				"checklist_name":self.checklist_name,
@@ -73,25 +75,24 @@ class ChecklistRequisition(Document):
 			task.save(ignore_permissions = True)
 			t.task_id = task.name
 
-	def update_checklist_requisition(self):
-		print "update_checklist_requisition"
-		if self.cr_task:
-			for task in self.cr_task:
-				tl = frappe.db.sql("""select actual_start_date,actual_end_date,actual_time from `tabChecklist Task` where name = '{0}'""".format(task.task_id),as_list=1)
-				frappe.db.sql("""update `tabRequisition Task` set actual_start_date = '{0}',actual_end_date = '{1}',actual_time ='{2}' where task_id ='{3}'""".format(tl[0][0],tl[0][1],tl[0][2],task.task_id))	
-
+	# def update_checklist_requisition(self):
+	# 	print "update_checklist_requisition"
+	# 	if self.cr_task:
+	# 		for task in self.cr_task:
+	# 			tl = frappe.db.sql("""select name,end_date from `tabChecklist Task` where name = '{0}'""".format(task.task_id),as_list=1)
+	# 			print tl[0][0],tl[0][1]
+	# 			update = frappe.db.sql("""update `tabRequisition Task` set actual_end_date = '{0}' where task_id ='{1}' and parent = '{2}' """.format(tl[0][1],tl[0][0],self.name))	
+	# 			print update
+	# 			return update
 	
 	def make_todo(self):
 		if self.flags.dont_make_todo: return
 		
 		todo_names = []
-		print self.cr_task
 		for task in self.cr_task:
 			if task.task_id:
 				task_id = frappe.get_doc("Checklist Task", task.task_id)
-				print "in todo"
 				todo = frappe.db.get_value("ToDo",{'reference_name':task.task_id,'reference_type':task_id.doctype},'name')
-				print todo
 				# todo = frappe.db.sql("""select name as name from `tabToDo` where reference_type = '{0}' and reference_name = '{1}'""".format(task_id.doctype,task.task_id),as_dict=1)
 				if todo:
 					todo1 = frappe.get_doc("ToDo",todo)
@@ -112,7 +113,8 @@ class ChecklistRequisition(Document):
 			# "owner": t.task_name,
 			"role": task.assignee,
 			"reference_type": "Checklist Task",
-			"reference_name": task.task_id
+			"reference_name": task.task_id,
+			"owner": task.user
 		})
 		todo.flags.ignore_links = True
 		todo.flags.from_project = True
@@ -162,17 +164,9 @@ class ChecklistRequisition(Document):
 		closed_task = "{1} / {0} Closed".format(self.counter,sot.count("Closed"))
 		return closed_task
 
-	def get_task(self):
-		t_id = frappe.db.sql("""select name as name,title as title from `tabChecklist Task` where project = '{0}'""".format(self.name),as_dict=1)
-		print t_id
-		return t_id
-
 @frappe.whitelist()
 def filter_user(doctype, txt, searchfield, start, page_len, filters):
-	print "inside filter_user"
 	cr_task = filters['doc']['cr_task']
-	print cr_task
-	print cr_task[0]['assignee']
 	user_list = frappe.db.sql("""select t1.email from `tabUser` t1,`tabUserRole` t2 
 		where t1.name = t2.parent and t2.role = '{0}'""".format(cr_task[0]['assignee']),as_list =1)
 	return user_list														

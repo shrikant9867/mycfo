@@ -1,4 +1,4 @@
-frappe.ui.form.on("Checklist Task", {
+/*frappe.ui.form.on("Checklist Task", {
 	refresh: function(frm) {
 		var doc = frm.doc;
 		if(!doc.__islocal) {
@@ -10,7 +10,7 @@ frappe.ui.form.on("Checklist Task", {
 			}
 		}
 	}
-})
+})*/
 cur_frm.add_fetch('task', 'title', 'title');
 cur_frm.add_fetch('task','status','status');
 
@@ -24,7 +24,7 @@ cur_frm.fields_dict.ct_depend_task.grid.get_field("task").get_query = function(d
 	}
 }
 
-frappe.ui.form.on("Checklist Task","title",function(frm){
+/*frappe.ui.form.on("Checklist Task","title",function(frm){
 	var regex = /^[a-zA-Z, ]*$/
 	if(!regex.test(cur_frm.doc.title)) {
 		msgprint(__("Only Alphabets Are Allowed"))
@@ -32,9 +32,9 @@ frappe.ui.form.on("Checklist Task","title",function(frm){
 		refresh_field("title")
 		frm.reload();
 	}
-})
+})*/
 
-frappe.ui.form.on("Checklist Task","status",function(frm){
+/*frappe.ui.form.on("Checklist Task","status",function(frm){
 		return frappe.call({
 			method: "mycfo.checklist.doctype.checklist_task.checklist_task.get_timelog",
 			args:{
@@ -48,20 +48,29 @@ frappe.ui.form.on("Checklist Task","status",function(frm){
 			}
 		} 
 	})
-})
+})*/
 
-/*frappe.ui.form.on("Checklist Task","status",function(frm){
+frappe.ui.form.on("Checklist Task","status",function(frm){
 		return frappe.call({
 			method: "mycfo.checklist.doctype.checklist_task.checklist_task.get_close_date",
 			args:{
 				"doc":cur_frm.doc
 			},
 			callback: function(r) {
-				console.log(r.message)
 				if(r.message && cur_frm.doc.status == "Closed"){
 				cur_frm.doc.end_date = r.message 
 				refresh_field("end_date")
 			}
 		} 
 	})
-})*/				
+})
+
+frappe.ui.form.on("Checklist Task","status",function(frm){
+	if(cur_frm.doc.status == "Closed"){
+		var hour = (moment(cur_frm.doc.end_date).diff(moment(cur_frm.doc.expected_start_date),
+								"minutes") / 60);
+		console.log(hour)
+		cur_frm.doc.actual_time = hour
+		refresh_field('actual_time')
+	}	
+})				
