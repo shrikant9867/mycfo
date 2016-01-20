@@ -77,6 +77,6 @@ upload = Class.extend({
 			file_names.push($(data).attr("title")) 		
 		})
 		console.log(file_list)
-		attobj = this.opts.callback({"file_list":JSON.stringify(file_list), "file_names":file_names});
+		attobj = this.opts.callback({"file_list":file_list, "file_names":file_names});
 	}
 })

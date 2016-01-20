@@ -37,7 +37,7 @@ init_for_upload_training = function(frm, cdt, cdn){
 			if (file_data){
 				console.log("in if")
 				console.log(file_data)
-				frm.doc.training_file_data = file_data['file_list']
+				frm.doc.training_file_data = JSON.stringify(file_data['file_list'])
 				frm.doc.training_documents = file_data['file_names'].join('\n')
 				refresh_field(["training_file_data", "training_documents"])
 				me.dialog.hide();
