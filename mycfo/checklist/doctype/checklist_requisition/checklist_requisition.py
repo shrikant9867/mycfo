@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 import frappe
 import itertools
 from frappe import _
+import json
 from frappe.model.naming import make_autoname
 from frappe.utils import nowdate, getdate
 from frappe.model.document import Document
@@ -169,4 +170,9 @@ def filter_user(doctype, txt, searchfield, start, page_len, filters):
 	cr_task = filters['doc']['cr_task']
 	user_list = frappe.db.sql("""select t1.email from `tabUser` t1,`tabUserRole` t2 
 		where t1.name = t2.parent and t2.role = '{0}'""".format(cr_task[0]['assignee']),as_list =1)
-	return user_list														
+	return user_list
+
+# @frappe.whitelist()
+# def get_cr_task_details(doc):
+# 	current_doc = json.loads(doc)
+																

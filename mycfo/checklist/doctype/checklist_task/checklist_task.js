@@ -82,8 +82,6 @@ frappe.ui.form.on("Checklist Task","validate",function(frm){
 					cur_frm.set_value('actual_time',hour)
 				}
 				cur_frm.set_df_property("status","read_only",1)
-				/*cur_frm.doc.actual_time = hour
-				refresh_field('actual_time')*/
 			}	
 		})	
 	}	

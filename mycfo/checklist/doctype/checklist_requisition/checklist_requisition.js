@@ -24,8 +24,9 @@ frappe.ui.form.on("Checklist Requisition","refresh",function(frm){
 				if(r.message){
 					console.log("hello")
 					console.log(r.message)
-					cur_frm.doc.task_closed = r.message
+					cur_frm.set_value("task_closed",r.message)
 					refresh_field("task_closed")
+					/*cur_frm.save("");*/
 				}
 			}
 		})
@@ -89,14 +90,14 @@ frappe.ui.form.on("Requisition Task","start_date",function(frm,cdt,cdn){
 	var endDate = new Date(d.end_date)
 	if(startDate > endDate){
 		msgprint(__("'StartDate' Should Not Greater Than 'EndDate' For Task"))
-		d.end_date = ""
-		refresh_field("cr_task")
+		/*cur_frm.doc.cr_task[0].end_date = ""
+		refresh_field("cr_task")*/
 	}
 	var dd = moment().format('YYYY-MM-DD')
 	var current_date = new Date(dd)
 	if (startDate < current_date){
 		msgprint(__("'Start Date Should Not Past Date "))
-		d.end_date = ""
+		cur_frm.doc.cr_task[0].start_date = ""
 		refresh_field("cr_task")
 	}
 })
@@ -110,7 +111,11 @@ cur_frm.fields_dict.cr_task.grid.get_field("user").get_query = function(doc, cdt
 	}
 }
 
-frappe.ui.form.on("Checklist Requisition","checklist_name",function(frm,cdt,cdn){
+/*frappe.ui.form.on("Requisition Task","assignee",function(frm,cdt,cdn){
+	msgprint(__("'Not Change"))
+	cur_frm.reload_doc();	
+})*/
+/*frappe.ui.form.on("Checklist Requisition","checklist_name",function(frm,cdt,cdn){
 	console.log("refresh")
 	if(!frm.doc.__islocal){
 	frappe.meta.get_docfield('Requisition Task','assignee').read_only = 1
@@ -119,4 +124,4 @@ frappe.ui.form.on("Checklist Requisition","checklist_name",function(frm,cdt,cdn)
 		frappe.meta.get_docfield('Requisition Task','assignee').read_only = 0	
 	}
 	cur_frm.refresh_fields();
-})
+})*/
