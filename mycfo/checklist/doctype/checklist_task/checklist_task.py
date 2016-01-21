@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 import frappe
 from frappe import _
 import json
+import datetime
 from datetime import datetime, timedelta
 from frappe.utils import getdate, date_diff, add_days, cstr
 from frappe.model.document import Document
@@ -54,3 +55,12 @@ def get_close_date(doc):
 	Date = datetime.now()
 	return Date		
 		 
+@frappe.whitelist()
+def valid_hours(doc):
+	current_doc = json.loads(doc)
+	if current_doc.get('expected_start_date') and current_doc.get('end_date'):
+		from_date = datetime.strptime(current_doc.get('expected_start_date'), '%Y-%m-%d')
+		to_date = datetime.strptime(current_doc.get('end_date')[:-7], '%Y-%m-%d %H:%M:%S')
+		holiday_count = frappe.db.sql("""select count(*) from `tabHoliday List` h1,`tabHoliday` h2 
+		where h2.parent = h1.name and h1.name = 'Mycfo' and h2.holiday_date >= %s and  h2.holiday_date <= %s""",(from_date,to_date.date()),as_list=1)		
+		return holiday_count[0][0]			 
