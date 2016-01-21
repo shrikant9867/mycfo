@@ -3,7 +3,6 @@ frappe.ui.form.on("IP Approver", {
 	onload: function(frm) {
 	},
 	refresh:function(frm){
-		console.log("refresh")
 		if(frm.doc.docstatus == 0 && !frm.doc.__islocal) {
 			cur_frm.add_custom_button(__('Download'), function(){ 
 				var file_url = frm.doc.file_path;
@@ -17,17 +16,18 @@ frappe.ui.form.on("IP Approver", {
 			cd_fields = ["central_delivery_status", "central_delivery", "central_delivery_comments"]
 			
 		}else{
-			cd_fields = ["approver_status", "approver", "approver_comments"]																																																																																																																																																																																																																																																																
+			cd_fields = ["approver_status", "approver", "approver_comments"]
+			frm.doc.central_delivery = frappe.user.name
+			refresh_field(["central_delivery"])																																																																																																																																																																																																																																																															
 		}
-		$.each(cd_fields, function(index, value){
-				cur_frm.set_df_property(value, "read_only", 1);	
-		})
+		make_read_only_fields(cd_fields)
+		check_for_validity_upgrade()
+		
 	}
 });
 
 
 frappe.ui.form.on("IP Approver", "approver_status", function(frm){
-	console.log("adsjkhadk")
 	if(frm.doc.approver_status == "Approved"){
 		frm.doc.file_rejected =  "";
 		refresh_field(["file_rejected"])
@@ -57,6 +57,20 @@ cur_frm.set_query("central_delivery", function() {
 });
 
 cur_frm.cscript.validate = function(doc) {
-	console.log("in validate")
 	// refresh_field(["current_status"])
+}
+
+
+make_read_only_fields = function(cd_fields){
+	$.each(cd_fields, function(index, value){
+		cur_frm.set_df_property(value, "read_only", 1);	
+	})
+
+}
+
+check_for_validity_upgrade = function(){
+	if (cur_frm.doc.request_type == 'Upgrade Validity'){
+		fields = ["industry", "source", "skill_matrix_18", "skill_matrix_120", "file_description", "level_of_approval"]
+		make_read_only_fields(fields)
+	}
 } 

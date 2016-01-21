@@ -24,8 +24,6 @@ class IPDownloadApproval(Document):
 		self.prepare_for_user_notification()
 		level_mapper = {"1-Level":self.set_approval_status_for_level1, "2-Level":self.set_approval_status_for_level2}
 		level_mapper.get(self.level_of_approval)()
-		if self.approval_status == "Download Allowed":
-			self.validity_end_date = add_days(now(), 2)
 
 	def set_approval_status_for_level1(self):
 		status_dict = {"Rejected":"Rejected", "Approved":"Download Allowed"}
@@ -63,7 +61,8 @@ class IPDownloadApproval(Document):
 	def validate_for_level_1_document(self, roles):
 		if "Central Delivery" in roles:
 			frappe.throw("Central Delivery is not allowed to submit download request of Level-1 document")
-
+		if not self.approver_status:
+			frappe.throw("Approver Status is mandatory to submit download request of Level-1 document")	
 	
 	
 	def validate_for_level_2_document(self, roles):
