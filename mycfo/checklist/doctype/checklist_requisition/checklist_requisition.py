@@ -32,8 +32,12 @@ class ChecklistRequisition(Document):
 					"assignee": task.assignee,
 					"user":task.user,
 					"actual_end_date":task.end_date,
-					"actual_time":task.actual_time
-				})
+					"count":task.count
+					# "actual_time":task.actual_time
+				})		
+	
+	# def on_update(self):
+	# 	self.get_closed_task()		
 
 	def __setup__(self):
 		self.onload()
@@ -111,7 +115,6 @@ class ChecklistRequisition(Document):
 		todo.description = self.name
 		todo.update({
 			# ct:cr
-			# "owner": t.task_name,
 			"role": task.assignee,
 			"reference_type": "Checklist Task",
 			"reference_name": task.task_id,
@@ -143,36 +146,34 @@ class ChecklistRequisition(Document):
 		return tot_hol[0][0]
 
 	def get_status(self):
-		status_of_all = frappe.db.sql("""select status from `tabChecklist Task`t1 where t1.project = '{0}'""".format(self.name),as_list=1)
-		chain = itertools.chain(*status_of_all)
-		sot =  list(chain)
-		sot.count("Closed")
-		if(("Open" not in sot)and("WIP" not in sot)and("Awaiting Inputs" not in sot)and("Completed" not in sot)and("Hold" not in sot)and("Not Required" not in sot)and("Deferred" not in sot)):
-			return "Closed"
-		if(("Open" not in sot)and("Closed" not in sot)and("Awaiting Inputs" not in sot)and("Completed" not in sot)and("Hold" not in sot)and("Not Required" not in sot)and("Deferred" not in sot)):
-			return "WIP"
-		if(("Open" not in sot)and("WIP" not in sot)and("Awaiting Inputs" not in sot)and("Closed" not in sot)and("Hold" not in sot)and("Not Required" not in sot)and("Deferred" not in sot)):
-			return "Completed"		
-		else:
-			return "Open"
-
-	def get_closed_task(self):
-		status_of_all = frappe.db.sql("""select status from `tabChecklist Task`t1 where t1.project = '{0}'""".format(self.name),as_list=1)
-		chain = itertools.chain(*status_of_all)
-		sot =  list(chain)
-		number_of_task = frappe.db.sql("""select count(*) from `tabChecklist Task`t1 where t1.project = '{0}'""".format(self.name),as_dict=1)
-		self.counter = number_of_task[0]['count(*)']
-		closed_task = "{1} / {0} Closed".format(self.counter,sot.count("Closed"))
-		return closed_task
+		if(self.cr_task):
+			if(len(self.cr_task) == len(filter(lambda x: x.status=="Closed",self.cr_task))):
+				return "Closed"
+		# status_of_all = frappe.db.sql("""select status from `tabChecklist Task`t1 where t1.project = '{0}'""".format(self.name),as_list=1)
+		# chain = itertools.chain(*status_of_all)
+		# sot =  list(chain)
+		# sot.count("Closed")
+		# if(("Open" not in sot)and("WIP" not in sot)and("Awaiting Inputs" not in sot)and("Completed" not in sot)and("Hold" not in sot)and("Not Required" not in sot)and("Deferred" not in sot)):
+		# 	return "Closed"
+		# if(("Open" not in sot)and("Closed" not in sot)and("Awaiting Inputs" not in sot)and("Completed" not in sot)and("Hold" not in sot)and("Not Required" not in sot)and("Deferred" not in sot)):
+		# 	return "WIP"
+		# if(("Open" not in sot)and("WIP" not in sot)and("Awaiting Inputs" not in sot)and("Closed" not in sot)and("Hold" not in sot)and("Not Required" not in sot)and("Deferred" not in sot)):
+		# 	return "Completed"		
+		# else:
+		# 	return "Open"
 
 @frappe.whitelist()
 def filter_user(doctype, txt, searchfield, start, page_len, filters):
-	cr_task = filters['doc']['cr_task']
 	user_list = frappe.db.sql("""select t1.email from `tabUser` t1,`tabUserRole` t2 
-		where t1.name = t2.parent and t2.role = '{0}'""".format(cr_task[0]['assignee']),as_list =1)
+		where t2.parent = t1.name and t2.role = '{0}'""".format(filters['assignee']),as_list =1)
 	return user_list
 
-# @frappe.whitelist()
-# def get_cr_task_details(doc):
-# 	current_doc = json.loads(doc)
-																
+@frappe.whitelist()
+def list_view(name):
+	list_requisition = frappe.get_doc("Checklist Requisition",name)
+	counter = len(list_requisition.cr_task)
+	closed_count = len(filter(lambda x: x.status=="Closed",list_requisition.cr_task))
+	closed_task = "{1} / {0} Closed".format(counter,closed_count)
+	return closed_task
+
+

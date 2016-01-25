@@ -67,23 +67,19 @@ frappe.ui.form.on("Checklist Task","status",function(frm){
 
 frappe.ui.form.on("Checklist Task","validate",function(frm){
 	if(cur_frm.doc.status == "Closed"){
-		return frappe.call({
-			method: "mycfo.checklist.doctype.checklist_task.checklist_task.valid_hours",
-				args: {
-				"doc":cur_frm.doc
-			},
-			callback: function(r) {
-				var hour = (moment(cur_frm.doc.end_date).diff(moment(cur_frm.doc.expected_start_date),
-										"minutes") / 60);
-				if(r.message){
-					cur_frm.set_value('actual_time',(hour - r.message*24))
-				}
-				if(!r.message){
-					cur_frm.set_value('actual_time',hour)
-				}
-				cur_frm.set_df_property("status","read_only",1)
-			}	
-		})	
+		cur_frm.set_df_property("status","read_only",1);
+	}
+})
+
+
+
+frappe.ui.form.on("Checklist Task","refresh",function(frm){
+	if(cur_frm.doc.status == "Closed"){
+		var hour = (moment(cur_frm.doc.end_date).diff(moment(cur_frm.doc.expected_start_date),
+										"minutes") / 60);	
+		console.log(hour/24)
+		cur_frm.doc.count = hour/24
+		refresh_field("count")
 	}	
 })
 			

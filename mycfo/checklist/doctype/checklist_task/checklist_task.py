@@ -50,10 +50,19 @@ def get_timelog(doc):
 	if(not timelog):
 		return "Not Allowed Without Create Time Log Cannot Closed Task"
 
+def get_permission_query_conditions(user):
+	if not user: user = frappe.session.user
+
+	if not user == "Administrator":
+		return """(`tabChecklist Task`.user = '{0}')""".format(user)
+
+
+
+
 @frappe.whitelist()
 def get_close_date(doc):
 	Date = datetime.now()
-	return Date		
+	return Date.date()		
 		 
 @frappe.whitelist()
 def valid_hours(doc):
