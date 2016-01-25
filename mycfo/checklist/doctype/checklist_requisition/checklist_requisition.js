@@ -1,4 +1,10 @@
-frappe.ui.form.on("Checklist Requisition","refresh",function(frm){
+frappe.ui.form.on("Checklist Requisition",{
+	refresh: function(frm){
+		this.get_status(frm)
+		this.get_closed_task(frm)
+	}
+})
+get_status = function(frm){
 	if(cur_frm.doc.checklist_name){
 		return frappe.call({
 			method: "get_status",
@@ -12,9 +18,9 @@ frappe.ui.form.on("Checklist Requisition","refresh",function(frm){
 			}
 		})
 	}	
-})
+}
 
-frappe.ui.form.on("Checklist Requisition","refresh",function(frm){
+get_closed_task = function(frm){
 	if(cur_frm.doc.checklist_name){
 		return frappe.call({
 			method: "mycfo.checklist.doctype.checklist_requisition.checklist_requisition.list_view",
@@ -29,7 +35,7 @@ frappe.ui.form.on("Checklist Requisition","refresh",function(frm){
 			}
 		})
 	}		
-})
+}
 
 frappe.ui.form.on("Checklist Requisition","checklist_name",function(frm){
 	if(cur_frm.doc.checklist_name){
