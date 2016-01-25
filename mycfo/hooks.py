@@ -61,7 +61,8 @@ permission_query_conditions = {
 	"IP Download Approval":"mycfo.ip_library.doctype.ip_download_approval.ip_download_approval.get_permission_query_conditions",
 	"Customer":"mycfo.mycfo.doctype.project_commercial.project_commercial.get_permission_query_conditions_for_customer",
 	"Project Commercial":"mycfo.mycfo.doctype.project_commercial.project_commercial.get_permission_query_conditions_for_project",
-	"Operational Matrix":"mycfo.mycfo.doctype.project_commercial.project_commercial.get_permission_query_conditions_for_om"
+	"Operational Matrix":"mycfo.mycfo.doctype.project_commercial.project_commercial.get_permission_query_conditions_for_om",
+	"Checklist Task":"mycfo.checklist.doctype.checklist_task.checklist_task.get_permission_query_conditions"
 }
 #
 # has_permission = {
