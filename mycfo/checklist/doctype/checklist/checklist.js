@@ -6,6 +6,14 @@ frappe.ui.form.on("Process Task","tat",function(frm,cdt,cdn){
 	}
 })
 
+frappe.ui.form.on("Checklist", "validate", 
+function(frm){
+if(frm.doc.task){
+	console.log(frm.doc.task.length)
+	cur_frm.doc.counter = frm.doc.task.length
+	refresh_field('counter')
+}
+})
 /*frappe.ui.form.on("Process Task","task_name",function(frm,cdt,cdn){
 	var d  = locals[cdt][cdn];
 	var regex = /^[a-zA-Z, ]*$/

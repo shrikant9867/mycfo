@@ -11,18 +11,18 @@ def get_data():
 				{
 					"type": "doctype",
 					"name": "Checklist Requisition",
-					"description": _("Execute Checklist")
+					"description": _("Run Checklist")
 				},
 				{
 					"type": "doctype",
 					"name": "Checklist Task",
 					"description": _("Task Details")
-				},
-				{
-					"type": "doctype",
-					"name": "Checklist Time Log",
-					"description": _("Time Log Details"),
-				}	
+				}
+				# {
+				# 	"type": "doctype",
+				# 	"name": "Checklist Time Log",
+				# 	"description": _("Time Log Details"),
+				# }	
 			]
 		},
 
