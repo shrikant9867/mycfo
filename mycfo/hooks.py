@@ -58,7 +58,10 @@ fixtures = ['Custom Field', 'Property Setter', "Role"]
 permission_query_conditions = {
 	"IP File": "mycfo.ip_library.doctype.ip_file.ip_file.get_permission_query_conditions",
 	"IP Approver":"mycfo.ip_library.doctype.ip_approver.ip_approver.get_permission_query_conditions",
-	"IP Download Approval":"mycfo.ip_library.doctype.ip_download_approval.ip_download_approval.get_permission_query_conditions"
+	"IP Download Approval":"mycfo.ip_library.doctype.ip_download_approval.ip_download_approval.get_permission_query_conditions",
+	"Customer":"mycfo.mycfo.doctype.project_commercial.project_commercial.get_permission_query_conditions_for_customer",
+	"Project Commercial":"mycfo.mycfo.doctype.project_commercial.project_commercial.get_permission_query_conditions_for_project",
+	"Operational Matrix":"mycfo.mycfo.doctype.project_commercial.project_commercial.get_permission_query_conditions_for_om"
 }
 #
 # has_permission = {
@@ -90,9 +93,9 @@ scheduler_events = {
 	]
 }
 
-permission_query_conditions = {
-	"Customer":"mycfo.mycfo.doctype.project_commercial.project_commercial.get_permission_query_conditions"
-}
+# permission_query_conditions = {
+# 	"Customer":"mycfo.mycfo.doctype.project_commercial.project_commercial.get_permission_query_conditions"
+# }
 
 # Testing
 # -------
