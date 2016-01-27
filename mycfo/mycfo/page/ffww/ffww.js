@@ -204,6 +204,7 @@ frappe.ui.Tree1 = Class.extend({
 		// })
 		
 		$('#new-ffww-button').click(function(){
+			frappe.route_options = {"customer" :$("input[data-fieldname=customer_name]").val()};
 			new_doc('FFWW');
 		})
 	},
