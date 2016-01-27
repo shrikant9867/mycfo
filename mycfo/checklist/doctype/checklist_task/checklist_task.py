@@ -32,6 +32,7 @@ class ChecklistTask(Document):
 			for d in self.ct_depend_task:
 				if frappe.db.get_value("Checklist Task", d.task, "status") != "Closed":
 					frappe.throw(_("Cannot close task as its dependant task {0} is not closed.").format(d.task))
+					self.status = "Open"
 
 	# def update_time(self):
 	# 	tl = frappe.db.sql("""select min(from_time) as start_date, max(to_time) as end_date,
@@ -72,4 +73,15 @@ def valid_hours(doc):
 		to_date = datetime.strptime(current_doc.get('end_date')[:-7], '%Y-%m-%d %H:%M:%S')
 		holiday_count = frappe.db.sql("""select count(*) from `tabHoliday List` h1,`tabHoliday` h2 
 		where h2.parent = h1.name and h1.name = 'Mycfo' and h2.holiday_date >= %s and  h2.holiday_date <= %s""",(from_date,to_date.date()),as_list=1)		
-		return holiday_count[0][0]			 
+		return holiday_count[0][0]
+
+@frappe.whitelist()
+def filter_task(doctype, txt, searchfield, start, page_len, filters):
+	print "start"
+	# print filters['doc']['ct_depend_task']
+	# for task in filters['doc']['ct_depend_task']:
+	# 	print type(task['task'])	
+		# print "End"	
+	task_list = frappe.db.sql("""select name from `tabChecklist Task` where name <> '{0}' and name <> {} and status = "Open" and project = '{1}'""".format(filters['doc']['name'],filters['doc']['project']),as_list=1)
+	print task_list
+	return task_list				 

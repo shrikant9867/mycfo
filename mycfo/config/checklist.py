@@ -25,7 +25,6 @@ def get_data():
 				# }	
 			]
 		},
-
 		{
 			"label": _("Masters"),
 			"icon": "icon-star",

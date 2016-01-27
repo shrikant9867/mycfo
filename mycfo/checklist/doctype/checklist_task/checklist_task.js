@@ -14,25 +14,35 @@
 cur_frm.add_fetch('task', 'title', 'title');
 cur_frm.add_fetch('task','status','status');
 
-cur_frm.fields_dict.ct_depend_task.grid.get_field("task").get_query = function(doc) {
+/*cur_frm.fields_dict.ct_depend_task.grid.get_field("task").get_query = function(doc) {
 	return {
 		filters: [
 			['Checklist Task','project','=',cur_frm.doc.project],
 			['Checklist Task', 'name', '!=', cur_frm.doc.name],
-			['Checklist Task', 'status', '=', 'Open'] 
+			['Checklist Task', 'status', '=', 'Open']
 		]
 	}
-}
-
-/*frappe.ui.form.on("Checklist Task","title",function(frm){
-	var regex = /^[a-zA-Z, ]*$/
-	if(!regex.test(cur_frm.doc.title)) {
-		msgprint(__("Only Alphabets Are Allowed"))
-		cur_frm.doc.title = "",
-		refresh_field("title")
-		frm.reload();
+}*/
+cur_frm.fields_dict.ct_depend_task.grid.get_field("task").get_query = function(doc) {
+	if(cur_frm.doc.ct_depend_task.length == 1){	
+		return {
+			filters: [
+				['Checklist Task','project','=',cur_frm.doc.project],
+				['Checklist Task', 'name', '!=', cur_frm.doc.name],
+				['Checklist Task', 'status', '=', 'Open']
+			]
+		}
 	}
-})*/
+	if(cur_frm.doc.ct_depend_task.length > 1){
+		return {
+			query: "mycfo.checklist.doctype.checklist_task.checklist_task.filter_task",
+			filters: {
+					'doc': cur_frm.doc
+			}
+		}
+	}
+}		
+
 
 /*frappe.ui.form.on("Checklist Task","status",function(frm){
 		return frappe.call({
@@ -66,9 +76,15 @@ frappe.ui.form.on("Checklist Task","status",function(frm){
 })
 
 frappe.ui.form.on("Checklist Task","validate",function(frm){
-	if(cur_frm.doc.status == "Closed"){
+	if(cur_frm.doc.status == "Closed" && !cur_frm.doc.ct_depend_task){
 		cur_frm.set_df_property("status","read_only",1);
+		cur_frm.set_df_property("ct_depend_task","read_only",1);
 	}
+	/*if(cur_frm.doc.ct_depend_task){
+		msgprint(__("Please select Company first"));
+		cur_frm.set_value("status","Open")
+		refresh_field('status')
+	}*/
 })
 
 

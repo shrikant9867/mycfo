@@ -2,6 +2,7 @@ frappe.ui.form.on("Checklist Requisition",{
 	refresh: function(frm){
 		this.get_status(frm)
 		this.get_closed_task(frm)
+		this.checklist_name(frm)
 	}
 })
 get_status = function(frm){
@@ -37,12 +38,23 @@ get_closed_task = function(frm){
 	}		
 }
 
+checklist_name = function(frm){
+	if(cur_frm.doc.checklist_name){
+		cur_frm.set_df_property("checklist_name","read_only",1)
+	}
+}
+
+
 frappe.ui.form.on("Checklist Requisition","checklist_name",function(frm){
 	if(cur_frm.doc.checklist_name){
 		return frappe.call({
 			method: "get_tasks_detail",
-			doc: frm.doc,
+			doc: cur_frm.doc,
 			callback: function(r) {
+			if(cur_frm.doc.cr_task){
+				cur_frm.doc.cr_task = ""
+				refresh_field("cr_task")
+			}
 			$.each(r.message, function(i, d) {
 				var row = frappe.model.add_child(cur_frm.doc, "Requisition Task", "cr_task");
 				row.task_name = d.task_name;
@@ -51,11 +63,14 @@ frappe.ui.form.on("Checklist Requisition","checklist_name",function(frm){
 				row.des = d.des;
 				row.assignee = d.assignee;
 				cur_frm.set_value('expected_start_date',d.start_date)
-				});
 				refresh_field("cr_task");
+				});	
 			}
 		})
 		/*frappe.meta.get_docfield('Requisition Task','assignee', frm.doc.docname).read_only = 1*/
+	}
+	if(cur_frm.doc.checklist_name == ""){
+		console.log("hhh")
 	}
 })
 
