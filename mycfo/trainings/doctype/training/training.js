@@ -11,7 +11,9 @@ frappe.ui.form.on("Training", {
 	refresh: function(frm, cdt, cdn){
 		console.log("refresh")
 		if (frm.doc.__islocal)
-			cur_frm.add_custom_button(__('Upload Training'), function(){ init_for_upload_training(frm, cdt, cdn) });	
+			cur_frm.add_custom_button(__('Upload Training'), function(){ init_for_upload_training(frm, cdt, cdn) });
+		else
+			make_fields_read_only(frm)		
 	}
 })
 
@@ -35,15 +37,11 @@ init_for_upload_training = function(frm, cdt, cdn){
 		},
 		callback: function(file_data) {
 			if (file_data){
-				console.log("in if")
-				console.log(file_data)
 				frm.doc.training_file_data = JSON.stringify(file_data['file_list'])
 				frm.doc.training_documents = file_data['file_names'].join('\n')
 				refresh_field(["training_file_data", "training_documents"])
 				me.dialog.hide();
-			}	
-			console.log("in callback")
-			console.log(file_data)		
+			}
 		},
 		onerror: function() {
 			me.dialog.hide();
@@ -54,3 +52,17 @@ init_for_upload_training = function(frm, cdt, cdn){
 }
 
 
+make_fields_read_only = function(frm){
+	var fields = ["evaluator" ,"assessment"]
+	$.each(fields ,function(index, value){
+		cur_frm.set_df_property(value, "read_only", 1)
+	}) 
+
+}
+
+
+cur_frm.fields_dict.assessment.get_query = function(doc, cdt, cdn){
+	return {
+		filters:{"training_name":"", "assessment_type":"Question Sheet"}
+	}
+}
