@@ -35,6 +35,10 @@ frappe.ui.form.on("FFWW", {
 				frappe.set_route("FFWW", "mycfo");
 			});
 		}
+		if(frappe.route_options){
+			frm.doc.customer = frappe.route_options.customer
+			refresh_field("customer")
+		}
 	},
 	
 });
