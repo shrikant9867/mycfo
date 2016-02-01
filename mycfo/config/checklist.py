@@ -37,18 +37,22 @@ def get_data():
 			]
 		},
 		{
-			"label": _("Main Reports"),
+			"label": _("Standard Reports"),
 			"icon": "icon-star",
 			"items": [
 				{
-					"type": "doctype",
-					"name": "Process Wise Tasks",
-					"description": _("Tasks Details"),
+					"type": "report",
+					"is_query_report": True,
+					"name": "Checklist Requisition Analysis",
+					"description": _("Process/Checklist Report"),
+					"doctype": "Checklist Requisition",
 				},
 				{
-					"type": "doctype",
-					"name": "Process Templates",
-					"description": _("Process Details"),
+					"type": "report",
+					"is_query_report": True,
+					"name": "Task Wise Analysis",
+					"description": _("Tasks Report"),
+					"doctype": "Checklist Task",
 				}
 			]
 		},	
