@@ -1,0 +1,16 @@
+<style>
+	.active{
+		background-color:#73AD21!important;
+		color:#ffffff !important;
+	}
+	.head{
+		background-color:#0072BC!important;
+		color:#ffffff !important;
+	}
+</style>
+<div class="list-group">
+	<a><div class="list-group-item head">Categories</div></a>
+	{% for(var i=0, l=post.length; i < l; i++) { %}
+		<a class="category list-group-item" data-name="{{ post[i].name }}" data-label="{{ post[i].title }}">{{ post[i].title }}</a>
+	{% } %}
+</div>

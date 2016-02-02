@@ -1,0 +1,21 @@
+{
+ "content": null, 
+ "creation": "2016-01-27 11:14:42.699617", 
+ "docstatus": 0, 
+ "doctype": "Page", 
+ "modified": "2016-01-27 11:14:42.699617", 
+ "modified_by": "Administrator", 
+ "module": "Discussion Forum", 
+ "name": "discussion-forum", 
+ "owner": "Administrator", 
+ "page_name": "Discussion Forum", 
+ "roles": [
+  {
+   "role": "All"
+  }
+ ], 
+ "script": null, 
+ "standard": "Yes", 
+ "style": null, 
+ "title": "Discussion Forum"
+}

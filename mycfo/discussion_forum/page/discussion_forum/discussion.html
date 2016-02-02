@@ -1,0 +1,49 @@
+<div class="row">
+		<div class="col-sm-12" style="padding-right:0px;padding-left:0px">
+			<div data-html-block="header" style="background-color:#0072BC;padding-left:10px;padding-bottom:4px;">
+				<h1 style="margin-top:0px!important;padding-top:4px;color:#ffffff;margin-bottom:0px"><strong>{{ title }}</strong></h1>
+				<p class="small text-muted blog-info"><i>
+						<span itemprop="author" style="color:#ffffff">{{ employee_name }}</span>,
+						<span itemprop="dateCreated" style="color:#ffffff">{{ published_on }}</span>
+					</i>	
+	    		</p>
+			</div>
+		</div>
+		<div class="col-sm-4 hidden">
+			<div class="page-header-actions-block" data-html-block="header-actions"></div>
+		</div>
+	<!-- <div class="page-breadcrumbs" data-html-block="breadcrumbs">
+		<ul class="breadcrumb">
+			<li>
+				<span class="icon icon-angle-left"></span>
+				<a href="/blog/general">General</a>
+			</li>
+		</ul>
+	</div> -->
+	<div class="page-content-block col-sm-12">
+		<article class="blog-content" itemscope="" itemtype="http://schema.org/BlogPost">
+		<!-- begin blog content -->
+			<div itemprop="articleBody" class="longform blog-text">
+				{{ content }}
+			</div>
+		<!-- end blog content -->
+		</article>
+		<div class="col-sm-12">
+			<div class="col-sm-9">
+				<h2>Comments</h2>
+			</div>
+			<div class="col-sm-3" style="padding-top:20px;">
+				<a class="add-comment btn btn-default btn-sm">Add Comment</a>
+			</div>
+		</div>
+		<div class="blog-comments">
+			<div class="no-comment" style="display: none;">
+				<p class="text-muted">Start a new discussion.</p>
+				<br>
+			</div>
+			<hr>
+			<div itemscope="" class="comment-list" itemtype="http://schema.org/UserComments" id="comment-list">
+			</div>
+	</div>
+</div>
+</div>

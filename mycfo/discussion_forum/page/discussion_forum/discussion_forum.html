@@ -1,0 +1,40 @@
+
+<div class="blog-list-content">
+	<div id="blog-list">
+	    <div class="website-list" data-doctype="Blog Post" data-txt="[notxt]">
+        <!--  -->
+        	<div style="background-color:#0072BC;padding-left:10px;padding-bottom:4px;">
+				<h1 style="margin-top:0px!important;padding-top:4px;color:#ffffff;margin-bottom:0px"><Strong>Discussion Topics</strong></h1>
+				<h6 style="color:#ffffff;padding-bottom:2px"><i>Topics category-<strong> <span class="dis-cat">ALL</span></strong></i></h6>
+			</div>
+			{% if (post.length) { %}
+	    		<div class="result">
+	    			<!-- {%- set post = result.doc -%} -->
+	    			{% for(var i=0, l=post.length; i < l; i++) { %}
+			   			<div class="row web-list-item">
+							<div class="col-xs-12">
+								<h3><a class="title" data-name="{{ post[i].name }}">{{ post[i].title }}</a></h3>
+								<p class="post-description">{{ post[i].content }}</p>
+								<p class="text-muted small post-meta">
+									<a class="no-decoration user_name" data-name="{{ post[i].employee_name }}">{{ post[i].employee_name }}</a> /  {{ post[i].published_on }} /
+						            <a class="no-decoration category" data-name="{{ post[i].blog_category }}">{{ post[i].blog_category }}</a> /
+						                {{ post[i].comment_text }}/
+						            {% if (post[i].assigned) { %}
+										<span class="label label-default" style="background-color:#0072BC;color:#ffffff">Assinged to You</span>
+									{% } %}</p>
+							</div>
+			   			</div>
+		   			{% } %}
+	    		</div>
+		    	<div class="more-block hide">
+		    		<button class="btn btn-default btn-more btn-sm">More</button>
+		    	</div>
+		    {% } else { %}
+		    	<div class="text-muted" style="min-height: 200px;text-align:center;padding-top:80px">
+    				<Strong>No posts</Strong>
+    			</div>
+		   	{% } %}
+
+    	</div>
+	</div>
+</div>
