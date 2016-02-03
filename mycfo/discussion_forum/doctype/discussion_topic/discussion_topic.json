@@ -47,7 +47,7 @@
    "print_hide": 0, 
    "read_only": 0, 
    "report_hide": 0, 
-   "reqd": 0, 
+   "reqd": 1, 
    "search_index": 0, 
    "set_only_once": 0, 
    "unique": 0
@@ -180,7 +180,7 @@
    "print_hide": 0, 
    "read_only": 0, 
    "report_hide": 0, 
-   "reqd": 0, 
+   "reqd": 1, 
    "search_index": 0, 
    "set_only_once": 0, 
    "unique": 0
@@ -239,7 +239,7 @@
  "issingle": 0, 
  "istable": 0, 
  "max_attachments": 5, 
- "modified": "2016-01-29 16:40:16.335178", 
+ "modified": "2016-02-03 22:36:19.883805", 
  "modified_by": "Administrator", 
  "module": "Discussion Forum", 
  "name": "Discussion Topic", 

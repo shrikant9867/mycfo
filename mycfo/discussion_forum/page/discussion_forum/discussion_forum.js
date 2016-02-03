@@ -305,7 +305,7 @@ df.discussion_forum = Class.extend({
 				$('a.category').removeClass('active')
 				me.user_name.input.value = ''
 				me.make_topic(me.search_topic.input.value)
-			}).appendTo('.top')
+			}).appendTo('.top').css({"background-color":"#0072BC","color":"#ffffff","border-radius":"1px"})
 	},
 	make_user_filter:function(){
 		var me = this;
@@ -323,10 +323,9 @@ df.discussion_forum = Class.extend({
 		this.user_name.make_input();
 		$('<button btn btn-primary btn-sm primary-action>\
 			Get Topics</button>').on("click",function(){
-				//$('a.category').removeClass('active')
 				me.search_topic.input.value = ''
 				me.get_discussions({"user":me.user_name.input.value})
-			}).appendTo('.usr')
+			}).appendTo('.usr').css({"background-color":"#0072BC","color":"#ffffff","border-radius":"1px"})
 	},
 	show_comment_dailog:function(topic_name){
 		var me = this;
