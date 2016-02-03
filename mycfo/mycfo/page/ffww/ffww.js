@@ -1,59 +1,60 @@
 frappe.pages['FFWW'].on_page_load = function(wrapper) {
-	$("#main-div").remove();
 	var page = frappe.ui.make_app_page({
 		parent: wrapper,
 		title: 'FFWW',
 		single_column: true
 	});
 
-	$("<div class='user-settings' id ='main-div'></div>").appendTo(page.main);
+	$("<div class='ffww-settings' id ='main-div'></div>").appendTo(page.main);
 
 	wrapper.FFWW = new FFWW(wrapper);
 }
 
 frappe.pages['FFWW'].on_page_show = function(wrapper) {
-	if(!frappe.route_options){
-		$("#main-div").empty();
-		wrapper.FFWW = new FFWW1(wrapper);
-	}
-	$("#main-div").empty();
-		wrapper.FFWW = new FFWW1(wrapper);
+	// if(!frappe.route_options){
+	// 	// $("#main-div").empty();
+	// 	wrapper.FFWW = new FFWW1(wrapper);
+	// }else{
+	// 	wrapper.FFWW.refresh();
+	// }
+	wrapper.FFWW.refresh();
+	// wrapper.FFWW = new FFWW(wrapper);	
 }
 
-FFWW1 = Class.extend({
-	init: function(wrapper) {
-		this.wrapper = wrapper;
-		this.body = $(this.wrapper).find(".user-settings");
-		this.filters = {};
-		this.render();
-	},
-	render: function(){
-		var me = this
-		me.body.make_tree = function() {
-			var ctype = 'Category';
+// FFWW1 = Class.extend({
+// 	init: function(wrapper) {
+// 		this.wrapper = wrapper;
+// 		this.body = $(this.wrapper).find(".user-settings");
+// 		this.filters = {};
+// 		this.render();
+// 	},
+// 	render: function(){
+// 		var me = this
+// 		me.body.make_tree = function() {
+// 			var ctype = 'Category';
 			
-			var customer = $('input[data-fieldname=customer_name]').val()
-			return frappe.call({
-				method: 'mycfo.mycfo.doctype.ffww_details.ffww_details.get_children',
-				args: {ctype: ctype , customer: customer},
-				callback: function(r) {
-					var root = 'Category';
-					dms = new DMS(ctype, customer ,root,me.body);
-				}
-			});
-	}
-	me.body.make_tree();
+// 			var customer = $('input[data-fieldname=customer_name]').val()
+// 			return frappe.call({
+// 				method: 'mycfo.mycfo.doctype.ffww_details.ffww_details.get_children',
+// 				args: {ctype: ctype , customer: customer},
+// 				callback: function(r) {
+// 					var root = 'Category';
+// 					dms = new DMS(ctype, customer ,root,me.body);
+// 				}
+// 			});
+// 	}
+// 	me.body.make_tree();
 
-	},
+// 	},
 
 
-})
+// })
 
 FFWW = Class.extend({
 	init: function(wrapper) {
 		this.wrapper = wrapper;
 		this.deactivation_list = []
-		this.body = $(this.wrapper).find(".user-settings");
+		this.body = $(this.wrapper).find(".ffww-settings");
 		this.filters = {};
 		this.make();
 		this.refresh();
@@ -68,18 +69,20 @@ FFWW = Class.extend({
 					read_only:1
 		});
 
-		if(frappe.route_options)
-			me.filters.customer_name.input.value= frappe.route_options['customer']
-
 		$(me.filters.customer_name.input).attr('disabled',true)
 	},
 	refresh: function(){
-		var me = this
+		var me = this;
+
+		if (frappe.route_options){
+			me.filters.customer_name.input.value = frappe.route_options['customer']
+			frappe.route_options = null;	
+		}
+		
+
 		me.body.make_tree = function() {
 			var ctype = 'Category';
-			if(frappe.route_options)
-				var customer = frappe.route_options['customer']
-
+			var customer = me.filters.customer_name.input.value
 			return frappe.call({
 				method: 'mycfo.mycfo.doctype.ffww_details.ffww_details.get_children',
 				args: {ctype: ctype , customer: customer},
@@ -171,7 +174,7 @@ frappe.ui.Tree1 = Class.extend({
 		$.extend(this, args);
 		this.nodes = {};
 
-		this.$w = $('<div class="col-md-12 row" id ="newbuttons" ><p style="float:right;text-align=right"><button class="btn btn-sm btn-default btn-address"><a id="new-button">ADD FFWW / CONTACT</a></button></p></div><div class="col-md-12 tree">\
+		this.$w = $('<div class="col-md-12 row" id ="newbuttons" ><p style="float:right;text-align=right"><button class="btn btn-sm btn-default btn-address"><a id="new-ffww-button">ADD FFWW / CONTACT</a></button></p></div><div class="col-md-12 tree">\
 			<div class="col-md-4" id ="designation"></div>\
 		<div class="col-md-4" id ="contact"></div>\
 		<div class="col-md-4" id ="address"></div></div>').appendTo(this.parent);
@@ -192,15 +195,16 @@ frappe.ui.Tree1 = Class.extend({
 		this.rootnode.toggle();
 
 
-		$('#new').click(function(){
-			new_doc('Contact');
-		})
+		// $('#new').click(function(){
+		// 	new_doc('Contact');
+		// })
 
-		$('#new_add').click(function(){
-			new_doc('Contact');
-		})
+		// $('#new_add').click(function(){
+		// 	new_doc('Contact');
+		// })
 		
-		$('#new-button').click(function(){
+		$('#new-ffww-button').click(function(){
+			frappe.route_options = {"customer" :$("input[data-fieldname=customer_name]").val()};
 			new_doc('FFWW');
 		})
 	},

@@ -18,17 +18,17 @@ cur_frm.add_fetch('currency','symbol','currency_symbol');
 frappe.ui.form.on("Project Commercial", {
 
 	onload: function(frm){
-		if(cur_frm.doc.doctype==="Project Commercial"){
-			if(frappe.route_history){
-				var doctype = frappe.route_history[0][1],
-					docname = frappe.route_history[0][2],
-					refdoc = frappe.get_doc(doctype, docname);
-				cur_frm.set_value("customer", $('input[data-fieldname=customer_nm]').val());
+		if(frappe.route_options){
+			if(Object.keys(frappe.route_options).length){
+				console.log(frappe.route_history)
+				refdoc = frappe.get_doc("Customer", frappe.route_options["customer_name"]);
+				cur_frm.set_value("customer", frappe.route_options["customer_name"]);
 				cur_frm.set_value("currency",refdoc.currency)
 				cur_frm.set_value("country",refdoc.country)
+				frappe.route_options = null
 			}
 		}
-
+			
 	},
 	refresh: function(frm) {
 		if(frm.doc.currency){
