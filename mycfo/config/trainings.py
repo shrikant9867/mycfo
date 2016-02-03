@@ -22,6 +22,16 @@ def get_data():
 					"type": "doctype",
 					"name": "Assessment",
 					"description": _("Make Assessment for trainings.")
+				},
+				{
+					"type": "doctype",
+					"name": "Answer Sheet",
+					"description": _("Evaluate answer sheet.")
+				},
+				{
+					"type": "doctype",
+					"name": "Training Subscription Approval",
+					"description": _("Approve training subscription requests.")
 				}
 				
 			]

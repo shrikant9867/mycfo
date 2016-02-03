@@ -1,0 +1,36 @@
+<div class="container online-training-test">
+	<div class="row">
+		<div class="col-xs-9 question-div"></div>
+		<div class="col-xs-3">
+			<div class="question-set-list row well">
+				<div class="question-ul">
+				{% var index = 0 %}
+				{% for(var qtn in qtn_keys ) { %}
+						{% if( qtn_dict[ qtn_keys[qtn] ].visited_flag  == 1 ) { %}
+							{% if(qtn_dict[ qtn_keys[qtn] ].user_answer || qtn_dict[ qtn_keys[qtn] ].user_subjective_answer) { %}
+							<div class="qtn-div attempted-qtn" id="{{ qtn_keys[qtn] }}" index="{{ index + 1 }}">{{ index + 1 }}</div>
+							{% } else { %}
+								<div class="qtn-div skipped-qtn" id="{{ qtn_keys[qtn] }}" index="{{ index + 1 }}" >{{ index + 1 }}</div>
+							{% } %}
+
+						{% } else { %}
+							<div class="qtn-div non-visited-qtn" id="{{ qtn_keys[qtn] }}" index="{{ index + 1 }}" >{{ index + 1 }}</div>	
+						{% } %}
+					{% index+=1 %}		
+				{% } %}
+				</div>
+				<hr>
+				<div class="row indicator-row">
+					<div><div class="attempted"></div>Attempted</div>
+					<div><div class="not-visited"></div>Not Visited</div>
+					<div><div class="skipped"></div>Not attempted or skipped</div>	
+				</div>
+			</div>		
+		</div>
+	</div>
+	<div class="next-prev-div row">
+		<button type="button" class="btn btn-success prev-qtn">Previous</button>
+		<button type="button" class="btn btn-success next-qt">Next</button>
+		<button type="button" class="btn btn-success end-test">End Test</button>
+	</div>
+</div>

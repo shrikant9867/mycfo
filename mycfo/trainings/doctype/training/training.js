@@ -63,6 +63,6 @@ make_fields_read_only = function(frm){
 
 cur_frm.fields_dict.assessment.get_query = function(doc, cdt, cdn){
 	return {
-		filters:{"training_name":"", "assessment_type":"Question Sheet"}
+		filters:{"training_name":""}
 	}
 }

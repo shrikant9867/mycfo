@@ -1,0 +1,117 @@
+
+.instruction-panel{
+	margin-left: 30px;
+	margin-right: 70px;
+	margin-top: 40px;
+}
+
+.start-test {
+	float: right;
+	margin-right: 100px;
+}
+
+.instructions{
+	margin-left: 50px;
+}
+
+.question-panel{
+	margin-left: 20px;
+	margin-right:20px;
+	margin-top: 35px;
+}
+
+.question{
+	margin-left: 40px;
+}
+
+
+.next-prev-div{
+	margin-left: 130px; 
+}
+
+.next-qt, .prev-qtn, .end-test{
+	margin-left:10px;
+	margin-bottom: 100px;
+}
+
+.question-set-list{
+	margin-right:50px;
+	margin-top: 35px;
+}
+
+
+
+div.question-ul {
+    padding: 0;
+    display: block;
+}
+
+div.question-ul div {
+    display: inline-block;
+  	width: 25px;
+    height: 25px;
+    margin-left: 5px;
+    margin-right: 5px;
+    border-radius: 3px 3px 3px 3px;
+    color: white;
+    cursor: pointer;
+}
+
+.attempted-qtn{
+    background-color:#060;
+}
+
+.skipped-qtn{
+    background-color:#f00;
+
+}
+
+.non-visited-qtn{
+    background-color:#000;
+}
+
+div.question-ul div:hover {
+    background-color: orange;
+}
+
+.attempted{
+	width: 15px;
+    height: 15px;
+    background: #060;
+    float: left;
+    margin-right: 10px;
+}
+
+.not-visited{
+	width: 15px;
+    height: 15px;
+    background: #000;
+    float: left;
+    margin-right: 10px;
+
+}
+
+.skipped{
+	width: 15px;
+    height: 15px;
+    background: #f00;
+    float: left;
+    margin-right: 10px;
+
+}
+.qtn-div{
+	text-align:center;
+	margin-top:4px;
+	margin-bottom: 4px;  
+}
+.question-set-list{
+	/*border: 1px solid #cccccc;*/
+}
+
+.indicator-row{
+	margin-left: 10px;
+}
+
+.subj-ans-div{
+    margin-right:100px; 
+}
