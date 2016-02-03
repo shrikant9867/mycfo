@@ -62,8 +62,9 @@ def get_data(category=None,user=None,page_no=0,limit=3):
 			post.comment_text = _('{0} comments').format(str(post.comments))
 
 	total_records = get_total_topics(conditions)
+	paginate = True if total_records > limit else False
 	total_pages = math.ceil(total_records/flt(limit))
-	return posts,total_pages,int(page_no)+1  if posts else {}
+	return posts,total_pages,int(page_no)+1,paginate  if posts else {}
 
 def check_if_assigned(post):
 	assigned = frappe.db.get_value("ToDo",
@@ -88,17 +89,18 @@ def get_post(topic_name):
 def get_comments(topic_name,page_no=0,limit=3):
 	comment_list = get_comment_list("Discussion Topic",topic_name,page_no,limit)
 	total_records = get_comment_count(topic_name)
+	paginate = True if total_records > limit else False
 	total_pages = math.ceil(total_records/flt(limit))
 	page_no = int(page_no) + 1
 	for comment in comment_list:
 		ratings = get_rating_details(comment)
+		comment["creation"] = comment.creation.strftime('%d-%m-%Y,%I:%M %p')
 		comment.update({
 			"average_rating":ratings.get("avg",0.0),
 			"ratings":ratings.get("ratings",0),
 			"user_rating":ratings.get("user_rating")
 		})
-	print comment_list,total_pages,page_no
-	return comment_list,total_pages,page_no
+	return comment_list,total_pages,page_no,paginate
 
 def get_comment_count(topic_name):
 	return frappe.get_list("Comment",fields=["count(*)"],

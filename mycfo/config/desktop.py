@@ -24,8 +24,9 @@ def get_data():
 		},
 		"Discussion Forum": {
 			"color": "#8e44ad",
-			"icon": "octicon octicon-database",
-			"type": "module",
-			"label": _("Discussion Forum")
+			"icon": "octicon octicon-organization",
+			"type": "page",
+			"label": _("Discussion Forum"),
+			"link":"discussion-forum"
 		}
 	}

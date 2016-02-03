@@ -13,7 +13,7 @@ df.discussion_forum = Class.extend({
 		this.parent = parent;
 		this.make_page();
 		this.get_discussions({});
-		this.get_categories();
+		this.make_sidebar()
 	},
 	make_page: function() {
 		if (this.page)
@@ -25,14 +25,34 @@ df.discussion_forum = Class.extend({
 		this.page = this.parent.page;
 		this.wrapper = $('<div></div>').appendTo(this.page.body);
 		this.page_sidebar = $('<div></div>').appendTo(this.page.sidebar.empty());
-		$('.layout-side-section').css("background-color","#ffffff")
+		$('.layout-side-section').css({"background-color":"#ffffff","padding-top":"10px"})
 		frappe.breadcrumbs.add("Discussion Forum");
 		this.page.clear_menu();
 		$('.form-inner-toolbar').remove()
 		$('.page-form').remove()
+		this.page.set_primary_action(__('Create New Topic'), function() { new_doc("Discussion Topic") }, true);
+		this.page.add_menu_item(__('Refresh'), function() { frappe.ui.toolbar.clear_cache() }, true);
+		$(frappe.render_template("discussion_sidebar",{"post":{}})).appendTo(this.page_sidebar);
+		var me = this;
+		$('.home').on('click',function(){
+			me.user_name.input.value = ''
+			$('a.category').removeClass('active')
+			me.search_topic.input.value = '' 
+			me.get_discussions() 
+		})
 	},
 	get_discussions: function(args,paginate) {
 		var me = this;
+		category =  $('.category.active').attr('data-name')
+		if (!args) args = {}
+		if (category){
+			args["category"] = category
+		}
+		if (me.user_name ){
+			if (me.user_name.input.value){
+				args["user"] = me.user_name.input.value	
+			}
+		}
 		return frappe.call({
 			method: "mycfo.discussion_forum.page.discussion_forum.discussion_forum.get_data",
 			freeze: true,
@@ -42,8 +62,9 @@ df.discussion_forum = Class.extend({
 				var data = r.message ? r.message[0]:{};
 				var total_records = r.message ? r.message[1]:{};
 				var current_page = r.message ? r.message[2]:{};
+				var paginate = r.message ? r.message[3]:{};
 				me.render_topics(data);
-				if (total_records){
+				if (total_records && paginate){
 					me.init_pagination(total_records,current_page)
 				}
 				
@@ -78,6 +99,7 @@ df.discussion_forum = Class.extend({
 		var me = this;
 		$(me.wrapper).empty()
 		me.page.clear_menu();
+		this.page.add_menu_item(__('Refresh'), function() { frappe.ui.toolbar.clear_cache() }, true);
 		$(frappe.render_template("discussion_forum",{"post":data})).appendTo(me.wrapper);
 		$(me.wrapper).find('.title').on("click",function(){
 			topic_name = $(this).attr("data-name") 
@@ -126,12 +148,15 @@ df.discussion_forum = Class.extend({
 				data = r.message[0]
 				total_pages = r.message[1]
 				current_page = r.message[2]
+				paginate = r.message[3]
 				if (data){
 					$(me.wrapper).find('#comment-list').empty()
 					$(frappe.render_template("discussion_comments",
 						{"comment_list":data})).appendTo($(me.wrapper).find('#comment-list'));
-					me.init_pagination_comment(total_pages,current_page,topic_name)
-					me.render_ratings({"comment_list":data})
+					if (paginate){
+						me.init_pagination_comment(total_pages,current_page,topic_name)
+					}
+					me.render_ratings({"comment_list":data},topic_name)
 
 				}
 				else{
@@ -164,7 +189,7 @@ df.discussion_forum = Class.extend({
 		}
 
 	},
-	render_ratings:function(data){
+	render_ratings:function(data,topic_name){
 		var me = this;
 		$.each(data.comment_list, function(index, value){
 			$("#avg-rateYo{0}".replace("{0}",index)).rateYo({
@@ -228,6 +253,13 @@ df.discussion_forum = Class.extend({
 			});
 
 	},
+	make_sidebar:function(){
+		var me = this;
+		me.get_categories()
+		me.make_search()
+		me.make_user_filter()
+
+	},
 	get_categories:function(){
 		var me = this;
 		return frappe.call({
@@ -240,7 +272,8 @@ df.discussion_forum = Class.extend({
 	},
 	render_categories:function(data){
 		var me = this;
-		$(frappe.render_template("discussion_categories",{"post":data})).appendTo(me.page_sidebar);
+
+		$(frappe.render_template("discussion_categories",{"post":data})).appendTo($('.cat'));
 		$('.category').on("click",function(){
 			$(me.wrapper).empty()
 			$(this).siblings('.category').removeClass('active')
@@ -252,6 +285,48 @@ df.discussion_forum = Class.extend({
 			$('a.category').removeClass('active')
 			me.get_discussions()	
 		})
+	},
+	make_search:function(){
+		var me = this;
+		this.search_topic = frappe.ui.form.make_control({
+			df: {
+				"fieldtype": "Link",
+				"options": "Discussion Topic",
+				"label": "Search Topic",
+				"fieldname": "topic",
+				"placeholder":"Search Topic"
+			},
+			parent:$('.top'),
+			only_input: true,
+		});
+		this.search_topic.make_input();
+		$('<button btn btn-primary btn-sm primary-action>\
+			Get Topic</button>').on("click",function(){
+				$('a.category').removeClass('active')
+				me.user_name.input.value = ''
+				me.make_topic(me.search_topic.input.value)
+			}).appendTo('.top')
+	},
+	make_user_filter:function(){
+		var me = this;
+		this.user_name = frappe.ui.form.make_control({
+			df: {
+				"fieldtype": "Link",
+				"options": "Employee",
+				"label": "Search According to Employee",
+				"fieldname": "user",
+				"placeholder":"Search on Employee"
+			},
+			parent:$('.usr'),
+			only_input: true,
+		});
+		this.user_name.make_input();
+		$('<button btn btn-primary btn-sm primary-action>\
+			Get Topics</button>').on("click",function(){
+				//$('a.category').removeClass('active')
+				me.search_topic.input.value = ''
+				me.get_discussions({"user":me.user_name.input.value})
+			}).appendTo('.usr')
 	},
 	show_comment_dailog:function(topic_name){
 		var me = this;

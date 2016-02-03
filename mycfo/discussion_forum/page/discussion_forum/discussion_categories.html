@@ -9,7 +9,7 @@
 	}
 </style>
 <div class="list-group">
-	<a><div class="list-group-item head">Categories</div></a>
+	<a><div class="list-group-item head">All Categories</div></a>
 	{% for(var i=0, l=post.length; i < l; i++) { %}
 		<a class="category list-group-item" data-name="{{ post[i].name }}" data-label="{{ post[i].title }}">{{ post[i].title }}</a>
 	{% } %}
