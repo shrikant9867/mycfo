@@ -238,8 +238,8 @@
  "is_submittable": 0, 
  "issingle": 0, 
  "istable": 0, 
- "max_attachments": 5, 
- "modified": "2016-02-03 22:36:19.883805", 
+ "max_attachments": 100, 
+ "modified": "2016-02-04 11:15:15.327125", 
  "modified_by": "Administrator", 
  "module": "Discussion Forum", 
  "name": "Discussion Topic", 
@@ -289,6 +289,7 @@
  ], 
  "read_only": 0, 
  "read_only_onload": 0, 
+ "search_fields": "title,intro", 
  "sort_field": "modified", 
  "sort_order": "DESC", 
  "title_field": "title"

@@ -115,7 +115,7 @@ def get_comment_list(doctype, name,page_no,limit):
 		name,comment, comment_by_fullname, creation, comment_by
 		from `tabComment` where comment_doctype=%s
 		and ifnull(comment_type, "Comment")="Comment"
-		and comment_docname=%s order by creation limit %s offset %s""",(doctype,name,limit,offset), as_dict=1) or []
+		and comment_docname=%s order by creation desc limit %s offset %s""",(doctype,name,limit,offset), as_dict=1) or []
 
 
 def get_rating_details(comment):

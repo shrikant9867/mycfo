@@ -322,7 +322,7 @@ df.discussion_forum = Class.extend({
 		});
 		this.user_name.make_input();
 		$('<button btn btn-primary btn-sm primary-action>\
-			Get Topics</button>').on("click",function(){
+			Search</button>').on("click",function(){
 				me.search_topic.input.value = ''
 				me.get_discussions({"user":me.user_name.input.value})
 			}).appendTo('.usr').css({"background-color":"#0072BC","color":"#ffffff","border-radius":"1px"})
