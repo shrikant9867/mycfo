@@ -104,7 +104,7 @@ def get_comments(topic_name,page_no=0,limit=3):
 
 def get_comment_count(topic_name):
 	return frappe.get_list("Comment",fields=["count(*)"],
-		filters={"comment_type":"Comment","comment_docname":topic_name},as_list=1)[0][0] or 0
+		filters={"comment_type":"Comment","comment_docname":topic_name},as_list=1,ignore_permissions=1)[0][0] or 0
 
 def get_comment_list(doctype, name,page_no,limit):
 	if page_no:
@@ -230,4 +230,4 @@ def user_query(doctype, txt, searchfield, start, page_len, filters):
 @frappe.whitelist(allow_guest=True)
 def get_categories():
 	#return frappe.get_list("Blog Category",)
-	return frappe.get_list("Blog Category", fields=["name","title"])
+	return frappe.get_list("Discussion Category", fields=["name","title"],ignore_permissions=1)
