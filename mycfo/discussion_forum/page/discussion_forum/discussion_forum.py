@@ -230,4 +230,4 @@ def user_query(doctype, txt, searchfield, start, page_len, filters):
 @frappe.whitelist(allow_guest=True)
 def get_categories():
 	#return frappe.get_list("Blog Category",)
-	return frappe.get_list("Blog Category", fields=["name","title"])
+	return frappe.get_list("Discussion Category", fields=["name","title"])
