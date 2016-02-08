@@ -115,7 +115,7 @@ IpFileDashboard = Class.extend({
 		});
 	},
 	init_for_my_requests_downloads:function(){
-		$("div.page-form.row").append(``);
+		//$("div.page-form.row").append(``);
 	},
 	init_for_latest_uploads:function(page_no, outer_this){
 		var me = outer_this;

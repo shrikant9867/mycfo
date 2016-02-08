@@ -1,7 +1,7 @@
 
 upload = {
 	make: function(opts) {
-		console.log("in upload make")
+
 		if(!opts.args) opts.args = {};
 		var $upload = $(frappe.render_template("upload", {opts:opts})).appendTo(opts.parent);
 		var $file_input = $upload.find(".input-upload-file");
