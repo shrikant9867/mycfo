@@ -222,9 +222,10 @@ a.active {
   font-size: 1.3rem;
 }
 
-
-
-
+.avg-ratings-info {
+margin-top: -15px;
+margin-left: 60px;
+}
 
 
 html {

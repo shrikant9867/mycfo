@@ -18,29 +18,21 @@ df.discussion_forum = Class.extend({
 	make_page: function() {
 		if (this.page)
 			return;
-		
 		frappe.ui.make_app_page({
 			parent:this.parent,
 			title:'Discussion Forum',
 		});
-		
 		this.page = this.parent.page;
 		this.wrapper = $('<div></div>').appendTo(this.page.body);
 		this.page_sidebar = $('<div></div>').appendTo(this.page.sidebar.empty());
-		
 		$('.layout-side-section').css({"background-color":"#ffffff","padding-top":"10px"})
-		
 		frappe.breadcrumbs.add("Discussion Forum");
 		this.page.clear_menu();
-		
 		$('.form-inner-toolbar').remove()
 		$('.page-form').remove()
-		
 		this.page.set_primary_action(__('Create New Topic'), function() { new_doc("Discussion Topic") }, true);
 		this.page.add_menu_item(__('Refresh'), function() { frappe.ui.toolbar.clear_cache() }, true);
-		
 		$(frappe.render_template("discussion_sidebar",{"post":{}})).appendTo(this.page_sidebar);
-		
 		var me = this;
 		$('.home').on('click',function(){
 			me.user_name.input.value = ''
@@ -71,6 +63,7 @@ df.discussion_forum = Class.extend({
 				var total_records = r.message ? r.message[1]:{};
 				var current_page = r.message ? r.message[2]:{};
 				var paginate = r.message ? r.message[3]:{};
+				console.log(data)
 				me.render_topics(data);
 				if (total_records && paginate){
 					me.init_pagination(total_records,current_page)
@@ -143,7 +136,7 @@ df.discussion_forum = Class.extend({
 			me.get_discussions({"user":user})
 		})
 		if (frappe.user.has_role(['Administrator', 'System Manager', 'Central Delivery'])){
-			this.page.add_menu_item(__('Assign'), function() { me.show_assign_dialog(topic_name) }, true);
+			this.page.add_menu_item(__('Assign'), function() { me.show_assign_dialog(topic_name,data) }, true);
 		}
 		me.get_comments(topic_name)
 	},
@@ -200,6 +193,8 @@ df.discussion_forum = Class.extend({
 	render_ratings:function(data,topic_name){
 		var me = this;
 		$.each(data.comment_list, function(index, value){
+			$("#number_of_users{0}".replace("{0}",index)).val(data['comment_list'][index]['no_of_users'],data['comment_list'][index]['average_rating']);
+			/*$("#users_average_rating{0}".replace("{0}",index)).val(data['comment_list'][index]['average_rating']);*/
 			$("#avg-rateYo{0}".replace("{0}",index)).rateYo({
 		    	precision: 1,
 		    	starWidth: "10px",
@@ -259,12 +254,14 @@ df.discussion_forum = Class.extend({
 				},
 				btn: this
 			});
+
 	},
 	make_sidebar:function(){
 		var me = this;
 		me.get_categories()
 		me.make_search()
 		me.make_user_filter()
+
 	},
 	get_categories:function(){
 		var me = this;
@@ -278,6 +275,7 @@ df.discussion_forum = Class.extend({
 	},
 	render_categories:function(data){
 		var me = this;
+
 		$(frappe.render_template("discussion_categories",{"post":data})).appendTo($('.cat'));
 		$('.category').on("click",function(){
 			$(me.wrapper).empty()
@@ -366,20 +364,28 @@ df.discussion_forum = Class.extend({
 			});
 		}
 	},
-	show_assign_dialog:function(topic_name){
+	show_assign_dialog:function(topic_name,data){
 		var me = this;
 		if(!me.dialog) {
 			me.dialog = new frappe.ui.Dialog({
 				title: __('Assign Topic to Particular User'),
 				fields: [
 					{fieldtype:'Link', fieldname:'assign_to', options:'User',
-						label:__("Assign To"),description:__("Add to To Do List Of"), reqd:true},
+						label:__("Assign To"),description:__("Add to To Do List Of"),reqd:true},
 					{fieldtype:'Text', fieldname:'description', label:__("Description"), reqd:true},
 				],
 				primary_action: function() { me.assign_topic(topic_name); },
 				primary_action_label: __("Assign")
 			});
-			me.dialog.fields_dict.assign_to.get_query = "mycfo.discussion_forum.page.discussion_forum.discussion_forum.user_query";
+			/*me.dialog.fields_dict.assign_to.get_query = "mycfo.discussion_forum.page.discussion_forum.discussion_forum.user_query";*/
+			me.dialog.fields_dict['assign_to'].get_query = function(){
+				return{ 
+					query: "mycfo.discussion_forum.page.discussion_forum.discussion_forum.users_query",
+					filters: {
+						'doc': data['owner']
+					}
+				}
+			}		
 		}
 		me.dialog.clear();
 		me.dialog.show();	
