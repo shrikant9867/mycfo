@@ -63,6 +63,7 @@ df.discussion_forum = Class.extend({
 				var total_records = r.message ? r.message[1]:{};
 				var current_page = r.message ? r.message[2]:{};
 				var paginate = r.message ? r.message[3]:{};
+				console.log(data)
 				me.render_topics(data);
 				if (total_records && paginate){
 					me.init_pagination(total_records,current_page)
@@ -135,7 +136,7 @@ df.discussion_forum = Class.extend({
 			me.get_discussions({"user":user})
 		})
 		if (frappe.user.has_role(['Administrator', 'System Manager', 'Central Delivery'])){
-			this.page.add_menu_item(__('Assign'), function() { me.show_assign_dialog(topic_name) }, true);
+			this.page.add_menu_item(__('Assign'), function() { me.show_assign_dialog(topic_name,data) }, true);
 		}
 		me.get_comments(topic_name)
 	},
@@ -190,12 +191,10 @@ df.discussion_forum = Class.extend({
 
 	},
 	render_ratings:function(data,topic_name){
-		console.log(data['comment_list'])
 		var me = this;
 		$.each(data.comment_list, function(index, value){
-			console.log(data['comment_list'][index]['no_of_users'])
-			$("#number_of_users{0}".replace("{0}",index)).val(data['comment_list'][index]['no_of_users']);
-			$("#users_average_rating{0}".replace("{0}",index)).val(data['comment_list'][index]['average_rating']);
+			$("#number_of_users{0}".replace("{0}",index)).val(data['comment_list'][index]['no_of_users'],data['comment_list'][index]['average_rating']);
+			/*$("#users_average_rating{0}".replace("{0}",index)).val(data['comment_list'][index]['average_rating']);*/
 			$("#avg-rateYo{0}".replace("{0}",index)).rateYo({
 		    	precision: 1,
 		    	starWidth: "10px",
@@ -203,8 +202,6 @@ df.discussion_forum = Class.extend({
 		    	readOnly:true
 	  		});
 	  		me.toggle_ratings(index,value,topic_name)
-	  		/*data['comment_list'][index]['no_of_users']*/
-			/*$("#user_name_list{0}".replace("{0}",index)).val(data['comment_list'][index]['no_of_users']);*/
 		})
 
 	},
@@ -367,20 +364,28 @@ df.discussion_forum = Class.extend({
 			});
 		}
 	},
-	show_assign_dialog:function(topic_name){
+	show_assign_dialog:function(topic_name,data){
 		var me = this;
 		if(!me.dialog) {
 			me.dialog = new frappe.ui.Dialog({
 				title: __('Assign Topic to Particular User'),
 				fields: [
 					{fieldtype:'Link', fieldname:'assign_to', options:'User',
-						label:__("Assign To"),description:__("Add to To Do List Of"), reqd:true},
+						label:__("Assign To"),description:__("Add to To Do List Of"),reqd:true},
 					{fieldtype:'Text', fieldname:'description', label:__("Description"), reqd:true},
 				],
 				primary_action: function() { me.assign_topic(topic_name); },
 				primary_action_label: __("Assign")
 			});
-			me.dialog.fields_dict.assign_to.get_query = "mycfo.discussion_forum.page.discussion_forum.discussion_forum.user_query";
+			/*me.dialog.fields_dict.assign_to.get_query = "mycfo.discussion_forum.page.discussion_forum.discussion_forum.user_query";*/
+			me.dialog.fields_dict['assign_to'].get_query = function(){
+				return{ 
+					query: "mycfo.discussion_forum.page.discussion_forum.discussion_forum.users_query",
+					filters: {
+						'doc': data['owner']
+					}
+				}
+			}		
 		}
 		me.dialog.clear();
 		me.dialog.show();	
