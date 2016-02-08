@@ -18,29 +18,21 @@ df.discussion_forum = Class.extend({
 	make_page: function() {
 		if (this.page)
 			return;
-		
 		frappe.ui.make_app_page({
 			parent:this.parent,
 			title:'Discussion Forum',
 		});
-		
 		this.page = this.parent.page;
 		this.wrapper = $('<div></div>').appendTo(this.page.body);
 		this.page_sidebar = $('<div></div>').appendTo(this.page.sidebar.empty());
-		
 		$('.layout-side-section').css({"background-color":"#ffffff","padding-top":"10px"})
-		
 		frappe.breadcrumbs.add("Discussion Forum");
 		this.page.clear_menu();
-		
 		$('.form-inner-toolbar').remove()
 		$('.page-form').remove()
-		
 		this.page.set_primary_action(__('Create New Topic'), function() { new_doc("Discussion Topic") }, true);
 		this.page.add_menu_item(__('Refresh'), function() { frappe.ui.toolbar.clear_cache() }, true);
-		
 		$(frappe.render_template("discussion_sidebar",{"post":{}})).appendTo(this.page_sidebar);
-		
 		var me = this;
 		$('.home').on('click',function(){
 			me.user_name.input.value = ''
@@ -198,8 +190,12 @@ df.discussion_forum = Class.extend({
 
 	},
 	render_ratings:function(data,topic_name){
+		console.log(data['comment_list'])
 		var me = this;
 		$.each(data.comment_list, function(index, value){
+			console.log(data['comment_list'][index]['no_of_users'])
+			$("#number_of_users{0}".replace("{0}",index)).val(data['comment_list'][index]['no_of_users']);
+			$("#users_average_rating{0}".replace("{0}",index)).val(data['comment_list'][index]['average_rating']);
 			$("#avg-rateYo{0}".replace("{0}",index)).rateYo({
 		    	precision: 1,
 		    	starWidth: "10px",
@@ -207,6 +203,8 @@ df.discussion_forum = Class.extend({
 		    	readOnly:true
 	  		});
 	  		me.toggle_ratings(index,value,topic_name)
+	  		/*data['comment_list'][index]['no_of_users']*/
+			/*$("#user_name_list{0}".replace("{0}",index)).val(data['comment_list'][index]['no_of_users']);*/
 		})
 
 	},
@@ -259,12 +257,14 @@ df.discussion_forum = Class.extend({
 				},
 				btn: this
 			});
+
 	},
 	make_sidebar:function(){
 		var me = this;
 		me.get_categories()
 		me.make_search()
 		me.make_user_filter()
+
 	},
 	get_categories:function(){
 		var me = this;
@@ -278,6 +278,7 @@ df.discussion_forum = Class.extend({
 	},
 	render_categories:function(data){
 		var me = this;
+
 		$(frappe.render_template("discussion_categories",{"post":data})).appendTo($('.cat'));
 		$('.category').on("click",function(){
 			$(me.wrapper).empty()

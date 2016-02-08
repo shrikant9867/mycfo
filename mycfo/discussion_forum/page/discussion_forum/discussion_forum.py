@@ -98,7 +98,8 @@ def get_comments(topic_name,page_no=0,limit=3):
 		comment.update({
 			"average_rating":ratings.get("avg",0.0),
 			"ratings":ratings.get("ratings",0),
-			"user_rating":ratings.get("user_rating")
+			"user_rating":ratings.get("user_rating"),
+			"no_of_users":ratings.get("number_of_users")
 		})
 	return comment_list,total_pages,page_no,paginate
 
@@ -127,6 +128,8 @@ def get_rating_details(comment):
 		ratings["ratings"] = frappe.db.sql("""select count(*) from 
 			`tabTopic Ratings` where comment='{0}'""".format(comment),as_list=1)[0][0]
 		ratings["user_rating"] = frappe.db.get_value("Topic Ratings",{"comment":comment,"user":frappe.session.user},"ratings")
+		ratings['number_of_users'] = frappe.db.sql("""select count(distinct user) from `tabTopic Ratings` where comment = '{0}'""".format(comment),as_list=1)[0][0]
+	print ratings
 	return ratings	
 
 

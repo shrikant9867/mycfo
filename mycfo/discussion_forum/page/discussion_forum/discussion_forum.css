@@ -222,9 +222,14 @@ a.active {
   font-size: 1.3rem;
 }
 
-
-
-
+/*.users {
+  width: 150px;
+  padding-bottom:-10px;
+    padding-top:-10px
+}
+.rating {
+  width: 350px;
+} */
 
 
 html {
