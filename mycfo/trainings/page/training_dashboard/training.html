@@ -1,11 +1,20 @@
 {% for(var i=0, l=training_data.length; i < l; i++) { %}
 <div class="panel panel-primary training-panel" tr-name="{{ training_data[i].name }}">
       <div class="panel-heading">{{ training_data[i].name }}
-      	{% if(inList( ["","Open", "Closed"], test_status)) { %}
-				<button type="button" class="btn btn-success subscribe" >Subscribe</button>	
-		{% } else if(inList( ["New", "Pending"], test_status)) { %}
+      	{% if( !test_status ) { %}
+      			
+      			{% if ( inList( ["", "Closed"], training_data[i].ans_status ) ) { %}
+						<button type="button" class="btn btn-success subscribe" >Subscribe</button>		
+      			{% } else { %}
+      					<div  style="float:right" title="Subjective Evaluation Pending."><button type="button" class="btn btn-success custom-button" disabled>Subscribe</button>
+						</div>
+      			{% } %}
+				
+		{% } else { %}
+				
 				<div  style="float:right" title="New subscription not allowed until pending test finished."><button type="button" class="btn btn-success custom-button" disabled>Subscribe</button>
 				</div>
+		
 		{% } %}
       </div>
       <div class="panel-body row">

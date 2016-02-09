@@ -48,10 +48,14 @@ def get_request_download_status(response_data):
 												from `tabTraining Review` tr  left join `tabUser` usr 
 												on usr.name = tr.user_id   
 												where  tr.training_name = %s""",(response.get("training_name")),as_dict=1)	 
-	result = frappe.db.sql(""" select answer_sheet_status from
-									`tabAnswer Sheet` where student_name = %s
-									order by creation desc limit 1  """,(frappe.session.user), as_dict=1)
-	return result[0].get("answer_sheet_status") if result else ""
+		ans_sheet = frappe.db.sql(""" select answer_sheet_status from
+													`tabAnswer Sheet` 
+													where student_name = %s and training_name = %s 
+													order by creation desc limit 1  """,(frappe.session.user, response.get("training_name") ), as_dict=1) 
+		response["ans_status"] = ans_sheet[0].get("answer_sheet_status") if ans_sheet else ""
+
+	result  = frappe.db.get_value("Answer Sheet", {"student_name":frappe.session.user, "answer_sheet_status":["in", ["New", "Pending"] ]}, 'name')
+	return result if result else ""
 
 
 def get_ratings_and_downloads_query():
@@ -157,15 +161,34 @@ def get_training_query(cond, txt):
 
 @frappe.whitelist()
 def get_employee_list(doctype, txt, searchfield, start, page_len, filters):
-	employee = frappe.db.sql(get_sub_query(filters.get("training_name")), as_dict=1)
-	emp_user_ids = ",".join("'{0}'".format(emp.get("emp_user_id")) for emp in employee if emp.get("emp_user_id"))
-	return frappe.db.sql(get_filtered_employee(emp_user_ids, txt),as_list=1)
+	return frappe.db.sql(get_emp_query(filters.get("training_name"),txt),as_list=1)
+
+
+def get_emp_query(training_name, txt):
+	return """  select name, employee_name from 
+				`tabEmployee` emp
+				where NOT EXISTS ({cond})
+				and user_id not in ('Administrator', '{usr}')
+				and (name like '{txt}' or employee_name like '{txt}')
+				limit 20 """.format(cond = get_sub_query(training_name), txt = "%%%s%%" % txt, usr= frappe.session.user )
+
 
 def get_sub_query(training_name):
-	return """ select ( select tsa.training_requester from `tabTraining Subscription Approval` tsa  
-					where tsa.request_status in ("Open", "Accepted") and tsa.training_name = '{0}'
-					and tsa.training_requester= emp.user_id order by creation desc limit 1) as emp_user_id from 
-		`tabEmployee` emp """.format(training_name)
+	return """  select * 
+				from `tabAnswer Sheet` ans   
+				where ans.answer_sheet_status in ("New", "Open", "Pending")
+				and ans.student_name = emp.user_id
+				and ans.training_name = '{0}'
+				order by ans.creation desc limit 1  """.format(training_name) 
+
+
+
+
+# def get_sub_query(training_name):
+# 	return """ select ( select tsa.training_requester from `tabTraining Subscription Approval` tsa  
+# 					where tsa.request_status in ("Open", "Accepted") and tsa.training_name = '{0}'
+# 					and tsa.training_requester= emp.user_id order by creation desc limit 1) as emp_user_id from 
+# 		`tabEmployee` emp """.format(training_name)
 
 def get_filtered_employee(cond, txt):
 	cond = cond if cond else "''"

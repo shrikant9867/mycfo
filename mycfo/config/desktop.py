@@ -19,14 +19,16 @@ def get_data():
 		"IP Library": {
 			"color": "#8e44ad",
 			"icon": "octicon octicon-database",
-			"type": "module",
-			"label": _("IP Library")
+			"type": "page",
+			"label": _("IP Library"),
+			"link":"ip-file-dashboard"
 		},
 		"Trainings":{
 			"color": "#4aa3df",
 			"icon": "octicon octicon-device-camera-video",
-			"type": "module",
-			"label": _("Trainings")
+			"type": "page",
+			"label": _("Trainings"),
+			"link":"training-dashboard"
 		},	
 		"Discussion Forum": {
 			"color": "#8e44ad",

@@ -53,7 +53,7 @@ def get_data():
 			]
 		},
 		{
-			"label": _("Page"),
+			"label": _("IP Library"),
 			"icon": "icon-star",
 			"items": [
 				{

@@ -37,7 +37,7 @@ def get_data():
 			]
 		},
 		{
-			"label": _("Page"),
+			"label": _("Training DB"),
 			"icon": "icon-star",
 			"items": [
 				{
