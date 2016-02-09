@@ -2,6 +2,13 @@
  {
   "docstatus": 0, 
   "doctype": "Role", 
+  "modified": "2016-01-14 12:23:31.826715", 
+  "name": "Job Seekers", 
+  "role_name": "Job Seekers"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
   "modified": "2015-12-16 12:17:13.970156", 
   "name": "System Manager", 
   "role_name": "System Manager"

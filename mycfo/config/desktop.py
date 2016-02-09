@@ -21,5 +21,12 @@ def get_data():
 			"icon": "octicon octicon-database",
 			"type": "module",
 			"label": _("IP Library")
+		},
+		"Discussion Forum": {
+			"color": "#8e44ad",
+			"icon": "octicon octicon-organization",
+			"type": "page",
+			"label": _("Discussion Forum"),
+			"link":"discussion-forum"
 		}
 	}
