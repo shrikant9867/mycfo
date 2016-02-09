@@ -98,7 +98,8 @@ def get_comments(topic_name,page_no=0,limit=3):
 		comment.update({
 			"average_rating":ratings.get("avg",0.0),
 			"ratings":ratings.get("ratings",0),
-			"user_rating":ratings.get("user_rating")
+			"user_rating":ratings.get("user_rating"),
+			"no_of_users":ratings.get("number_of_users")
 		})
 	return comment_list,total_pages,page_no,paginate
 
@@ -122,11 +123,12 @@ def get_rating_details(comment):
 	ratings = {}
 	if comment.get("name"):
 		comment = comment.get("name")
-		ratings["avg"] = frappe.get_list("Topic Ratings", fields=["ifnull(avg(ratings),0.0)"], 
-			filters={ "comment":comment}, as_list=True)[0][0]
+		ratings["avg"] = round(frappe.get_list("Topic Ratings", fields=["ifnull(avg(ratings),0.0)"], 
+					filters={ "comment":comment}, as_list=True)[0][0],2)
 		ratings["ratings"] = frappe.db.sql("""select count(*) from 
 			`tabTopic Ratings` where comment='{0}'""".format(comment),as_list=1)[0][0]
 		ratings["user_rating"] = frappe.db.get_value("Topic Ratings",{"comment":comment,"user":frappe.session.user},"ratings")
+		ratings['number_of_users'] = frappe.db.sql("""select count(distinct user) from `tabTopic Ratings` where comment = '{0}'""".format(comment),as_list=1)[0][0]
 	return ratings	
 
 
@@ -226,6 +228,11 @@ def user_query(doctype, txt, searchfield, start, page_len, filters):
 		limit %s, %s""".format(standard_users=", ".join(["%s"]*len(STANDARD_USERS)),
 			key=searchfield, mcond=get_match_cond(doctype)),
 			tuple(list(STANDARD_USERS) + [txt, txt, txt, txt, start, page_len]))
+
+
+def users_query(doctype, txt, searchfield, start, page_len, filters):
+	return frappe.db.sql("""select name,first_name from `tabUser` where name <> '{0}' and name <> '{1}' """.format(filters['doc'],frappe.session.user),as_list=1,debug=1)
+
 
 @frappe.whitelist(allow_guest=True)
 def get_categories():

@@ -62,7 +62,9 @@ permission_query_conditions = {
 	"Customer":"mycfo.mycfo.doctype.project_commercial.project_commercial.get_permission_query_conditions_for_customer",
 	"Project Commercial":"mycfo.mycfo.doctype.project_commercial.project_commercial.get_permission_query_conditions_for_project",
 	"Operational Matrix":"mycfo.mycfo.doctype.project_commercial.project_commercial.get_permission_query_conditions_for_om",
-	"Checklist Task":"mycfo.checklist.doctype.checklist_task.checklist_task.get_permission_query_conditions"
+	"Checklist Task":"mycfo.checklist.doctype.checklist_task.checklist_task.get_permission_query_conditions",
+	"Answer Sheet":"mycfo.trainings.doctype.answer_sheet.answer_sheet.get_permission_query_conditions",
+	"Assessment":"mycfo.trainings.doctype.assessment.assessment.get_permission_query_conditions"
 }
 #
 # has_permission = {

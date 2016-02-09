@@ -29,17 +29,17 @@ def get_global_search_suggestions(filters):
 @frappe.whitelist()
 def get_published_ip_file(search_filters):
 	search_filters = json.loads(search_filters)
-	limit_query = "LIMIT 2 OFFSET {0}".format(search_filters.get("page_no") * 2 )
+	limit_query = "LIMIT 5 OFFSET {0}".format(search_filters.get("page_no") * 5 )
 	my_query = """ select * from `tabIP File` ipf
 						where 
 						( ipf.skill_matrix_18 like '%{0}%' or ipf.file_name like '%{0}%' 
 						or ipf.project like '%{0}%' or ipf.security_level like '%{0}%' 
-						or ipf.skill_matrix_120 like '%{0}%' )  order by ipf.uploaded_date desc """.format(search_filters.get("filters"))
+						or ipf.skill_matrix_120 like '%{0}%' or ipf.document_type like '%{0}%' )  order by ipf.uploaded_date desc """.format(search_filters.get("filters"))
 	
 	total_records = get_total_records(my_query)
 	response_data = frappe.db.sql(my_query + limit_query, as_dict=True)
 	get_request_download_status(response_data)
-	total_pages = math.ceil(total_records[0].get("count",0)/2.0)
+	total_pages = math.ceil(total_records[0].get("count",0)/5.0)
 	return response_data, total_pages 
 
 
@@ -72,12 +72,12 @@ def get_request_download_status(response_data):
 @frappe.whitelist()
 def get_latest_uploaded_documents(search_filters):
 	search_filters = json.loads(search_filters)
-	limit_query = "LIMIT 2 OFFSET {0}".format(search_filters.get("page_no") * 2 )
+	limit_query = "LIMIT 5 OFFSET {0}".format(search_filters.get("page_no") * 5 )
 	my_query = get_latest_query()
 	total_records = get_total_records(my_query)
 	response_data = frappe.db.sql(my_query + limit_query, as_dict=True)
 	get_request_download_status(response_data)
-	total_pages = math.ceil(total_records[0].get("count",0)/2.0)
+	total_pages = math.ceil(total_records[0].get("count",0)/5.0)
 	return response_data, total_pages 
 
 
@@ -97,32 +97,7 @@ def get_latest_upload_count():
 	counts["total_downloads"] = len(frappe.db.sql(downloads_query, as_dict=1))
 	return counts
 
-# """
-# 	Return request status for ip document
-# 	0 status means user can make new request for Download
-# 	1 status means user can download document
-# 	2 status means user can not create new request for download
-# 	beacuse existing request is pending.
-
-# """
-# def get_request_status(file_name):
-# 	query = """ select docstatus, modified 
-# 										from `tabIP Download Approval` 
-# 										where file_name = '{0}'
-# 										and ip_file_requester = '{1}'
-# 										order by creation desc limit 1
-# 										""".format(file_name, frappe.session.user)
-# 	request_status = frappe.db.sql(query, as_dict=1)
-# 	status = 0
-# 	if request_status:
-# 		if request_status[0].get("docstatus"):
-# 			print [now(), request_status[0].get("modified")]
-# 			time_difference = time_diff(now(), request_status[0].get("modified"))
-# 			print type(time_difference)
-# 			print time_difference
-# 		elif request_status[0].get("docstatus") == 0:
-# 			status = 2					
-# 	return status	
+	
 
 
 def get_search_conditions(search_filters):
@@ -275,11 +250,11 @@ def get_my_pending_requests(search_filters):
 
 def prepare_response_data(search_filters, query):
 	response_data, total_pages = [], 0
-	limit_query = "LIMIT 2 OFFSET {0}".format(search_filters.get("page_no") * 2 )
+	limit_query = "LIMIT 5 OFFSET {0}".format(search_filters.get("page_no") * 5 )
 	total_records = len(frappe.db.sql(query, as_dict=1))
 	response_data = frappe.db.sql(query + limit_query, as_dict=True)
 	get_request_status(response_data)
-	total_pages = math.ceil(total_records/2.0)
+	total_pages = math.ceil(total_records/5.0)
 	return response_data, total_pages 	
 
 

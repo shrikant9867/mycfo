@@ -1,6 +1,6 @@
 {
  "allow_copy": 0, 
- "allow_import": 0, 
+ "allow_import": 1, 
  "allow_rename": 0, 
  "autoname": "field:skill", 
  "creation": "2015-12-16 16:28:51.152137", 
@@ -43,7 +43,7 @@
  "issingle": 0, 
  "istable": 0, 
  "max_attachments": 0, 
- "modified": "2016-01-17 16:55:59.951959", 
+ "modified": "2016-02-04 12:16:55.615517", 
  "modified_by": "Administrator", 
  "module": "IP Library", 
  "name": "Skill Matrix 18", 
