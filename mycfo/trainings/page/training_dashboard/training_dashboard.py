@@ -24,38 +24,40 @@ def get_global_search_suggestions(filters):
 @frappe.whitelist()
 def get_published_trainings(search_filters):
 	search_filters = json.loads(search_filters)
-	limit_query = "LIMIT 2 OFFSET {0}".format(search_filters.get("page_no") * 2 )
-	my_query = """ select * from `tabTraining` tr
-						where 
+	limit_query = "LIMIT 5 OFFSET {0}".format(search_filters.get("page_no") * 5 )
+	downld_query, avg_rat_query = get_ratings_and_downloads_query()
+	my_query = """ select * , ({1}) as download_count , ({2}) as avg_ratings from `tabTraining` tr
+						where tr.training_status = 'Published' and
 						( tr.skill_matrix_18 like '%{0}%' or tr.name like '%{0}%' 
 						or tr.skill_matrix_120 like '%{0}%' or tr.document_type like '%{0}%' 
-						or tr.industry like '%{0}%' or tr.description like '%{0}%' )  order by tr.creation desc """.format(search_filters.get("filters"))
+						or tr.industry like '%{0}%' or tr.description like '%{0}%' )  order by tr.creation desc """.format(search_filters.get("filters"), downld_query, avg_rat_query)
 	
 	total_records = get_total_records(my_query)
 	response_data = frappe.db.sql(my_query + limit_query, as_dict=True)
-	get_request_download_status(response_data)
-	total_pages = math.ceil(total_records[0].get("count",0)/2.0)
-	return {"response_data":response_data, "total_pages":total_pages}
+	assessment_status = get_request_download_status(response_data)
+	total_pages = math.ceil(total_records[0].get("count",0)/5.0)
+	return {"response_data":response_data, "total_pages":total_pages, "test_status":assessment_status}
 
 def get_total_records(query):
 	return frappe.db.sql(query.replace("*", "count(*) as count", 1), as_dict=1)
 
 
 def get_request_download_status(response_data):
-	for response in response_data:
-		response["download_count"] = frappe.get_list("Training Download Log", fields=["count(*)"], filters={ "training_name":response.get("training_name") }, as_list=True)[0][0] 
-		response["avg_ratings"] = frappe.get_list("Training Review", fields=["ifnull(avg(ratings),0.0)"], filters={ "training_name":response.get("training_name") }, as_list=True)[0][0]
+	for response in response_data:		
 		response["comments"] = frappe.db.sql(""" select tr.user_id, tr.comments, tr.ratings, concat(usr.first_name , ' ' ,usr.last_name) as full_name  
 												from `tabTraining Review` tr  left join `tabUser` usr 
 												on usr.name = tr.user_id   
 												where  tr.training_name = %s""",(response.get("training_name")),as_dict=1)	 
-		result = frappe.db.sql(""" select request_status  from
-										`tabTraining Subscription Approval` 
-										where training_name = %s and training_requester = %s
-										order by creation desc limit 1
-									""", (response.get("training_name"), frappe.session.user), as_dict=1)
-		response["request_status"] = result[0].get("request_status") if result else ""
-		# response["download_flag"] = frappe.db.get_value("Training Download Log", {"training_name":response.get("training_name"), "user_id":frappe.session.user}, "name")
+	result = frappe.db.sql(""" select answer_sheet_status from
+									`tabAnswer Sheet` where student_name = %s
+									order by creation desc limit 1  """,(frappe.session.user), as_dict=1)
+	return result[0].get("answer_sheet_status") if result else ""
+
+
+def get_ratings_and_downloads_query():
+	download_query = " select count(name) from `tabTraining Download Log` tdl where tdl.training_name = tr.name "
+	avg_rat_query = " select ifnull(avg(ratings), 0.0) from `tabTraining Review` rvw where rvw.training_name = tr.name "
+	return download_query , avg_rat_query
 
 
 @frappe.whitelist()
@@ -83,7 +85,8 @@ def make_training_subscription_form(request_data):
 	tsa.training_requester = frappe.session.user
 	tsa.update(get_subscription_form_dict(training_data))
 	tsa.save(ignore_permissions=True)
-	send_mail_of_training_request(training_data.get("name"))
+	tsa.submit()
+	# send_mail_of_training_request(training_data.get("name"))
 
 
 @frappe.whitelist()
@@ -95,8 +98,6 @@ def assign_forced_training(request_data):
 		tsa.request_type = "Forced Training"
 		tsa.training_requester = frappe.db.get_value("Employee", {"name":row.get("employee")}, "user_id")
 		tsa.update(get_subscription_form_dict(training_data))
-		tsa.central_delivery_status = "Accepted"
-		tsa.central_delivery = "Administrator"
 		tsa.save(ignore_permissions=True)
 		tsa.submit()
 
@@ -119,7 +120,9 @@ def get_subscription_form_dict(training_data):
 			"skill_matrix_120":training_data.get("skill_matrix_120"),
 			"skill_matrix_18":training_data.get("skill_matrix_18"),
 			"assessment":training_data.get("assessment"),
-			"request_status":"Open"
+			"request_status":"Open",
+			"central_delivery_status":"Accepted",
+			"central_delivery":"Administrator"
 		}
 
 def get_central_delivery():
@@ -165,6 +168,7 @@ def get_sub_query(training_name):
 		`tabEmployee` emp """.format(training_name)
 
 def get_filtered_employee(cond, txt):
+	cond = cond if cond else "''"
 	return """  select name, employee_name from 
 				`tabEmployee`
 				where user_id not in ({cond})
@@ -173,11 +177,12 @@ def get_filtered_employee(cond, txt):
 				limit 20 """.format(cond = cond, txt = "%%%s%%" % txt, usr= frappe.session.user )
 
 @frappe.whitelist()
-def create_training_download_log(training_name):
+def create_training_download_log(training_name, ans_sheet):
 	tdl = frappe.new_doc("Training Download Log")
 	tdl.user_id = frappe.session.user
 	tdl.training_name = training_name
 	tdl.downloaded_datetime = now()
+	tdl.answer_sheet_link = ans_sheet
 	tdl.save(ignore_permissions=True)
 
 
@@ -190,7 +195,6 @@ def get_my_trainings():
 					`tabAnswer Sheet` ans join `tabTraining` tr
 					on ans.training_name = tr.name
 					where student_name = %s  order by ans.creation desc""",(frappe.session.user), as_dict=1)
-	print response_data
 	get_meta_data_of_response(response_data)
 	return response_data
 
@@ -198,7 +202,13 @@ def get_my_trainings():
 def get_meta_data_of_response(response_data):
 	mapper = {"New":"Not Completed", "Pending":"Partial Completed", "Open":"Test Completed", "Closed":"Result Declared"}
 	for response in response_data:
-		response["download_flag"] = frappe.db.get_value("Training Download Log", {"training_name":response.get("training_name"), "user_id":frappe.session.user}, "name")
+		response["download_flag"] = frappe.db.get_value("Training Download Log", {"training_name":response.get("training_name"), 
+															"user_id":frappe.session.user, "answer_sheet_link":response.get("ans_sheet")}, "name")
 		response["assessment_status"] = mapper.get(response.get("answer_sheet_status")) if response.get("answer_sheet_status") else ""
 		response["tooltip_title"] = "{0} test Completed".format(response.get("training_name")) if response.get("answer_sheet_status") in ["Open", "Closed"] else " Test allowed after training download !!!!"
 		response["sub_date"] = formatdate(response.get("creation"))
+
+
+@frappe.whitelist()
+def check_answer_sheet_status(ans_sheet):
+	return frappe.db.get_value("Answer Sheet", {"name":ans_sheet}, 'answer_sheet_status')

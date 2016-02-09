@@ -47,7 +47,7 @@ IpFileDashboard = Class.extend({
 			method: "get_latest_upload_count",
 			callback:function(r){
 				$("button[data-fieldname=latest_uploads]").append("<span class ='badge pull-right custom-badge'>{0}</span>".replace('{0}', r.message.latest_records));
-				$("div.page-form.row").append(frappe.render_template("ip_file_filters", {"pending_requests":r.message.pending_requests, "my_downloads":r.message.total_downloads}));				
+				$(me.page.page_form).append(frappe.render_template("ip_file_filters", {"pending_requests":r.message.pending_requests, "my_downloads":r.message.total_downloads}));				
 				me.init_for_pending_requests();
 				me.init_for_my_downloads();	
 			}
@@ -71,7 +71,7 @@ IpFileDashboard = Class.extend({
 	},
 	init_for_filter_rendering:function(){
 		var me = this;
-		$("div.page-form.row").append("<div class='form-group frappe-control col-xs-4 col-xs-offset-1' id='global-search-div'><input type='text'\
+		$(this.page.page_form).append("<div class='form-group frappe-control col-xs-4 col-xs-offset-1' id='global-search-div'><input type='text'\
 			id='global_search' class ='form-control' placeholder='Search IP File'></div>")
 		search_filters = [
 					{"name":"search", "fieldname":"search", "label":"Search", "fieldtype":"Button", "options":"" , "icon":"icon-search"},
@@ -95,7 +95,6 @@ IpFileDashboard = Class.extend({
 		$("[data-fieldname=search_type]").css("display", "none")
 		me.init_for_latest();
 		me.init_for_global_search();
-		me.init_for_my_requests_downloads();
 		
 	},
 	init_for_global_search:function(){
@@ -113,9 +112,6 @@ IpFileDashboard = Class.extend({
 				})
 			}
 		});
-	},
-	init_for_my_requests_downloads:function(){
-		$("div.page-form.row").append(``);
 	},
 	init_for_latest_uploads:function(page_no, outer_this){
 		var me = outer_this;
@@ -142,9 +138,9 @@ IpFileDashboard = Class.extend({
 		if (total_pages == 0){
 			msgprint("No IP File found against specified criteria.")
 		}
-		else if (!$('#pagination-demo').length && total_pages){
+		else if (! $(me.footer).find('#pagination-demo').length && total_pages){
 			$('<div class="row"><div class="col-xs-10 col-xs-offset-2"><ul id="pagination-demo" class="pagination-sm"></ul></div></div>').appendTo(this.footer)
-			$('#pagination-demo').twbsPagination({
+			$(me.footer).find('#pagination-demo').twbsPagination({
 				totalPages:total_pages,
 				visiblePages: 3,
 				initiateStartPageClick:false,
@@ -155,11 +151,11 @@ IpFileDashboard = Class.extend({
 	
 				}
 			});
-			this.paginaiton = $('#pagination-demo').data();
+			this.paginaiton = $(me.footer).find('#pagination-demo').data();
 			this.paginaiton.twbsPagination.options.initiateStartPageClick = true;
 			
 
-		}else if($('#pagination-demo').length){
+		}else if($(me.footer).find('#pagination-demo').length){
 			
 			this.paginaiton.twbsPagination.options.totalPages = total_pages;
 			// this.paginaiton.twbsPagination.options.initiateStartPageClick = total_pages == 0 ? false :true;
@@ -424,9 +420,6 @@ IpFileDashboard = Class.extend({
 			}
 
 		})
-
-	},
-	render_feedback_tab_after_download:function(){
 
 	}
 })

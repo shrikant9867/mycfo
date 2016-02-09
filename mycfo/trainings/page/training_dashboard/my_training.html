@@ -1,5 +1,5 @@
 <div class="my-training-container">
-<div class="row">  
+<div class="row my-training-div">  
 <table class="table table-bordered table-hover my-training-table">
     <thead>
       <tr>
@@ -15,7 +15,7 @@
     </thead>
     <tbody>
      {% for(var i=0, l=my_training.length; i < l; i++) { %}
-      <tr tr-nm= "{{ my_training[i].training_name }}" tr-url="{{ my_training[i].training_path }}" download-flag="{{ my_training[i].download_flag }}" ans-sheet-status= "{{ my_training[i].answer_sheet_status }}">
+      <tr tr-nm= "{{ my_training[i].training_name }}" tr-url="{{ my_training[i].training_path }}" download-flag="{{ my_training[i].download_flag }}" ans-sheet-status= "{{ my_training[i].answer_sheet_status }}" tr-ans-sheet="{{ my_training[i].ans_sheet }}">
         <td class="value">{{ my_training[i].training_name }}</td>
         <td class="value">{{ my_training[i].sub_date }}</td>
         <td class="value">{{ my_training[i].assessment_status }}</td>

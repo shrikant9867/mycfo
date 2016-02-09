@@ -10,16 +10,31 @@ class Assessment(Document):
 	
 	def validate(self):
 		self.validate_for_answers()
+		self.set_subjective_flag()
 		self.total_marks = sum([row.total_marks for row in self.table_5])
 		self.total_questions = len(self.table_5)
 
 
+	def set_subjective_flag(self):
+		for row in self.table_5:
+			if row.question_type == 'Subjective':
+				self.subjective_flag = "Yes"
+				break
+		else:
+			self.subjective_flag = "No" 				
+
 	def validate_for_answers(self):
+		mapper  ={"A":"option_a", "B":"option_b", "C":"option_c", "D":"option_d", "E":"option_e"}
 		for row in self.table_5:
 			if row.question_type == "Objective":
-				if not row.option_a or not row.option_b or not row.option_c or not row.option_d:
-					frappe.throw("Options A,B,C,D are mandatory for objective type question for row no {0}".format(row.idx)) 
-				if not row.objective_answer or (row.objective_answer == 'E' and not row.option_e):
+				if not row.objective_answer or not row.get(mapper.get(row.objective_answer)):
 					frappe.throw("Please provide valid answer for row no {0}".format(row.idx))
 			if not row.total_marks:
 				frappe.throw("Total Marks for question should be non-zero digit for row no {0}".format(row.idx))
+
+
+
+def get_permission_query_conditions(user):
+	roles = frappe.get_roles()
+	if "Central Delivery" not in roles and frappe.session.user != "Administrator":		
+		return """(`tabAssessment`.owner = "{user}" )""".format(user = frappe.session.user)	

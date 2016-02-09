@@ -26,10 +26,13 @@ class TrainingSubscriptionApproval(Document):
 
 	def accept_request(self):
 		self.request_status = "Accepted"
-		request_type_dict = {"Forced Training":["/templates/training_templates/assigned_training_notification.html"], "Unforced Training":["/templates/training_templates/training_request_notification.html"]}
+		request_type_dict = {"Forced Training":["/templates/training_templates/assigned_training_notification.html", [self.training_requester] ], 
+								"Unforced Training":["/templates/training_templates/training_request_notification.html", self.get_central_delivery() ]
+							}
 		template = request_type_dict.get(self.request_type)[0]
+		recipients = request_type_dict.get(self.request_type)[1]
 		self.create_answer_sheet()
-		self.send_mail(template)
+		self.send_mail(template, recipients)
 
 	def create_answer_sheet(self):
 		as_data = frappe.get_doc("Assessment", {"name":self.assessment})
@@ -47,7 +50,8 @@ class TrainingSubscriptionApproval(Document):
 					"total_marks":as_data.get("total_marks"), 
 					"table_5":as_data.get("table_5"), 
 					"training_name":as_data.get("training_name"), 
-					"assessment_evaluator":as_data.get("assessment_evaluator")
+					"assessment_evaluator":as_data.get("assessment_evaluator"),
+					"subjective_flag":as_data.get("subjective_flag")
 				}
 
 	def reject_request(self):
@@ -55,12 +59,17 @@ class TrainingSubscriptionApproval(Document):
 		template = "/templates/training_templates/training_request_notification.html"	
 		self.send_mail(template)
 
-	def send_mail(self, template):
+	def get_central_delivery(self):
+		central_delivery = frappe.get_list("UserRole", filters={"role":"Central Delivery","parent":["!=", "Administrator"]}, fields=["parent"])
+		central_delivery = [user.get("parent") for user in central_delivery]
+		return central_delivery	
+
+	def send_mail(self, template, recipients):
 		subject = "Training Document Notification"
 		first_nm, last_nm = frappe.db.get_value("User", {"name":self.training_requester}, ["first_name", "last_name"])
 		args = {"training_name":self.training_name, "cd":frappe.session.user, "first_name":first_nm, 
-					"last_name":last_nm , "comments":self.central_delivery_comments, "status":self.request_status }
-		frappe.sendmail(recipients= self.training_requester, sender=None, subject=subject,
+					"last_name":last_nm if last_nm else "", "comments":self.central_delivery_comments, "status":self.request_status }
+		frappe.sendmail(recipients= recipients, sender=None, subject=subject,
 			message=frappe.get_template(template).render(args))
 		
 

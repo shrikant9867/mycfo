@@ -29,7 +29,7 @@ TrainingDashboard = Class.extend({
 	},
 	render_filters:function(){
 		var me = this;
-		$("div.page-form.row").append("<div class='form-group frappe-control col-xs-4 col-xs-offset-1' id='training-search-div'><input type='text'\
+		$(this.page.page_form).append("<div class='form-group frappe-control col-xs-4 col-xs-offset-1' id='training-search-div'><input type='text'\
 			id='global_training_search' class ='form-control' placeholder='Search Trainings'></div>")
 		search_filters = [
 					{"name":"search", "fieldname":"search", "label":"Search", "fieldtype":"Button", "options":"" , "icon":"icon-search"},
@@ -96,7 +96,7 @@ TrainingDashboard = Class.extend({
 	},
 	run_post_search_operation:function(response){
 		var me = this;
-		$(me.body).html(frappe.render_template("training", {"training_data":response.response_data}));
+		$(me.body).html(frappe.render_template("training", {"training_data":response.response_data, "test_status":response.test_status}));
 		me.render_ratings();
 		me.render_avg_ratings(response.response_data);
 		me.init_for_pagination(response.total_pages);
@@ -111,11 +111,11 @@ TrainingDashboard = Class.extend({
 		var me = this;	
 		var pagination_mapper = {"Normal Search":me.get_training_documents }
 		if (total_pages == 0){
-			msgprint("No IP File found against specified criteria.")
+			msgprint("No Training documents found against specified criteria.")
 		}
-		else if (!$('#pagination-demo').length && total_pages){
+		else if (! $(me.footer).find('#pagination-demo').length && total_pages){
 			$('<div class="row"><div class="col-xs-10 col-xs-offset-2"><ul id="pagination-demo" class="pagination-sm"></ul></div></div>').appendTo(this.footer)
-			$('#pagination-demo').twbsPagination({
+			$(me.footer).find('#pagination-demo').twbsPagination({
 				totalPages:total_pages,
 				visiblePages: 3,
 				initiateStartPageClick:false,
@@ -126,11 +126,11 @@ TrainingDashboard = Class.extend({
 	
 				}
 			});
-			this.paginaiton = $('#pagination-demo').data();
+			this.paginaiton = $(me.footer).find('#pagination-demo').data();
 			this.paginaiton.twbsPagination.options.initiateStartPageClick = true;
 			
 
-		}else if($('#pagination-demo').length){
+		}else if($(me.footer).find('#pagination-demo').length){
 			
 			this.paginaiton.twbsPagination.options.totalPages = total_pages;
 
@@ -198,18 +198,20 @@ TrainingDashboard = Class.extend({
 			var subscribe_button = this;
 			$panel = $(this).closest(".training-panel")
 			training_nm = $panel.attr("tr-name")
-			frappe.call({
-					freeze: true,
-					freeze_message:"Please wait ...........",
-					module:"mycfo.trainings",
-					page: "training_dashboard",
-					method: "make_training_subscription_form",
-					args:{"request_data":{ "tr_name":training_nm } },
-					callback:function(r){
-						$(subscribe_button).attr("disabled", true)
-						frappe.msgprint("Training subscription request for {0} submiited successfully.".replace("{0}", training_nm))
-					}
-			})	
+			frappe.confirm(__("Are you sure you want to subscribe for this training ?"), function() { 
+				frappe.call({
+						freeze: true,
+						freeze_message:"Please wait ...........",
+						module:"mycfo.trainings",
+						page: "training_dashboard",
+						method: "make_training_subscription_form",
+						args:{"request_data":{ "tr_name":training_nm } },
+						callback:function(r){
+							$(".subscribe").attr("disabled", true)
+							frappe.msgprint("Training subscription request for {0} submiited successfully.".replace("{0}", training_nm))
+						}
+				})
+			})		
 		})
 	},
 	init_for_assign_now:function(){
@@ -230,8 +232,10 @@ TrainingDashboard = Class.extend({
 	},
 	render_assign_training:function(){
 		var me = this;
-		$("div.page-form.row").append("<button class='btn btn-default btn-xs input-sm btn-sm'  style='width:150px;' id='assign_training' >Assign Training</button>")		
-		$("#assign_training").click(function(){
+		console.log("assign now")
+		$(this.page.page_form).append("<button class='btn btn-default btn-xs input-sm btn-sm'  style='width:150px;' id='assign_training' >Assign Training</button>")		
+		$(this.wrapper).find("#assign_training").click(function(){
+			console.log("in on click")
 			me.render_dialog_for_assign_training()
 		})
 	},
@@ -298,10 +302,17 @@ TrainingDashboard = Class.extend({
 		var me = this;
 		this.assign_training_data = [];
 		this.dialog.fields_dict.add_training.$input.click(function(){
-			if (me.check_for_duplicate_training()){
-				me.render_table_head();
-				me.render_table_row();
+			console.log("in add")
+			if (me.dialog.fields_dict.tr_nm.input.value && me.dialog.fields_dict.employee.input.value){
+				if (me.check_for_duplicate_training()){
+					me.render_table_head();
+					me.render_table_row();
+				}				
 			}	
+			else{
+				msgprint("Training & employee are mandatory for assigning training")		
+			}	
+				
 		})
 	},
 	check_for_duplicate_training:function(){
@@ -416,17 +427,18 @@ MyTrainings = Class.extend({
 		$(this.body).find(".tr-download").click(function(){
 			tr_url =$(this).closest("tr").attr("tr-url") 
 			tr_name = $(this).closest("tr").attr("tr-nm") 
+			ans_sheet = $(this).closest("tr").attr("tr-ans-sheet") 
 			tr_url = tr_url.replace(/#/g, '%23');
 			window.open(tr_url)
-			me.make_download_entry(tr_name, this)
+			me.make_download_entry(tr_name, this, ans_sheet)
 		})
 	},
-	make_download_entry:function(tr_name, button_this){
+	make_download_entry:function(tr_name, button_this, ans_sheet){
 		frappe.call({
 			module:"mycfo.trainings",
 			page: "training_dashboard",
 			method: "create_training_download_log",
-			args:{"training_name":tr_name },
+			args:{"training_name":tr_name, "ans_sheet":ans_sheet },
 			callback:function(r){
 				$(button_this).closest("tr").find(".tr-feedback").attr("disabled", false)
 				$(button_this).closest("tr").find(".tr-start-assessment").attr("disabled", false)
@@ -444,7 +456,7 @@ MyTrainings = Class.extend({
 	},
 	check_answer_sheet:function(){
 		$(this.body).find(".tr-check-result").click(function(){
-			frappe.set_route("Form", "Answer Sheet", $(this).attr("tr-ans-sheet"))
+			frappe.set_route("Form", "Answer Sheet", $(this).closest("tr").attr("tr-ans-sheet"))
 		})
 	},
 	render_share_feedback_popup:function(training_name){
@@ -496,8 +508,30 @@ MyTrainings = Class.extend({
 		var me = this;
 		$(this.body).find(".tr-start-assessment").click(function(){
 			console.log("in start asssessment")
+			var ans_sheet = $(this).closest("tr").attr("tr-ans-sheet")
+			me.check_if_answer_sheet_completed(ans_sheet);
 		})
 
+	},
+	check_if_answer_sheet_completed:function(ans_sheet){
+		var me = this;
+		return frappe.call({
+				freeze: true,
+				freeze_message:"Please wait ...........",
+				module:"mycfo.trainings",
+				page: "training_dashboard",
+				method: "check_answer_sheet_status",
+				args:{"ans_sheet":ans_sheet },
+				callback:function(r){
+					console.log(["in check ans_sheet", r.message])
+					if(inList(["Pending", "New"], r.message) ){
+						frappe.route_options = {"ans_sheet": ans_sheet}
+						frappe.set_route("training-test")	
+					}else{
+						msgprint("Training test already completed.")
+					}			
+				}
+			})
 	}
 
 

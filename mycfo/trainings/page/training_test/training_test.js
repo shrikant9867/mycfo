@@ -6,14 +6,18 @@ frappe.pages['training-test'].on_page_load = function(wrapper) {
 	});
 	frappe.breadcrumbs.add("Trainings");
 	$("<div class='online-test-page'</div>").appendTo(page.body);
-	new OnlineTest(wrapper, page)
+	if(frappe.route_options){
+		wrapper.online_test = new OnlineTest(wrapper, page);	
+	}
+	
 }
 
 
 frappe.pages['training-test'].refresh = function(wrapper) {
-	// wrapper.user_permissions.set_from_route();
+	if(frappe.route_options){
+		wrapper.online_test.reset_route_options_and_refresh();
+	}	
 }
-
 
 
 OnlineTest = Class.extend({
@@ -22,44 +26,58 @@ OnlineTest = Class.extend({
 		this.page = page;
 		this.body = $(page.body).find(".online-test-page");
 		this.footer = $("<div class='online-test-footer'</div>").insertAfter(this.body);
-		this.get_questions("AS0000000006");
 	},
 	render_instructions_page:function(test_data){
-		$(this.body).html(frappe.render_template("test_instructions"));
+		$(this.body).html(frappe.render_template("test_instructions", {"test_data":test_data} ));
 		this.init_for_start_test_trigger(test_data);
 	},
 	init_for_start_test_trigger:function(test_data){
 		var me = this;
 		$(this.body).find(".start-test").click(function(){
-			$(me.page.body).css("border", "")
-			me.init_for_refresh_page(test_data, "AS0000000006")
+			me.update_answer_sheet_status();
+			me.init_for_refresh_page(test_data)
+		
 			
 		})
 	},
-	get_questions:function(ans_sheet){
+	update_answer_sheet_status:function(){
+		var me = this;
+		frappe.call({
+			module:"mycfo.trainings",
+			page: "training_test",
+			method: "update_ans_sheet_status",
+			args:{"ans_sheet": me.ans_sheet },
+			callback:function(r){
+			}
+		})
+	},
+	get_questions:function(){
 		var me = this;
 		frappe.call({
 			module:"mycfo.trainings",
 			page: "training_test",
 			method: "get_question_list",
-			args:{"ans_sheet": ans_sheet },
+			args:{"ans_sheet": me.ans_sheet },
 			callback:function(r){
-				console.log(r.message)
 				if(r.message.ans_sheet_status == "New"){
 					me.render_instructions_page(r.message)
 				}else{
-					me.init_for_refresh_page(r.message, ans_sheet)
+					me.init_for_refresh_page(r.message)
 				}
 			
 			}
 		})
 	},
-	init_for_refresh_page:function(test_data, ans_sheet){
-		this.refresh_online_test_page(test_data, ans_sheet);	
+	reset_route_options_and_refresh:function(){
+		this.ans_sheet = frappe.route_options["ans_sheet"];
+		this.get_questions();
+		frappe.route_options = null;
+	},
+	init_for_refresh_page:function(test_data){
+		this.refresh_online_test_page(test_data);	
 		this.refresh_question_list(test_data.qtn_keys);
 	},
-	refresh_online_test_page:function(test_data, ans_sheet){
-		this.ans_sheet = ans_sheet;
+	refresh_online_test_page:function(test_data){
 		this.question_dict = test_data.question_dict;
 		this.current_question = test_data.last_qtn;
 		this.qtn_keys = test_data.qtn_keys;
@@ -68,8 +86,23 @@ OnlineTest = Class.extend({
 		this.instruction_page_flag = test_data.ans_sheet_status; 
 	},
 	refresh_questions:function(){
-		console.log(["in refresh questions", this.question_dict])	
 		$(this.body).find(".question-div").html(frappe.render_template("online_test", {"question_dict":this.question_dict[this.current_question], "qtn_count":this.questions_count, "qtn_index":this.question_index} ));
+		this.toggle_display_of_next_button();
+		this.toggle_display_of_prev_button();
+	},
+	toggle_display_of_next_button:function(){
+		if(this.question_index == this.questions_count){
+			$(this.body).find(".next-qt").css("display", "none")
+		}else{
+			$(this.body).find(".next-qt").css("display", "")
+		}
+	},
+	toggle_display_of_prev_button:function(){
+		if(this.question_index == 1){
+			$(this.body).find(".prev-qtn").css("display", "none")
+		}else{
+			$(this.body).find(".prev-qtn").css("display", "")
+		}
 	},
 	refresh_question_list:function(qtn_keys){
 		$(this.body).html(frappe.render_template("question_list", {"qtn_dict":this.question_dict, "qtn_keys":qtn_keys} ));
@@ -87,38 +120,53 @@ OnlineTest = Class.extend({
 	init_for_next_button:function(){
 		var me = this;
 		$(this.body).find(".next-qt").click(function(){
-			console.log("in next button")
-			console.log([me.current_question, me.question_index])
 			me.init_for_common_next_prev_behaviour(me.question_index + 1)
 		})
 	},
 	init_for_prev_button:function(){
 		var me = this;
 		$(this.body).find(".prev-qtn").click(function(){
-			console.log("in prev button")
 			me.init_for_common_next_prev_behaviour(me.question_index - 1)
 		})
 	},
 	init_for_common_next_prev_behaviour:function(new_qtn_index){
 		var me = this;
-		console.log(this)
 		if($(me.body).find(".panel").attr("qtn-type") == "Objective" ){
-			console.log($(me.body).find("input[name='radio']").is(":checked"))
 			new_class = $(me.body).find("input[name='radio']").is(":checked") ? "qtn-div attempted-qtn" : "qtn-div skipped-qtn";				
 		}
 		else{
-			console.log("in else")
 			new_class = $(me.body).find(".subj-ans").val() ? "qtn-div attempted-qtn" : "qtn-div skipped-qtn";
 		}
 		me.toggle_colour_of_question(new_class);
-		me.store_user_answer(new_qtn_index);	
+		var answer_data = me.store_user_answer(new_qtn_index);	
+		me.update_user_answer_sheet(answer_data)
 		me.set_current_question_and_index(new_qtn_index);
 	},
 	init_for_end_test:function(){
 		var me = this;
 		$(this.body).find(".end-test").click(function(){
-			console.log("in end test")
+			frappe.confirm(__("Are you sure you want to end test?"), function() {  
+				var answer_data = me.store_user_answer(1); // This 1 does not have any meaning. It is required because store answer is common method.
+				me.end_online_test(answer_data)
+			})
+			
 		})
+	},
+	end_online_test:function(answer_data){
+		var me = this;
+		return frappe.call({
+			freeze: true,
+			freeze_message:"Please wait ..............",
+			module:"mycfo.trainings",
+			page: "training_test",
+			method: "end_test",
+			args:{"request_data": answer_data},
+			callback:function(r){
+				frappe.msgprint(r.message)
+				$(me.body).html("")
+			}
+		})
+
 	},
 	store_user_answer:function(new_qtn_index){
 		var me = this;
@@ -131,25 +179,21 @@ OnlineTest = Class.extend({
 			this.question_dict[qtn_id].user_answer = answer
 		}
 		else{
-			console.log("in else")
 			answer = $(me.body).find(".subj-ans").val();
 			this.question_dict[qtn_id].user_subjective_answer = answer 
 		}
-		this.update_user_answer_sheet(answer, qtn_type, qtn_id, new_qtn_id)
+		return { "user_answer":answer, "qtn_type":qtn_type, "qtn_id":qtn_id, 
+				"new_qtn_id":new_qtn_id, "ans_sheet":me.ans_sheet }
 
 	},
-	update_user_answer_sheet:function(user_answer, qtn_type, qtn_id, new_qtn_id){
-		console.log(["In user_answer sheet", qtn_type, qtn_id, user_answer])
+	update_user_answer_sheet:function(answer_data){
 		var me = this;
 		return frappe.call({
 			module:"mycfo.trainings",
 			page: "training_test",
 			method: "update_user_answer",
-			args:{"request_data": {"user_answer":user_answer, "qtn_type":qtn_type, "qtn_id":qtn_id, 
-										"new_qtn_id":new_qtn_id, "ans_sheet":me.ans_sheet} },
+			args:{"request_data": answer_data },
 			callback:function(r){
-				console.log(r.message)
-			
 			}
 		})
 		
@@ -157,33 +201,24 @@ OnlineTest = Class.extend({
 	init_for_question_toggle:function(){
 		var me = this;
 		$(this.body).on("click", ".qtn-div", function(event){
-			console.log("in page test")
-			console.log($(this))
-			console.log($(this).attr("id"))
-			me.set_current_question_and_index(parseInt($(this).attr("index")))
+			me.init_for_common_next_prev_behaviour(parseInt($(this).attr("index")))
 		})
 	},
 	set_current_question_and_index:function(current_qtn){
 		this.current_question = this.qtn_keys[current_qtn - 1];
 		this.question_index = current_qtn;
-		console.log([current_qtn, this.current_question, this.question_index])
 		this.refresh_questions();
 		
 	},
 	init_for_radio_button:function(){
 		var me = this;
 		$(this.body).on("click", ".custom-radio", function(event){
-			console.log("custom_radio")
-			console.log($(this))
 			me.toggle_colour_of_question("qtn-div attempted-qtn")
 		})
 	},
 	init_for_subjective_text_box:function(){
 		var me = this;
-		console.log("in subjective")
 		$(this.body).on("keyup", ".subj-ans" ,function(event){
-			console.log("subject ans")
-			console.log($(this))
 			if($(this).val()){
 				me.toggle_colour_of_question("qtn-div attempted-qtn")	
 			}else{
@@ -194,7 +229,6 @@ OnlineTest = Class.extend({
 	},
 	toggle_colour_of_question:function(new_class){
 		$question = $(this.body).find("#{0}".replace("{0}", this.current_question));
-		console.log(["in toggle coour", $question])
 		$question.removeClass($question.attr("class")).addClass(new_class)
 	},
 

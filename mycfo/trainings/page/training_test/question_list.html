@@ -8,13 +8,13 @@
 				{% for(var qtn in qtn_keys ) { %}
 						{% if( qtn_dict[ qtn_keys[qtn] ].visited_flag  == 1 ) { %}
 							{% if(qtn_dict[ qtn_keys[qtn] ].user_answer || qtn_dict[ qtn_keys[qtn] ].user_subjective_answer) { %}
-							<div class="qtn-div attempted-qtn" id="{{ qtn_keys[qtn] }}" index="{{ index + 1 }}">{{ index + 1 }}</div>
+							<div class="qtn-div attempted-qtn" id="{{ qtn_keys[qtn] }}" index="{{ index + 1 }}"><div class="index-div">{{ index + 1 }}</div></div>
 							{% } else { %}
-								<div class="qtn-div skipped-qtn" id="{{ qtn_keys[qtn] }}" index="{{ index + 1 }}" >{{ index + 1 }}</div>
+								<div class="qtn-div skipped-qtn" id="{{ qtn_keys[qtn] }}" index="{{ index + 1 }}" ><div class="index-div">{{ index + 1 }}</div></div>
 							{% } %}
 
 						{% } else { %}
-							<div class="qtn-div non-visited-qtn" id="{{ qtn_keys[qtn] }}" index="{{ index + 1 }}" >{{ index + 1 }}</div>	
+							<div class="qtn-div non-visited-qtn" id="{{ qtn_keys[qtn] }}" index="{{ index + 1 }}" ><div class="index-div">{{ index + 1 }}</div></div>	
 						{% } %}
 					{% index+=1 %}		
 				{% } %}
