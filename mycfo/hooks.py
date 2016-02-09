@@ -50,7 +50,7 @@ app_include_js = ["/assets/mycfo/js/jquery.rateyo.min.js","/assets/mycfo/js/jque
 
 # notification_config = "mycfo.notifications.get_notification_config"
 
-fixtures = ['Custom Field', 'Property Setter', "Role"]
+fixtures = ['Custom Field', 'Property Setter', "Role","Discussion Category"]
 # Permissions
 # -----------
 # Permissions evaluated in scripted ways

@@ -1,0 +1,34 @@
+{% for(var i=0, l=comment_list.length; i < l; i++) { %}
+	<div class="blog-comment-row">
+		<div class="inline-block" style="vertical-align: top">
+			<div class="avatar avatar-medium" style="margin-top: 11px;">
+				<img itemprop="thumbnailUrl" src="{{ frappe.get_gravatar(comment_list[i].comment_by) }}" />
+			</div>
+		</div>
+		<div class="inline-block" style="width: calc(100% - 100px)">
+			<h4 itemprop="name">{{ comment_list[i].comment_by_fullname }}
+				<br>
+				<div class="col-sm-12" style="padding-left:0px">
+					<div class="inline-block col-sm-8" style="padding-left:0px">
+						<small class="text-muted">
+							<span itemprop="commentTime">{{ comment_list[i].creation }}</span>
+						</small>
+							<div id ="avg-rateYo{{ i }}"></div>
+							<div class="text-muted avg-ratings-info" id ="number_of_users{{ i }}"><label><font size="1.5">{{comment_list[i].average_rating}}  &nbsp; ({{comment_list[i].no_of_users}}  Ratings)</font></label>
+							</div>
+					</div>
+					<div class="inline-block col-sm-4">
+						<span class="your_rating">
+							<strong>Your Rating</strong>
+							<div class="show_rating{{ i }} hidden"></div>
+							<div class="add_rating{{ i }} hidden"><div class="edit_rating{{ i }} inline-block"></div><a class="rate_topic{{ i }} btn inline-block" style="background-color:#4CDD04;padding:3px 8px;font-size:10px" data-name="{{ comment_list[i].name }}">Rate</a></div>
+						</span>
+					</div>
+				</div>
+				<br>	
+			</h4>
+			<hr style="border-bottom:0.3px!important">
+			<div itemprop="commentText">{{ comment_list[i].comment }}</div>
+		</div>
+	</div>
+{% } %}

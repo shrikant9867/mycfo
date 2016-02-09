@@ -7,12 +7,13 @@
  "doctype": "Report", 
  "is_standard": "Yes", 
  "json": "{\"filters\":[],\"columns\":[[\"name\",\"Checklist Requisition\"],[\"checklist_status\",\"Checklist Requisition\"],[\"checklist_name\",\"Checklist Requisition\"],[\"expected_start_date\",\"Checklist Requisition\"],[\"description\",\"Checklist Requisition\"]],\"sort_by\":\"Checklist Requisition.modified\",\"sort_order\":\"desc\",\"sort_by_next\":null,\"sort_order_next\":\"desc\"}", 
- "modified": "2016-01-08 11:35:31.788371", 
+ "modified": "2016-01-27 13:33:59.499112", 
  "modified_by": "Administrator", 
  "module": "Checklist", 
  "name": "Process Templates", 
  "owner": "Administrator", 
+ "query": "SELECT\n  `tabChecklist Requisition`.name as \"Process:Link/Process:200\",\n  `tabChecklist Task`.title as as \"Name:Link/Name:200\"\nFROM\n  `tabProduction Order`\nWHERE\n  `tabProduction Order`.docstatus=1\n  AND ifnull(`tabProduction Order`.produced_qty,0) &lt; `tabProduction Order`.qty\n  AND EXISTS (SELECT name from `tabStock Entry` where production_order =`tabProduction Order`.name)", 
  "ref_doctype": "Checklist Requisition", 
  "report_name": "Process Templates", 
- "report_type": "Report Builder"
+ "report_type": "Query Report"
 }

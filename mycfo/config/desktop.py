@@ -27,5 +27,12 @@ def get_data():
 			"icon": "octicon octicon-device-camera-video",
 			"type": "module",
 			"label": _("Trainings")
+		},	
+		"Discussion Forum": {
+			"color": "#8e44ad",
+			"icon": "octicon octicon-organization",
+			"type": "page",
+			"label": _("Discussion Forum"),
+			"link":"discussion-forum"
 		}
 	}
