@@ -37,6 +37,11 @@ def get_data():
 					"name": "Financial Data",
 					"description": _("Financial Details"),
 				},
+				{
+					"type": "doctype",
+					"name": "KPI",
+					"description": _("KPI	 Details"),
+				},	
 				
 			]
 		},
