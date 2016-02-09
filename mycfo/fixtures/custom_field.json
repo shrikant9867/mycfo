@@ -221,7 +221,7 @@
   "in_list_view": 0, 
   "insert_after": "cin_number", 
   "label": "Date Of Incorporation", 
-  "modified": "2015-12-01 13:22:14.259024", 
+  "modified": "2016-02-09 12:56:44.337837", 
   "name": "Customer-date_of_incorporation", 
   "no_copy": 0, 
   "options": null, 
@@ -232,7 +232,7 @@
   "print_width": null, 
   "read_only": 0, 
   "report_hide": 0, 
-  "reqd": 1, 
+  "reqd": 0, 
   "search_index": 0, 
   "unique": 0, 
   "width": null
@@ -289,7 +289,7 @@
   "in_list_view": 0, 
   "insert_after": "customer_segment", 
   "label": "PAN Number", 
-  "modified": "2015-12-10 11:59:13.921962", 
+  "modified": "2016-02-09 12:57:03.881891", 
   "name": "Customer-pan_number", 
   "no_copy": 0, 
   "options": null, 
@@ -300,7 +300,7 @@
   "print_width": null, 
   "read_only": 0, 
   "report_hide": 0, 
-  "reqd": 1, 
+  "reqd": 0, 
   "search_index": 0, 
   "unique": 0, 
   "width": null
@@ -338,7 +338,7 @@
   "search_index": 0, 
   "unique": 0, 
   "width": null
- },
+ }, 
  {
   "allow_on_submit": 0, 
   "collapsible": 0, 
