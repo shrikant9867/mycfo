@@ -1,0 +1,51 @@
+<div class="my-training-container">
+<div class="row my-training-div">  
+<table class="table table-bordered table-hover my-training-table">
+    <thead>
+      <tr>
+        <th>Training Name</th>
+        <th>Subscription Date</th>
+        <th>Assessment Status</th>
+        <th>Total Score (%)</th>
+        <th>Download</th>
+        <th>Feedback</th>
+        <th>Start Test</th>
+        <th>Result</th>
+      </tr>
+    </thead>
+    <tbody>
+     {% for(var i=0, l=my_training.length; i < l; i++) { %}
+      <tr tr-nm= "{{ my_training[i].training_name }}" tr-url="{{ my_training[i].training_path }}" download-flag="{{ my_training[i].download_flag }}" ans-sheet-status= "{{ my_training[i].answer_sheet_status }}" tr-ans-sheet="{{ my_training[i].ans_sheet }}">
+        <td class="value">{{ my_training[i].training_name }}</td>
+        <td class="value">{{ my_training[i].sub_date }}</td>
+        <td class="value">{{ my_training[i].assessment_status }}</td>
+        <td class="value">{{ my_training[i].percentage_score }}</td>
+        <td><button type="button" class="btn btn-success tr-download" tr-url="{{ my_training[i].training_path }}"><i class="icon-download"></i></button></td>
+        {% if(my_training[i].download_flag ) { %}
+            <td><button type="button" class="btn btn-success tr-feedback">Share Review</button> </td>
+        {% } else { %}
+            <td  data-toggle="tooltip" data-placement="top"  title="Allowed after training download !!!!" class="td-review"><button type="button" class="btn btn-success tr-feedback"  disabled>Share Review</button> </td>
+        {% } %}
+
+         {% if(my_training[i].download_flag && inList(["New", "Pending"], my_training[i].answer_sheet_status )  ) { %}    
+            <td><button type="button" class="btn btn-success tr-start-assessment">Start Test
+              <i class="octicon octicon-triangle-right"></i></button></td>
+         
+         {% } else { %}
+            <td data-toggle="tooltip" data-placement="top"  title="{{ my_training[i].tooltip_title }}" class="td-start-test"><button type="button" class="btn btn-success tr-start-assessment" disabled >
+              Start Test<i class="octicon octicon-triangle-right"></i></button></td>
+           
+         {% } %}
+
+        {% if(inList(["Closed"], my_training[i].answer_sheet_status )  ) { %}
+              <td><button type="button" class="btn btn-success tr-check-result" tr-ans-sheet="{{ my_training[i].ans_sheet }}" >Result</button></td>
+        {% } else { %}
+              <td  data-toggle="tooltip" data-placement="top"  title="Test evaluation pending"><button type="button" class="btn btn-success tr-check-result" tr-ans-sheet="{{ my_training[i].ans_sheet }}" disabled>Result</button></td>
+        {% } %}
+
+      </tr>
+    {% } %}
+    </tbody>
+</table>
+</div>
+</div>

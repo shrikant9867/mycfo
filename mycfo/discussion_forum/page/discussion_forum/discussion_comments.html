@@ -13,7 +13,9 @@
 						<small class="text-muted">
 							<span itemprop="commentTime">{{ comment_list[i].creation }}</span>
 						</small>
-						<div id ="avg-rateYo{{ i }}"></div>
+							<div id ="avg-rateYo{{ i }}"></div>
+							<div class="text-muted avg-ratings-info" id ="number_of_users{{ i }}"><label><font size="1.5">{{comment_list[i].average_rating}}  &nbsp; ({{comment_list[i].no_of_users}}  Ratings)</font></label>
+							</div>
 					</div>
 					<div class="inline-block col-sm-4">
 						<span class="your_rating">

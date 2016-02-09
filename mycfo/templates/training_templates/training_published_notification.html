@@ -1,0 +1,11 @@
+<h3>{{_("Training Document Notification")}}</h3>
+<p>{{_("Dear")}} {{ first_name }}{% if last_name %} {{ last_name}}{% endif %},</p>
+<p>{{_("Your training request for {0} has been {1} by central delivery.").format(training_name, status)}}
+</p>
+{% if status == "Rejected" %}
+<p>Comments By CD:</p>
+<p style="margin-left:50px">{{ comments }}</p>
+{% endif %}	
+<br>
+<p>{{_("Thank you")}}.<br></p>
+<p>Team MyCFO</p>

@@ -18,6 +18,11 @@ class ChecklistRequisition(Document):
 	def autoname(self):
 		if self.checklist_status == "Open":
 			self.name = make_autoname(self.checklist_name.upper()+ ' - ' +'.#####')		
+	
+	def on_submit(self):
+		if(self.checklist_status != "Closed"):
+			frappe.throw(_("Checklist Requisition Status is Not Closed So Cannot Submit"))
+
 	def onload(self):
 		"""Load project tasks for quick view"""
 		if not self.get("cr_task"):
@@ -32,7 +37,8 @@ class ChecklistRequisition(Document):
 					"assignee": task.assignee,
 					"user":task.user,
 					"actual_end_date":task.end_date,
-					"count":task.count
+					"count":task.count,
+					"tat":task.tat
 					# "actual_time":task.actual_time
 				})		
 	
@@ -73,6 +79,7 @@ class ChecklistRequisition(Document):
 				"to_be_processed_for":self.to_be_processed_for,
 				"process_description":self.process_description,
 				"checklist_name":self.checklist_name,
+				"tat":t.tat
 			})
 
 			task.flags.ignore_links = True
@@ -108,7 +115,6 @@ class ChecklistRequisition(Document):
 					})
 				else:
 					self.init_make_todo(task)
-	
 
 	def init_make_todo(self,task):			
 		todo = frappe.new_doc("ToDo")
@@ -118,19 +124,18 @@ class ChecklistRequisition(Document):
 			"role": task.assignee,
 			"reference_type": "Checklist Task",
 			"reference_name": task.task_id,
-			"owner": task.user
+			"owner": task.user,
+			"date":task.end_date
 		})
 		todo.flags.ignore_links = True
 		todo.flags.from_project = True
 		todo.save(ignore_permissions = True)
 
-		
-
 	def get_tasks_detail(self):
 		checklist_doc = frappe.get_doc("Checklist",self.checklist_name)
 		checklist_list = []
 		for task in checklist_doc.get("task"):
-			checklist_list.append({'task_name':task.task_name,'start_date':datetime.now().strftime("%Y-%m-%d"),'end_date':self.get_end_date(task.tat),'des':task.des,'assignee':task.assignee})
+			checklist_list.append({'task_name':task.task_name,'start_date':datetime.now().strftime("%Y-%m-%d"),'end_date':self.get_end_date(task.tat),'des':task.des,'assignee':task.assignee,'tat':task.tat})
 		return checklist_list
 
 	def get_end_date(self,tat):
@@ -145,10 +150,11 @@ class ChecklistRequisition(Document):
 		where h2.parent = h1.name and h1.name = 'Mycfo' and h2.holiday_date >= %s and  h2.holiday_date <= %s""",(nowdate(),due_date.strftime("%Y-%m-%d")))
 		return tot_hol[0][0]
 
-	def get_status(self):
-		if(self.cr_task):
-			if(len(self.cr_task) == len(filter(lambda x: x.status=="Closed",self.cr_task))):
-				return "Closed"
+	# def get_status(self):
+	# 	if(self.cr_task):
+	# 		if(len(self.cr_task) == len(filter(lambda x: x.status=="Closed",self.cr_task))):
+	# 			Date = datetime.now()
+	# 			return {"status":"Closed","date":Date.date()}
 		# status_of_all = frappe.db.sql("""select status from `tabChecklist Task`t1 where t1.project = '{0}'""".format(self.name),as_list=1)
 		# chain = itertools.chain(*status_of_all)
 		# sot =  list(chain)
@@ -164,6 +170,9 @@ class ChecklistRequisition(Document):
 
 @frappe.whitelist()
 def filter_user(doctype, txt, searchfield, start, page_len, filters):
+	"""
+	filter users according to Role
+	"""
 	user_list = frappe.db.sql("""select t1.email from `tabUser` t1,`tabUserRole` t2 
 		where t2.parent = t1.name and t2.role = '{0}'""".format(filters['assignee']),as_list =1)
 	return user_list
@@ -175,5 +184,4 @@ def list_view(name):
 	closed_count = len(filter(lambda x: x.status=="Closed",list_requisition.cr_task))
 	closed_task = "{1} / {0} Closed".format(counter,closed_count)
 	return closed_task
-
 

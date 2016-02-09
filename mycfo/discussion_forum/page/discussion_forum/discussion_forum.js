@@ -18,29 +18,21 @@ df.discussion_forum = Class.extend({
 	make_page: function() {
 		if (this.page)
 			return;
-		
 		frappe.ui.make_app_page({
 			parent:this.parent,
 			title:'Discussion Forum',
 		});
-		
 		this.page = this.parent.page;
 		this.wrapper = $('<div></div>').appendTo(this.page.body);
 		this.page_sidebar = $('<div></div>').appendTo(this.page.sidebar.empty());
-		
 		$('.layout-side-section').css({"background-color":"#ffffff","padding-top":"10px"})
-		
 		frappe.breadcrumbs.add("Discussion Forum");
 		this.page.clear_menu();
-		
 		$('.form-inner-toolbar').remove()
 		$('.page-form').remove()
-		
 		this.page.set_primary_action(__('Create New Topic'), function() { new_doc("Discussion Topic") }, true);
 		this.page.add_menu_item(__('Refresh'), function() { frappe.ui.toolbar.clear_cache() }, true);
-		
 		$(frappe.render_template("discussion_sidebar",{"post":{}})).appendTo(this.page_sidebar);
-		
 		var me = this;
 		$('.home').on('click',function(){
 			me.user_name.input.value = ''
@@ -143,7 +135,7 @@ df.discussion_forum = Class.extend({
 			me.get_discussions({"user":user})
 		})
 		if (frappe.user.has_role(['Administrator', 'System Manager', 'Central Delivery'])){
-			this.page.add_menu_item(__('Assign'), function() { me.show_assign_dialog(topic_name) }, true);
+			this.page.add_menu_item(__('Assign'), function() { me.show_assign_dialog(topic_name,data) }, true);
 		}
 		me.get_comments(topic_name)
 	},
@@ -200,6 +192,8 @@ df.discussion_forum = Class.extend({
 	render_ratings:function(data,topic_name){
 		var me = this;
 		$.each(data.comment_list, function(index, value){
+			$("#number_of_users{0}".replace("{0}",index)).val(data['comment_list'][index]['no_of_users'],data['comment_list'][index]['average_rating']);
+			/*$("#users_average_rating{0}".replace("{0}",index)).val(data['comment_list'][index]['average_rating']);*/
 			$("#avg-rateYo{0}".replace("{0}",index)).rateYo({
 		    	precision: 1,
 		    	starWidth: "10px",
@@ -259,12 +253,14 @@ df.discussion_forum = Class.extend({
 				},
 				btn: this
 			});
+
 	},
 	make_sidebar:function(){
 		var me = this;
 		me.get_categories()
 		me.make_search()
 		me.make_user_filter()
+
 	},
 	get_categories:function(){
 		var me = this;
@@ -278,6 +274,7 @@ df.discussion_forum = Class.extend({
 	},
 	render_categories:function(data){
 		var me = this;
+
 		$(frappe.render_template("discussion_categories",{"post":data})).appendTo($('.cat'));
 		$('.category').on("click",function(){
 			$(me.wrapper).empty()
@@ -366,36 +363,112 @@ df.discussion_forum = Class.extend({
 			});
 		}
 	},
-	show_assign_dialog:function(topic_name){
+	show_assign_dialog:function(topic_name,data){
 		var me = this;
 		if(!me.dialog) {
 			me.dialog = new frappe.ui.Dialog({
-				title: __('Assign Topic to Particular User'),
+				title: __('Assign Topic to Multiple User'),
 				fields: [
 					{fieldtype:'Link', fieldname:'assign_to', options:'User',
-						label:__("Assign To"),description:__("Add to To Do List Of"), reqd:true},
+						label:__("Assign To"),description:__("Add to To Do List Of"),reqd:true},
 					{fieldtype:'Text', fieldname:'description', label:__("Description"), reqd:true},
+					{fieldtype:'Button', fieldname:'add_users', label:__("Add Users")},
+					{fieldtype: 'HTML', fieldname: 'assign_tr_html'},
 				],
 				primary_action: function() { me.assign_topic(topic_name); },
 				primary_action_label: __("Assign")
 			});
-			me.dialog.fields_dict.assign_to.get_query = "mycfo.discussion_forum.page.discussion_forum.discussion_forum.user_query";
+			/*me.dialog.fields_dict.assign_to.get_query = "mycfo.discussion_forum.page.discussion_forum.discussion_forum.user_query";*/
+			me.dialog.fields_dict['assign_to'].get_query = function(){
+				return{ 
+					query: "mycfo.discussion_forum.page.discussion_forum.discussion_forum.users_query",
+					filters: {
+						'doc': data['owner'],
+						'doc_name':topic_name
+					}
+				}
+			}
+			// this.dialog.clear();		
 		}
-		me.dialog.clear();
-		me.dialog.show();	
+		
+		this.dialog.show();
+		this.init_for_add_users();	
 	},
+
+	init_for_add_users: function(){
+		var me = this;
+		this.assign_topic_data = [];
+		this.dialog.fields_dict.add_users.$input.click(function(){
+			if (me.check_for_duplicate_users()){
+				me.render_table_head();
+				me.render_table_row();
+			}	
+		})
+	},
+	
+	check_for_duplicate_users: function(){
+		var me = this;
+		var emp = this.dialog.fields_dict.assign_to.input.value
+		function isduplicate(args) {
+ 			return args.employee == emp
+		};
+		var filtered_tr_data = this.assign_topic_data.filter(isduplicate);
+		if (filtered_tr_data.length){
+			msgprint(repl("Assign table already contains user %(employee)s",{employee:emp}))
+			return false
+		}
+		return true	
+	},
+
+
+	render_table_head:function(){
+		if (! $(cur_dialog.body).find("#tr-table").length){
+			$(this.dialog.fields_dict.assign_tr_html.$wrapper).append("<table class='table' id='tr-table'><thead><tr class='row'>\
+				<th class='col-xs-8'>User</th><th class='col-xs-4'>Remove</th></tr></thead><tbody class='tr-tbody'></tbody></table>")
+		}
+	},
+
+	render_table_row:function(){
+		var me = this;
+		args = {"employee":this.dialog.fields_dict.assign_to.input.value ,"description":this.dialog.fields_dict.description.input.value}
+		$(cur_dialog.body).find(".tr-tbody").append(frappe.render_template("assign_topic_row", args));
+		this.assign_topic_data.push(args);
+		this.remove_table_row()
+	},
+
+	remove_table_row:function(){
+		var me = this;
+		$(cur_dialog.body).find(".icon-remove").click(function(){
+			var emp = $(this).attr("emp")
+			var filtered_tr_data = me.assign_topic_data.filter(function(args) {
+ 			 	return !(args.employee == emp)
+			});
+			me.assign_topic_data = filtered_tr_data
+			$(this).parent().parent().remove();
+		})	
+	},
+
 	assign_topic: function(topic_name) {
 		var me = this;
 		var args = me.dialog.get_values();
-		var assign_to = me.dialog.fields_dict.assign_to.get_value();
-		if(args) {
+		var employee_list = []
+		if(this.assign_topic_data.length){
+			for(var i = 0 ; i < this.assign_topic_data.length ; i++){
+				employee_list.push(this.assign_topic_data[i].employee);	
+			}
+			var assign_emp = employee_list
+		}
+		else{
+			msgprint(repl("Add user"))
+		}	
+		if(this.assign_topic_data.length) {
 			return frappe.call({
 				method:'mycfo.discussion_forum.page.discussion_forum.discussion_forum.assign_topic',
 				args: $.extend(args, {
 					topic_name:topic_name,
 					doctype: "Discussion Topic",
 					name:topic_name,
-					assign_to: assign_to
+					assign_to: assign_emp
 				}),
 				callback: function(r,rt) {
 					if(!r.exc) {
