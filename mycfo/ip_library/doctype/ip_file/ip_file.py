@@ -92,7 +92,7 @@ class IPFile(Document):
 		ipa.file_extension = self.file_extension
 		ipa.file_description = self.description
 		ipa.file_type = self.document_type
-		ipa.project = self.project
+		ipa.customer = self.customer
 		ipa.source = self.source
 		ipa.industry = self.industry
 		ipa.skill_matrix_18 = self.skill_matrix_18
@@ -117,7 +117,7 @@ class IPFile(Document):
 		template = "/templates/ip_library_templates/upgrade_validity_request_notification.html"
 		subject = "IP Document Upgrade Validity Notification"
 		central_delivery = self.get_central_delivery()
-		cc = [self.owner] if frappe.session.user != self.owner else [] 
+		cc = [ frappe.db.get_value("User", {"name":self.owner } ,"email") ] if frappe.session.user != self.owner else []
 		args = {"user_name":frappe.session.user, "file_name":self.file_name }
 		frappe.sendmail(recipients=central_delivery, sender=None, subject=subject,
 			message=frappe.get_template(template).render(args), cc=cc)	
@@ -125,14 +125,18 @@ class IPFile(Document):
 
 
 	def prepare_for_approver_notification(self):
-		full_name, email_id = frappe.db.get_value("Employee", self.file_approver, ["employee_name", "user_id"])
+		full_name, user_id = frappe.db.get_value("Employee", self.file_approver, ["employee_name", "user_id"])
 		central_delivery = self.get_central_delivery()
-		central_delivery.append(email_id)
+		central_delivery.append( frappe.db.get_value("User",{"name":user_id}, "email") )
 		self.send_mail(central_delivery)
 
 	def get_central_delivery(self):
-		central_delivery = frappe.get_list("UserRole", filters={"role":"Central Delivery","parent":["!=", "Administrator"]}, fields=["parent"])
-		central_delivery = [user.get("parent") for user in central_delivery]
+		central_delivery = frappe.db.sql(""" select distinct usr.email from `tabUser` usr 
+							left join `tabUserRole` usr_role 
+							on usr_role.parent = usr.name
+							where usr.name != "Administrator"
+							and usr_role.role = "Central Delivery"  """, as_dict=1)
+		central_delivery = [user.get("email") for user in central_delivery if user.get("email")]
 		return central_delivery	
 
 	
@@ -157,13 +161,13 @@ def get_approver_list(doctype, txt, searchfield, start, page_len, filters):
 								on  emp.name  = opd.user_name 
 								where opd.role in ("EL")
 								and opd.email_id != %(user)s  
-								and opc.project_commercial = %(project)s
+								and opc.customer = %(customer)s
 								and (emp.name like %(txt)s
 								or emp.employee_name like %(txt)s)
 								limit 20
 	 		""", {
 			'txt': "%%%s%%" % txt,
-			'project':filters.get("project"),
+			'customer':filters.get("customer"),
 			"user":frappe.session.user}, as_list=1)
 
 
@@ -190,7 +194,7 @@ def create_archive_request(doc):
 	ip_arch.file_name = doc.get("file_name")
 	ip_arch.file_description = doc.get("description")
 	ip_arch.file_type = doc.get("document_type")
-	ip_arch.project = doc.get("project")
+	ip_arch.customer = doc.get("customer")
 	ip_arch.source = doc.get("source")
 	ip_arch.industry = doc.get("industry")
 	ip_arch.skill_matrix_18 = doc.get("skill_matrix_18")
@@ -208,10 +212,14 @@ def create_archive_request(doc):
 def send_archive_notification(doc):
 	template = "/templates/ip_library_templates/archive_request_notification.html"
 	subject = "IP Document Archive Request Notification"
-	central_delivery = frappe.get_list("UserRole", filters={"role":"Central Delivery","parent":["!=", "Administrator"]}, fields=["parent"])
-	central_delivery = [user.get("parent") for user in central_delivery]
+	central_delivery = frappe.db.sql(""" select distinct usr.email from `tabUser` usr 
+							left join `tabUserRole` usr_role 
+							on usr_role.parent = usr.name
+							where usr.name != "Administrator"
+							and usr_role.role = "Central Delivery"  """, as_dict=1)
+	central_delivery = [user.get("email") for user in central_delivery if user.get("email")]
 	args = {"user_name":frappe.session.user, "file_name":doc.get("file_name")}
-	cc = [doc.get("owner")] if frappe.session.user != doc.get("owner") else [] 
+	cc = [ frappe.db.get_value("User", {"name":doc.get("owner") } ,"email") ] if frappe.session.user != doc.get("owner") else []
 	frappe.sendmail(recipients=central_delivery, sender=None, subject=subject,
 			message=frappe.get_template(template).render(args), cc=cc)	
 

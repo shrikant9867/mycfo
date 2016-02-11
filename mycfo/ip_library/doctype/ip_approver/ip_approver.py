@@ -48,7 +48,7 @@ class IPApprover(Document):
 		approver_full_name = appr_fnm + "  " + appr_lstnm if appr_lstnm else ""
 		args["approver"] = approver_full_name
 		args["comments"] = comments
-		self.send_notification("IP Docuemnt {0} Rejected".format(self.file_name), email, 
+		self.send_notification("IP Document {0} Rejected".format(self.file_name), email, 
 									"templates/ip_library_templates/user_notification.html",args)
 
 
