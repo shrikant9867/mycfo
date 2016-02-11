@@ -14,7 +14,6 @@ def get_global_search_suggestions(filters):
 						and file_name like '%{0}%' 
 						union select name from `tabSkill Matrix 18` where name like '%{0}%'
 						union select name from `tabSkill Matrix 120` where name like '%{0}%'
-						union select name  from `tabProject Commercial` where name like '%{0}%'	
 						union select name from `tabDocument Type` where name like '%{0}%'
 		""".format(filters)
 	suggestions = frappe.db.sql(query, as_list=1)
@@ -33,7 +32,7 @@ def get_published_ip_file(search_filters):
 	my_query = """ select * from `tabIP File` ipf
 						where 
 						( ipf.skill_matrix_18 like '%{0}%' or ipf.file_name like '%{0}%' 
-						or ipf.project like '%{0}%' or ipf.security_level like '%{0}%' 
+						or ipf.security_level like '%{0}%' 
 						or ipf.skill_matrix_120 like '%{0}%' or ipf.document_type like '%{0}%' )  order by ipf.uploaded_date desc """.format(search_filters.get("filters"))
 	
 	total_records = get_total_records(my_query)
@@ -127,7 +126,7 @@ def create_ip_file_feedback(request_data):
 
 
 @frappe.whitelist()
-def create_ip_download_request(ip_file_name, project, approver):
+def create_ip_download_request(ip_file_name, customer, approver):
 	file_data = frappe.db.get_value("IP File", {"name":ip_file_name}, '*', as_dict=True)
 	check_for_existing_download_approval_form(file_data)
 	if not frappe.db.get_value("IP Download Approval", {"file_name":file_data.get("file_name"), 
@@ -136,7 +135,7 @@ def create_ip_download_request(ip_file_name, project, approver):
 		ipa.file_name = file_data.get("file_name")
 		ipa.file_description = file_data.get("file_description")
 		ipa.file_type = file_data.get("file_type")
-		ipa.project = project
+		ipa.customer = customer
 		ipa.industry = file_data.get("industry")
 		ipa.department = file_data.get("department")
 		ipa.skill_matrix_18 = file_data.get("skill_matrix_18")
@@ -195,8 +194,8 @@ def make_todo(users, file_data):
 	for usr in users:
 		todo = frappe.new_doc("ToDo")
 		todo.description = "Approve the download request of user {0} for file {1}".format(frappe.session.user, file_data.get("file_name"))
-		todo.reference_type = "Project Commercial"
-		todo.reference_name = file_data.get("project")
+		todo.reference_type = "Customer"
+		todo.reference_name = file_data.get("customer")
 		todo.role = "EL"
 		todo.owner = usr
 		todo.status = "Open"
@@ -268,13 +267,13 @@ def get_pending_request_query():
 
 
 @frappe.whitelist()
-def get_projects_of_user(doctype, txt, searchfield, start, page_len, filters):
+def get_customers_of_user(doctype, txt, searchfield, start, page_len, filters):
 	query = """ select distinct(opc.project_commercial) from 
 						`tabOperation And Project Commercial` opc left join
 						`tabOperation And Project Details` opd 
 						on opc.name = opd.parent
 						where opd.email_id = '{0}'
-						and opc.project_commercial like '%{1}%' limit 20""".format(frappe.session.user, txt)
+						and opc.customer like '%{1}%' limit 20""".format(frappe.session.user, txt)
 	return frappe.db.sql(query, as_list=1)
 
 
@@ -298,3 +297,6 @@ def get_comments_reviews(response):
 	response["panel_class"] = "panel panel-primary ip-file-panel" if response.get("published_flag") else "panel panel-archive ip-file-panel"
 
 
+def get_customer_list(doctype, txt, searchfield, start, page_len, filters):
+	return frappe.db.sql(""" select name from `tabCustomer` 
+								where name like %(txt)s limit 10 """, {"txt":"%%%s%%" % txt }, as_list=1)

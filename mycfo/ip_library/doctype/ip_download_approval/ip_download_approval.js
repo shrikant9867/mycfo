@@ -54,9 +54,9 @@ cur_frm.set_query("central_delivery", function() {
 });
 
 
-cur_frm.set_query("approver", function() {
-   	return {
-   		query:"mycfo.ip_library.doctype.ip_approver.ip_approver.get_user_with_el_roles",
-   		filters:{"project_id":cur_frm.doc.project}
-   	}
-});
+// cur_frm.set_query("approver", function() {
+//    	return {
+//    		query:"mycfo.ip_library.doctype.ip_approver.ip_approver.get_user_with_el_roles",
+//    		filters:{"project_id":cur_frm.doc.project}
+//    	}
+// });

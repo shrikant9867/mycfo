@@ -40,7 +40,8 @@ class IPArchiver(Document):
 	def send_archive_notification(self):
 		template = "/templates/ip_library_templates/archive_notification.html"
 		subject = "IP Document Archive Notification"
-		email = list(set([self.archive_requester, self.ip_file_owner]))
+		email_recipients = frappe.db.get_values("User", {"name":["in", [self.archive_requester, self.ip_file_owner] ]}, ["email"], as_dict=1)
+		email = list(set([ recipient.get("email") for recipient in email_recipients if recipient.get("email") ] ))
 		args = {"status":self.central_delivery_status, "comments":self.central_delivery_comments, "file_name":self.file_name}
 		frappe.sendmail(recipients=email, sender=None, subject=subject,
 			message=frappe.get_template(template).render(args))	

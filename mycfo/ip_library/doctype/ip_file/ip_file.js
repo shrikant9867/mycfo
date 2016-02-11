@@ -97,7 +97,7 @@ init_for_edit_file = function(frm){
 cur_frm.set_query("file_approver", function() {
    	return {
    		query: "mycfo.ip_library.doctype.ip_file.ip_file.get_approver_list",
-   		filters: { "project":cur_frm.doc.project }
+   		filters: { "customer":cur_frm.doc.customer }
    	}
 });
 

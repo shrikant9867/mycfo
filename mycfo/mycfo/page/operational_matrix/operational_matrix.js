@@ -280,22 +280,22 @@ Operational = Class.extend({
 
 		$(me.filters.customer.input).attr('disabled',true)
 
-		me.filters.project_id = me.wrapper.page.add_field({
-					fieldname: "project_id",
-					label: __("Project ID"),
-					fieldtype: "Link",
-					options: "Project Commercial",
-					"get_query": function() {
-				return {
-					"doctype": "Project Commercial",
-					"filters": {
-						"project_status": 'Active',
-						"customer":me.filters.customer.input.value
-					}
-				}
-			}
+		// me.filters.project_id = me.wrapper.page.add_field({
+		// 			fieldname: "project_id",
+		// 			label: __("Project ID"),
+		// 			fieldtype: "Link",
+		// 			options: "Project Commercial",
+		// 			"get_query": function() {
+		// 		return {
+		// 			"doctype": "Project Commercial",
+		// 			"filters": {
+		// 				"project_status": 'Active',
+		// 				"customer":me.filters.customer.input.value
+		// 			}
+		// 		}
+		// 	}
 
-		});
+		// });
 
 		me.filters.operational_matrix = me.wrapper.page.add_field({
 					fieldname: "operational_matrix",
@@ -303,13 +303,11 @@ Operational = Class.extend({
 					fieldtype: "Link",
 					options: "Operational Matrix",
 					"get_query": function() {
-				return {
-					"doctype": "Operational Matrix",
-					"filters": {
-						"operational_matrix_status": 'Active',
-					}
+						return {
+							"query": "mycfo.mycfo.page.operational_matrix.operational_matrix.get_unlinked_operation_matrix",
+							"filters": { "customer": me.filters.customer.input.value}
+						}
 				}
-			}
 		});
 
 		me.add = me.wrapper.page.add_field({
@@ -337,64 +335,64 @@ Operational = Class.extend({
     	//$("#newbuttons").remove();
 									
 		//change in filter project ID-----------------------------------------------------------
-		$(me.filters.project_id.input).change(function(){
-			if (me.filters.project_id.input.value.length!=0 && me.filters.operational_matrix.input.value.length!=0){
-				$('[data-fieldname=add]').css('display','block')
-			}
-			else{
-				$('[data-fieldname=add]').css('display','none')
-			}
-			if(me.values){
-				if(me.filters.project_id.input.value.length!=0 && me.filters.operational_matrix.input.value.length==0){
-					me.get_filtered_data()
-				}
-				else if (me.filters.project_id.input.value.length ==0 && me.filters.operational_matrix.input.value.length!=0){
-					me.get_filtered_data()
-				}
-				else if (me.filters.project_id.input.value.length!=0 && me.filters.operational_matrix.input.value.length!=0){
-					me.get_filtered_data()
-				}
+		// $(me.filters.project_id.input).change(function(){
+		// 	if (me.filters.project_id.input.value.length!=0 && me.filters.operational_matrix.input.value.length!=0){
+		// 		$('[data-fieldname=add]').css('display','block')
+		// 	}
+		// 	else{
+		// 		$('[data-fieldname=add]').css('display','none')
+		// 	}
+		// 	if(me.values){
+		// 		if(me.filters.project_id.input.value.length!=0 && me.filters.operational_matrix.input.value.length==0){
+		// 			me.get_filtered_data()
+		// 		}
+		// 		else if (me.filters.project_id.input.value.length ==0 && me.filters.operational_matrix.input.value.length!=0){
+		// 			me.get_filtered_data()
+		// 		}
+		// 		else if (me.filters.project_id.input.value.length!=0 && me.filters.operational_matrix.input.value.length!=0){
+		// 			me.get_filtered_data()
+		// 		}
 
-			}
+		// 	}
 
 			
-		});
+		// });
 
 
 		//change in filter operational ID-----------------------------------------------------------
 		$(me.filters.operational_matrix.input).change(function(){
 		
-			if (me.filters.project_id.input.value.length!=0 && me.filters.operational_matrix.input.value.length!=0){
+			if (me.filters.operational_matrix.input.value.length!=0){
 				$('[data-fieldname=add]').css('display','block')
 			}
 			else{
 				$('[data-fieldname=add]').css('display','none')
 			}
-			if(me.filters.project_id.input.value.length!=0 && me.filters.operational_matrix.input.value.length==0){
-				me.get_filtered_data()
-			}
-			else if (me.filters.project_id.input.value.length ==0 && me.filters.operational_matrix.input.value.length!=0){
-				me.get_filtered_data()
-			}
-			else if (me.filters.project_id.input.value.length!=0 && me.filters.operational_matrix.input.value.length!=0){
-				me.get_filtered_data()
-			}
+			// if(me.filters.project_id.input.value.length!=0 && me.filters.operational_matrix.input.value.length==0){
+			// 	me.get_filtered_data()
+			// }
+			// else if (me.filters.project_id.input.value.length ==0 && me.filters.operational_matrix.input.value.length!=0){
+			// 	me.get_filtered_data()
+			// }
+			// else if (me.filters.project_id.input.value.length!=0 && me.filters.operational_matrix.input.value.length!=0){
+			// 	me.get_filtered_data()
+			// }
 
-
+			me.get_filtered_data();	
 			
 		});
 
 
 
 
-		$(me.filters.operational_matrix.input).change(function(){
-			if (me.filters.operational_matrix.input.value && me.filters.project_id.input.value){
-				$('[data-fieldname=add]').css('display','block')
-			}
-		});
+		// $(me.filters.operational_matrix.input).change(function(){
+		// 	if (me.filters.operational_matrix.input.value && me.filters.project_id.input.value){
+		// 		$('[data-fieldname=add]').css('display','block')
+		// 	}
+		// });
 
 		me.add.$input.on("click", function() {
-			if (me.filters.operational_matrix.input.value && me.filters.project_id.input.value){
+			if (me.filters.operational_matrix.input.value){
 				me.pop_up = me.show_pop_up_dialog()
 				me.append_pop_up_dialog_body(me.pop_up);
 				me.append_se_popup_fields(me);
@@ -404,7 +402,7 @@ Operational = Class.extend({
 				$(".modal-footer").css("text-align","center");
 				
 			}else{
-				msgprint("Project Id and Operational matrix are required.")
+				msgprint("Operational matrix is mandatory.")
 			}
 		})
 	},
@@ -414,7 +412,6 @@ Operational = Class.extend({
 		return frappe.call({
 						method:'mycfo.mycfo.page.operational_matrix.operational_matrix.get_filtered_data',
 						args :{
-							"project_id": me.filters.project_id.input.value,
 							"customer":me.filters.customer.input.value,
 							"operational_matrix": me.filters.operational_matrix.input.value
 						},
@@ -440,7 +437,6 @@ Operational = Class.extend({
 			method:'mycfo.mycfo.page.operational_matrix.operational_matrix.get_operational_matrix_details',
 			args :{
 				"operational_matrix":me.filters.operational_matrix.input.value,
-				"project_id": me.filters.project_id.input.value,
 				"customer":me.filters.customer.input.value
 			},
 			callback: function(r,rt) {
@@ -522,8 +518,7 @@ Operational = Class.extend({
 	refresh: function() {
 		var me = this;
 		if(frappe.route_options){
-			me.filters.customer.input.value= frappe.route_options['customer']
-			me.filters.project_id.input.value = "";
+			me.filters.customer.input.value= frappe.route_options['customer'];
 			me.filters.operational_matrix.input.value = ""
 			frappe.route_options = null;
 		}
@@ -618,30 +613,20 @@ Operational = Class.extend({
 							 </div></div>\
 				 			</li>").appendTo($(me.body).find("#mytable"))
 						$("<div class='col-md-12 row first-row' style='margin-top:15px;' id ='first'>\
-							<div class='col-md-6' style='background-color=#fafbfc;'>\
-			        			<div class='row row-id'>\
-			        			<div class='col-md-6 row'>\
-			       				<div class='row property-row'><b>Project Id :</b></div>\
-			      				 </div>\
-			      				 <div class='col-md-6 row'>\
-			        			<div class='row property-row' id='project_id'></div>\
-			        			</div>\
-			      				 </div>\
-			       				</div>\
 			       				<div class='col-md-6' style='background-color=#fafbfc;'>\
 			        			<div class='row row-id'>\
 			        			<div class='col-md-5 row'>\
 			       				<div class='row property-row'><b>Operational Matrix :</b></div>\
 			      				 </div>\
-			      				 <div class='col-md-5 row'>\
+			      				<div class='col-md-5 row'>\
 			        			<div class='row property-row' id='operational-id'></div>\
 			        			</div>\
-			        			<div class='col-md-2 row' style='margin-left:65px;'>\
-			        			<div class='row property-row' id="+values[i][0]['name']+" style='float:right;'>\
-							<button class='btn btn-sm btn-default cb'>Deactivate</button>\
-							</div>\
 								</div>\
-			      				 </div>\
+			       				</div>\
+			       				<div class='col-md-6' style='background-color=#fafbfc;'>\
+	        					<div class='row property-row' id="+values[i][0]['name']+" style='float:right;'>\
+								<button class='btn btn-sm btn-default cb'>Deactivate</button>\
+			       				</div>\
 			       				</div>\
 			       				</div>\
 								<div class='col-md-12 table-data' style='margin-top:15px; overflow:auto;height: 90px;' id ='table-details"+""+i+"'>\
@@ -664,7 +649,7 @@ Operational = Class.extend({
 
 					//$($(me.body).find("#"+i+"")).find("#project_id").append('<div class="row property-row"><a class="pv" style="margin-left:12px;" id="'+values[i].name+'">'+values[i].name+'<a></div>')
 					$($(me.body).find("#"+i+"")).find("#operational-id").append('<div class="row property-row">'+values[i][0].operational_id ? values[i][0].operational_id : ""+'</div>')
-					 $($(me.body).find("#"+i+"")).find("#project_id").append('<div class="row property-row">'+values[i][0].project_commercial ? values[i][0].project_commercial : ""+'</div>')
+					// $($(me.body).find("#"+i+"")).find("#project_id").append('<div class="row property-row">'+values[i][0].project_commercial ? values[i][0].project_commercial : ""+'</div>')
 					
 
 					if(values[i][0]['child_records']!=null){
