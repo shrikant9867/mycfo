@@ -56,9 +56,6 @@ cur_frm.set_query("central_delivery", function() {
    	}
 });
 
-cur_frm.cscript.validate = function(doc) {
-	// refresh_field(["current_status"])
-}
 
 
 make_read_only_fields = function(cd_fields){

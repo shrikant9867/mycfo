@@ -37,6 +37,7 @@ def update_user_answer(request_data):
 	frappe.db.sql(""" update `tabAnswer Sheet` 
 						set last_attempted_question = %(qtn)s where name = %(ans_sheet)s """,
 						{"qtn":request_data.get("new_qtn_id"), "ans_sheet":request_data.get("ans_sheet")})
+	frappe.db.commit()
 
 
 def common_update_answer(request_data):
