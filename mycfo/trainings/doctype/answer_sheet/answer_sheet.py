@@ -28,7 +28,7 @@ class AnswerSheet(Document):
 				frappe.throw("Marks obtained for question {0} must be less than total marks.".format(row.idx))
 			if row.question_type == 'Objective':
 				row.marks_obtained = row.total_marks if row.user_answer == row.objective_answer else 0
-		self.marks_obtained = sum([row.marks_obtained for row in self.table_5])
+		self.marks_obtained = sum([row.marks_obtained for row in self.table_5 if row.marks_obtained])
 		self.percentage_score = round(float(self.marks_obtained) / float(self.total_marks) * 100, 2)
 
 

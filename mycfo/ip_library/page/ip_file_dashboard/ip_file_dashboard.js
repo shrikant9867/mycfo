@@ -316,38 +316,37 @@ IpFileDashboard = Class.extend({
 		this.dialog = new frappe.ui.Dialog({
 						title: "Make Download Request",
 						fields: [
-								{"fieldtype": "Link", "label": __("Project"), "fieldname": "project", "reqd": 1, "options":"Project Commercial"},
+								{"fieldtype": "Link", "label": __("Customer"), "fieldname": "customer", "reqd": 1, "options":"Customer"},
 								{"fieldtype": "Link", "label": __("Employee"), "fieldname": "employee_id", "reqd": 1, "options":"Employee"},
 							],
 						primary_action_label: "Make Request",
 						primary_action: function(doc) {
-								project_id = me.dialog.fields_dict.project.input.value
+								customer = me.dialog.fields_dict.customer.input.value
 								employee_id = me.dialog.fields_dict.employee_id.input.value	
-								if (project_id && employee_id){
-									my_dict = {"ip_file_name":ip_file_name, "project":project_id, "approver":employee_id}
+								if (customer && employee_id){
+									my_dict = {"ip_file_name":ip_file_name, "customer":customer, "approver":employee_id}
 									me.make_download_request(file_name, request_button, my_dict)
 									me.dialog.hide();
 								}else{
-									frappe.msgprint("Mandatory Field Project & Employee")
+									frappe.msgprint("Mandatory Field Employee & Customer")
 								}
 							}							
 						})
 		this.dialog.show();
-		this.init_for_project_employee_get_query()
+		this.init_for_customer_employee_get_query()
 	},
-	init_for_project_employee_get_query:function(){
+	init_for_customer_employee_get_query:function(){
 		var me = this;
-		this.dialog.fields_dict.project.get_query = function(){
-			console.log("in project")
-			return {
-				query:"mycfo.ip_library.page.ip_file_dashboard.ip_file_dashboard.get_projects_of_user",
-				filters:{}	
-			}						
-		};
+		this.dialog.fields_dict.customer.get_query = function(){
+			return{
+				query:"mycfo.ip_library.page.ip_file_dashboard.ip_file_dashboard.get_customer_list"
+			}
+		}
+
 		this.dialog.fields_dict.employee_id.get_query = function(){
 			return{
 				query: "mycfo.ip_library.doctype.ip_file.ip_file.get_approver_list",
-				filters: { "project":me.dialog.fields_dict.project.input.value }
+				filters: { "customer":me.dialog.fields_dict.customer.input.value }
 			}
 		}	
 	},
