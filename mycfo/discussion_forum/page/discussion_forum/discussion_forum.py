@@ -71,6 +71,9 @@ def check_if_assigned(post):
 		{"owner":frappe.session.user,"reference_type":"Discussion Topic","reference_name":post.name},"name")
 	return 1 if assigned else 0
 
+# def list_of_assigned_topics(post);
+# 	ass_topic = frappe.db.sql("""select t1.name from `tabDiscussion Topic`t1,`tabToDo`t2 where t2.reference_name = t1.name and t2.reference_name ='{0}'""".format(post.name),as_list=1,debug=1)	
+
 def get_total_topics(conditions):
 	condition = (" and " + " and ".join(conditions)) if conditions else ""
 	return frappe.db.sql("""select count(*) from `tabDiscussion Topic` as t1
@@ -176,17 +179,12 @@ def assign_topic(args=None):
 	if not args:
 		args = frappe.local.form_dict
 
-	if frappe.db.sql("""select owner from `tabToDo`
-		where reference_type=%(doctype)s and reference_name=%(name)s and status="Open"
-		and owner=%(assign_to)s""", args):
-		frappe.msgprint(_("Already in user's To Do list"), raise_exception=True)
-		return
-	else:
-		from frappe.utils import nowdate
-
+	from frappe.utils import nowdate
+	emp_list = eval(args['assign_to'])
+	for employee in emp_list:
 		d = frappe.get_doc({
 			"doctype":"ToDo",
-			"owner": args['assign_to'],
+			"owner": employee,
 			"reference_type": args['doctype'],
 			"reference_name": args['name'],
 			"description": args.get('description'),
@@ -196,9 +194,10 @@ def assign_topic(args=None):
 			"assigned_by": frappe.session.user,
 		}).insert(ignore_permissions=True)
 
-		# set assigned_to if field exists
-		if frappe.get_meta(args['doctype']).get_field("assigned_to"):
-			frappe.db.set_value(args['doctype'], args['name'], "assigned_to", args['assign_to'])
+	# set assigned_to if field exists
+	if frappe.get_meta(args['doctype']).get_field("assigned_to"):
+		for employee in emp_list:
+			frappe.db.set_value(args['doctype'], args['name'], "assigned_to", employee)
 
 	# notify
 	if not args.get("no_notification"):
@@ -231,10 +230,15 @@ def user_query(doctype, txt, searchfield, start, page_len, filters):
 
 
 def users_query(doctype, txt, searchfield, start, page_len, filters):
-	return frappe.db.sql("""select name,first_name from `tabUser` where name <> '{0}' and name <> '{1}' """.format(filters['doc'],frappe.session.user),as_list=1,debug=1)
+	return frappe.db.sql("""select usr.name, usr.first_name 
+								from `tabUser` usr
+								where usr.name != '{0}' 
+								and usr.name != '{1}'
+								and usr.name not in ( select owner from `tabToDo` 
+														where  reference_type= "Discussion Topic" and reference_name= "{2}" and status="Open") 
+								""".format(filters['doc'],frappe.session.user,filters['doc_name']),as_list=1 )
 
 
 @frappe.whitelist(allow_guest=True)
 def get_categories():
-	#return frappe.get_list("Blog Category",)
 	return frappe.get_list("Discussion Category", fields=["name","title"],ignore_permissions=1)
