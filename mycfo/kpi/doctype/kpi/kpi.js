@@ -1,3 +1,6 @@
+cur_frm.add_fetch("skill_matrix_120", "skill_matrix_18", "skill_matrix_18")
+
+
 //Validation kpi start date
 cur_frm.cscript.start_date = function(doc,cdt,cdn){
 	if(doc.start_date && doc.end_date){
