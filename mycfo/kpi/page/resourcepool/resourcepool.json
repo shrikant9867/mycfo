@@ -1,0 +1,21 @@
+{
+ "content": null, 
+ "creation": "2016-02-11 16:35:11.163949", 
+ "docstatus": 0, 
+ "doctype": "Page", 
+ "modified": "2016-02-11 16:35:11.163949", 
+ "modified_by": "Administrator", 
+ "module": "KPI", 
+ "name": "resourcepool", 
+ "owner": "Administrator", 
+ "page_name": "resourcepool ", 
+ "roles": [
+  {
+   "role": "All"
+  }
+ ], 
+ "script": null, 
+ "standard": "Yes", 
+ "style": null, 
+ "title": "Resource Pool "
+}
