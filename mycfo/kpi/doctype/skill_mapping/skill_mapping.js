@@ -25,6 +25,7 @@ frappe.require("assets/frappe/js/lib/slickgrid/plugins/slick.cellexternalcopyman
 frappe.require("assets/frappe/js/lib/slickgrid/plugins/slick.rowselectionmodel.js");
 
 
+cur_frm.add_fetch('employee', 'employee_name', 'employee_name');
 
 //Validation Skill Mapping start date
 cur_frm.cscript.start_date = function(doc,cdt,cdn){
@@ -91,7 +92,7 @@ frappe.ui.form.on("Skill Mapping", {
         // }
 var columns = [];
       var options = {
-        showHeaderRow: true,
+        // showHeaderRow: true,
         headerRowHeight: 30,
         editable: true,
         enableAddRow: true,
@@ -105,12 +106,12 @@ var columns = [];
            var columns = [];
               columns.push(
 {id: "sel", name: "#", field: "num", cssClass: "cell-selection", width: 40, resizable: false, selectable: false, focusable: false },
-        {id: "industry", name: "#", field: "industry", width: 330, cssClass: "cell-title", validator: requiredFieldValidator},
-        {id: "none_field", name: "None Field", field: "none_field",editor: Slick.Editors.Text, validator: requiredNoneFieldValidator},
-        {id: "beginner", name: "Beginner", field: "beginner",editor: Slick.Editors.Text, validator: requiredBeginnerFieldValidator  },
-        {id: "imtermediatory", name: "Imtermediatory", field: "imtermediatory", minWidth: 60, editor: Slick.Editors.Text, validator: requiredImtermediatoryFieldValidator},
-        {id: "expert", name: "Expert", field: "expert", minWidth: 60, editor: Slick.Editors.Text, validator: requiredExpertFieldValidator},
-        {id: "master_industry", name: "Skill 18", field: "master_industry", width: 180, cssClass: "cell-title", validator: requiredFieldValidator}
+        {id: "industry", name: "Skills", field: "industry", width: 330, cssClass: "cell-title", validator: requiredFieldValidator},
+        {id: "none_field", name: "None \(0\)", field: "none_field",width: 100,editor: Slick.Editors.Text, validator: requiredNoneFieldValidator},
+        {id: "beginner", name: "Beginner \(1-4\)", field: "beginner",width: 100,editor: Slick.Editors.Text, validator: requiredBeginnerFieldValidator  },
+        {id: "imtermediatory", name: "Imtermediatory \(5-7\)", field: "imtermediatory",width: 140, minWidth: 60, editor: Slick.Editors.Text, validator: requiredImtermediatoryFieldValidator},
+        {id: "expert", name: "Expert \(8-10\)", field: "expert", minWidth: 60, width: 120,editor: Slick.Editors.Text, validator: requiredExpertFieldValidator}
+        // {id: "master_industry", name: "Skill 18", field: "master_industry", width: 180, cssClass: "cell-title", validator: requiredFieldValidator}
              );
 
 //validators for slick grid
@@ -223,7 +224,7 @@ make_grid:function(data1,columns,options){
         for (var i = 0; i<data1.get_sample_data.length; i++) {
           data[i] = {
             id: i,
-            num: i,
+            num: i+1,
             master_industry: data1.get_sample_data[i][0],
             industry: data1.get_sample_data[i][1],
             none_field: data1.get_sample_data[i][2],

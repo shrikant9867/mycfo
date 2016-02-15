@@ -7,7 +7,7 @@ import json
 def get_sample_data():
 	# frappe.msgprint("in get sample data");
 	return {
-	"get_sample_data": frappe.db.sql("""select skill,sub_skill,none_field,beginner,imtermediatory,expert, parent as a,CASE WHEN skill !='' then (select employee from `tabSkill Mapping` where name=a)\
+	"get_sample_data": frappe.db.sql("""select skill,sub_skill,none_field,beginner,imtermediatory,expert, parent as a,CASE WHEN skill !='' then (select employee_name from `tabSkill Mapping` where name=a)\
 	            else null\
 	       END AS Name,\
 	       CASE WHEN skill !='' then (select industry from `tabSkill Mapping` where name=a)\
