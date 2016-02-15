@@ -121,6 +121,7 @@ mycfo.SkillMapping = Class.extend({
 
 		    var columns = [
 	        {id: "sel", name: "#", field: "num", cssClass: "cell-selection", width: 40, resizable: false, selectable: false, focusable: false },
+	        {id: "employee", name: "Employee", field: "employee", width: 150, cssClass: "cell-title", validator: requiredFieldValidator},        	        
 	        {id: "master_industry", name: "Skill Matrix 18", field: "master_industry", width: 150, cssClass: "cell-title", validator: requiredFieldValidator},        
 	        {id: "industry", name: "Skill Matrix 120", field: "industry", width: 330, cssClass: "cell-title", validator: requiredFieldValidator},
 	        {id: "none_field", name: "None Field", field: "none_field",editor: Slick.Editors.Text, validator: requiredFieldValidator},
@@ -128,7 +129,6 @@ mycfo.SkillMapping = Class.extend({
 	        {id: "imtermediatory", name: "Imtermediatory", field: "imtermediatory", minWidth: 60, editor: Slick.Editors.Text, validator: requiredFieldValidator},
 	        {id: "imtermediatory", name: "Expert", field: "expert", minWidth: 60, editor: Slick.Editors.Text, validator: requiredFieldValidator},
 	        {id: "skill_m_industry", name: "Industry", field: "skill_m_industry", width: 150, cssClass: "cell-title", validator: requiredFieldValidator},        	        
-	        {id: "employee", name: "Employee", field: "employee", width: 150, cssClass: "cell-title", validator: requiredFieldValidator},        
 	        ];
 
 	        for (var i = 0; i<data1.get_sample_data.length; i++) {
