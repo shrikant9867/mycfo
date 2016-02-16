@@ -26,12 +26,17 @@
 
 
 .next-prev-div{
-	margin-left: 130px; 
+	margin-left: 70px; 
 }
 
-.next-qt, .prev-qtn, .end-test{
-	margin-left:10px;
+.next-qt, .prev-qtn{
+	margin-left:20px;
 	margin-bottom: 100px;
+}
+
+.end-test{
+   margin-left: 400px;
+   margin-bottom: 100px; 
 }
 
 .question-set-list{

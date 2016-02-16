@@ -5,6 +5,7 @@
 from __future__ import unicode_literals
 import frappe
 from frappe.model.document import Document
+from mycfo.mycfo_utils import get_central_delivery
 
 class TrainingSubscriptionApproval(Document):
 	
@@ -26,8 +27,8 @@ class TrainingSubscriptionApproval(Document):
 
 	def accept_request(self):
 		self.request_status = "Accepted"
-		request_type_dict = {"Forced Training":["/templates/training_templates/assigned_training_notification.html", [self.training_requester] ], 
-								"Unforced Training":["/templates/training_templates/training_request_notification.html", self.get_central_delivery() ]
+		request_type_dict = {"Forced Training":["/templates/training_templates/assigned_training_notification.html", [ frappe.db.get_value("User", {"name":self.training_requester}, "email") ] ], 
+								"Unforced Training":["/templates/training_templates/training_request_notification.html", get_central_delivery() ]
 							}
 		template = request_type_dict.get(self.request_type)[0]
 		recipients = request_type_dict.get(self.request_type)[1]
@@ -58,11 +59,6 @@ class TrainingSubscriptionApproval(Document):
 		self.request_status = "Rejected"
 		template = "/templates/training_templates/training_request_notification.html"	
 		self.send_mail(template)
-
-	def get_central_delivery(self):
-		central_delivery = frappe.get_list("UserRole", filters={"role":"Central Delivery","parent":["!=", "Administrator"]}, fields=["parent"])
-		central_delivery = [user.get("parent") for user in central_delivery]
-		return central_delivery	
 
 	def send_mail(self, template, recipients):
 		subject = "Training Document Notification"

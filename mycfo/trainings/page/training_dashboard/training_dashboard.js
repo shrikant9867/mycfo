@@ -208,7 +208,7 @@ TrainingDashboard = Class.extend({
 						args:{"request_data":{ "tr_name":training_nm } },
 						callback:function(r){
 							$(".subscribe").attr("disabled", true)
-							frappe.msgprint("Training subscription request for {0} submiited successfully.".replace("{0}", training_nm))
+							frappe.msgprint("Training subscription request for {0} submitted successfully.".replace("{0}", training_nm))
 						}
 				})
 			})		
@@ -269,7 +269,7 @@ TrainingDashboard = Class.extend({
 					me.start_assign_training();
 					me.dialog.hide();
 				}else{
-					msgprint("No employee selected to assign Training.")
+					msgprint("Training & employee are mandatory for assigning training")
 				}
 			}
 		});
@@ -472,8 +472,13 @@ MyTrainings = Class.extend({
 				var my_ratings = $(me.dialog.fields_dict.share_feedback_html.$wrapper).find(".rateYo").rateYo("rating");
 				var comments =  me.dialog.fields_dict.feedback_text_area.input.value;
 				var request_data = {"training_name":training_name, "ratings":my_ratings, "comments":comments};
-				me.submit_review(request_data);
-				me.dialog.hide();
+				if (comments){
+					me.submit_review(request_data);
+					me.dialog.hide();	
+				}else{
+					msgprint("Comments are Mandatory to submit the review.")
+				}
+				
 			}
 
 		});

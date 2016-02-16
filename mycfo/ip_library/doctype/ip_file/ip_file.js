@@ -46,7 +46,7 @@ init_for_upload_file = function(frm ,cdt, cdn){
 		parent: this.dialog.get_field("upload_area").$wrapper,
 		btn: this.dialog.set_primary_action(__("Attach")),
 		on_no_attach: function() {
-			msgprint(__("Please attach a file or set a URL"));
+			msgprint(__("Please attach a file."));
 		},
 		callback: function(file_data) {
 			// frm.doc.file_name = file_data.file_name
