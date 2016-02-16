@@ -18,6 +18,9 @@ frappe.require("assets/frappe/js/lib/slickgrid/plugins/slick.cellselectionmodel.
 frappe.require("assets/frappe/js/lib/slickgrid/plugins/slick.rowselectionmodel.js");
 frappe.require("assets/frappe/js/lib/slickgrid/plugins/slick.cellselectionmodel.js");
 
+frappe.require("assets/mycfo/js/slick/controls/slick.pager.js");
+frappe.require("assets/mycfo/js/slick/controls/slick.columnpicker.js");
+
 frappe.pages['resourcepool'].on_page_load = function(wrapper) {
 	var page = frappe.ui.make_app_page({
 		parent: wrapper,
@@ -186,6 +189,20 @@ mycfo.SkillMapping = Class.extend({
 	        dataView = new Slick.Data.DataView();
 	        //call to create grid report
    			grid = new Slick.Grid("#myGrid", dataView, columns, options);
+
+//
+  // function filter(item) {
+  //   for (var columnId in columnFilters) {
+  //     if (columnId !== undefined && columnFilters[columnId] !== "") {
+  //       var c = grid.getColumns()[grid.getColumnIndex(columnId)];
+  //       if (item[c.field] != columnFilters[columnId]) {
+  //         return false;
+  //       }
+  //     }
+  //   }
+  //   return true;
+  // }
+//
 
 //Start filter in slick grid
    			function filter(item) {
