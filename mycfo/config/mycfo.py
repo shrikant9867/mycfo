@@ -40,9 +40,13 @@ def get_data():
 				{
 					"type": "doctype",
 					"name": "KPI",
-					"description": _("KPI	 Details"),
+					"description": _("KPI Details"),
 				},	
-				
+				{
+					"type": "doctype",
+					"name": "Customer Satisfaction Survey",
+					"description": _("Customer Satisfaction Survey Details"),
+				},					
 			]
 		},
 

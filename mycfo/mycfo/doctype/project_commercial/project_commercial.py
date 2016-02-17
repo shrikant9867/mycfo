@@ -14,8 +14,8 @@ class ProjectCommercial(Document):
 			self.validate_fixed_variable_type()
 			self.validate_total_of_both_type()
 		self.validate_project_value()
-		if self.project_status == 'Terminate' or self.project_status == 'Close':
-			self.delink_projectid()
+		# if self.project_status == 'Terminate' or self.project_status == 'Close':
+		# 	self.delink_projectid()
 
 		self.validate_due_date_in_childtable()
 
@@ -235,11 +235,11 @@ def get_permission_query_conditions_for_project(user):
 	"""
 	#pass
 	if "Mycfo User" in frappe.get_roles(user) and not user == "Administrator":
-		customer_list  = frappe.db.sql("""SELECT DISTINCT(project_commercial) 
+		customer_list  = frappe.db.sql("""SELECT DISTINCT(customer) 
 			from `tabOperation And Project Commercial` 
 			WHERE name in (SELECT parent from `tabOperation And Project Details` WHERE email_id ='{0}')""".format(user),as_list=1)
 		name_list = "', '".join([customer[0] for customer in customer_list])
-		return """(`tabProject Commercial`.name in ('{name_list}'))""".format(name_list=name_list)
+		return """(`tabProject Commercial`.customer in ('{name_list}'))""".format(name_list=name_list)
 
 
 
