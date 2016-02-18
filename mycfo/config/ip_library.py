@@ -65,6 +65,18 @@ def get_data():
 					"description": _("Search Ip File from here")
 				}
 			]
-		}	
-
+		},
+		{
+			"label": _("Standard Reports"),
+			"icon": "icon-star",
+			"items": [
+				{
+					"type": "page",
+					"name": "ip-library-reports",
+					"icon": "icon-sitemap",
+					"label": _("Graphical Reports"),
+					"description": _("Graphical Report for Request and IP Library"),
+				}
+			]
+		}
 	]

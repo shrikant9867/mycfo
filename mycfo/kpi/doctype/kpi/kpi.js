@@ -1,3 +1,33 @@
+//set filter on Resouce Assigned
+cur_frm.fields_dict["kpi_business_details"].grid.get_field("resouce_assigned").get_query = function(doc){
+   	return {
+   		query: "mycfo.kpi.doctype.kpi.kpi.get_kpi_resouce_assigned_list",
+   		filters: { "customer":cur_frm.doc.customer }
+   	}
+}
+cur_frm.fields_dict["kpi_people_details"].grid.get_field("resouce_assigned").get_query = function(doc){
+   	return {
+   		query: "mycfo.kpi.doctype.kpi.kpi.get_kpi_resouce_assigned_list",
+   		filters: { "customer":cur_frm.doc.customer }
+   	}
+}
+cur_frm.fields_dict["kpi_finance_details"].grid.get_field("resouce_assigned").get_query = function(doc){
+   	return {
+   		query: "mycfo.kpi.doctype.kpi.kpi.get_kpi_resouce_assigned_list",
+   		filters: { "customer":cur_frm.doc.customer }
+   	}
+}
+cur_frm.fields_dict["kpi_process_details"].grid.get_field("resouce_assigned").get_query = function(doc){
+   	return {
+   		query: "mycfo.kpi.doctype.kpi.kpi.get_kpi_resouce_assigned_list",
+   		filters: { "customer":cur_frm.doc.customer }
+   	}
+}
+
+
+cur_frm.add_fetch("skill_matrix_120", "skill_matrix_18", "skill_matrix_18")
+
+
 //Validation kpi start date
 cur_frm.cscript.start_date = function(doc,cdt,cdn){
 	if(doc.start_date && doc.end_date){

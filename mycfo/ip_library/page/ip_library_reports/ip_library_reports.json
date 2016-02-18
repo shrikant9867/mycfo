@@ -1,0 +1,21 @@
+{
+ "content": null, 
+ "creation": "2016-02-16 13:15:34.671806", 
+ "docstatus": 0, 
+ "doctype": "Page", 
+ "modified": "2016-02-16 13:15:34.671806", 
+ "modified_by": "Administrator", 
+ "module": "IP Library", 
+ "name": "ip-library-reports", 
+ "owner": "Administrator", 
+ "page_name": "ip-library-reports", 
+ "roles": [
+  {
+   "role": "All"
+  }
+ ], 
+ "script": null, 
+ "standard": "Yes", 
+ "style": null, 
+ "title": "Graphical Reports"
+}

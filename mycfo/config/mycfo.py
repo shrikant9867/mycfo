@@ -40,9 +40,13 @@ def get_data():
 				{
 					"type": "doctype",
 					"name": "KPI",
-					"description": _("KPI	 Details"),
+					"description": _("KPI Details"),
 				},	
-				
+				{
+					"type": "doctype",
+					"name": "Customer Satisfaction Survey",
+					"description": _("Customer Satisfaction Survey Details"),
+				},					
 			]
 		},
 
@@ -91,6 +95,18 @@ def get_data():
 					"description": _("Category"),
 				},
 			]
-		},	
-
+		},
+		{
+			"label": _("Standard Reports"),
+			"icon": "icon-star",
+			"items": [
+				{
+					"type": "page",
+					"name": "project-commercial-report",
+					"icon": "icon-sitemap",
+					"label": _("Graphical Reports"),
+					"description": _("Graphical Report for Request and IP Library"),
+				}
+			]
+		}
 	]
