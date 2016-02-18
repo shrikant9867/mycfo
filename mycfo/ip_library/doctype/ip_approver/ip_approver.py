@@ -179,7 +179,8 @@ class IPApprover(Document):
 		template = "/templates/ip_library_templates/upgrade_validity_notification.html"
 		subject = "IP Document Upgrade Validity Notification"
 		file_owner = frappe.db.get_value("IP File", {"name":self.ip_file}, 'owner')
-		email = list(set([self.ip_file_requester, file_owner]))
+		email_recipients = frappe.db.get_values("User", {"name":["in", [self.ip_file_requester, file_owner] ]}, ["email"], as_dict=1)
+		email = list(set([ recipient.get("email") for recipient in email_recipients if recipient.get("email") ] ))
 		args = {"status":self.central_delivery_status, "comments":self.central_delivery_comments, "file_name":self.file_name}
 		self.send_notification(subject, email, template, args)
 

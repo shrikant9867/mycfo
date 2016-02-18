@@ -5,6 +5,7 @@ from frappe import _
 import json
 import math
 import re
+from mycfo.mycfo_utils import get_central_delivery
 
 
 
@@ -168,8 +169,7 @@ def prepare_for_todo_creation(file_data, emp_id):
 	user_id = frappe.db.get_value("Employee", emp_id, 'user_id')
 	users.append(user_id)
 	if file_data.get("security_level") ==  "2-Level":
-		central_delivery = frappe.get_list("UserRole", filters={"role":"Central Delivery","parent":["!=", "Administrator"]}, fields=["parent"])
-		central_delivery = [user.get("parent") for user in central_delivery]
+		central_delivery = get_central_delivery()
 		users.extend(central_delivery)
 	make_todo(users, file_data)	
 
@@ -210,9 +210,14 @@ def create_ip_download_log(file_name, download_form, validity):
 	start_download_validity_count_down(download_form, validity)
 	idl = frappe.new_doc("IP Download Log")
 	idl.user_id = frappe.session.user
+	idl.full_name = get_full_name_of_user()
 	idl.file_name = file_name
 	idl.downloaded_datetime = now()
 	idl.save(ignore_permissions=True)
+
+def get_full_name_of_user():
+	first_name, last_name = frappe.db.get_value("User", {"name":frappe.session.user}, ["first_name", "last_name"])
+	return   first_name + " " + last_name  if last_name else first_name	
 
 
 @frappe.whitelist()

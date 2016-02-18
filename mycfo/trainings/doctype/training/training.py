@@ -10,20 +10,25 @@ import zipfile
 import json
 import base64
 import os
+from mycfo.mycfo_utils import get_central_delivery
 
 
 class Training(Document):
 	
 	def validate(self):
-		self.validate_for_assessments()
+		self.validate_for_negative_completion_value()
+		self.validity_for_cd_users()
 		self.validate_for_training_data()
 		self.store_training_data()
 
-	
-	def validate_for_assessments(self):
-		pass
+	def validate_for_negative_completion_value(self):
+		if self.validity_for_completion <= 0:
+			frappe.throw("Validity of training completion must be grater than 0 hours.")
 
-	
+	def validity_for_cd_users(self):
+		if not len(get_central_delivery()):		
+			frappe.throw("There are no Central Delivery users in system.Please upload training later.")
+
 	def validate_for_training_data(self):
 		if cint(self.get("__islocal")) and not self.training_file_data:
 			frappe.throw("Please Upload the Training documents.")
@@ -45,7 +50,6 @@ class Training(Document):
 				self.training_path = '/'.join(["files", "trainings", self.training_name + '.zip'])
 				self.init_for_approver_form()	
 			except Exception,e:
-				print e
 				frappe.throw("Error Occured while storing training files")
 			finally:
 				tr_zip.close()
@@ -92,18 +96,20 @@ class Training(Document):
 		subject = "Training Document Notification"
 		template = "/templates/training_templates/cd_training_notification.html"
 		args = {"training_name":self.training_name,  "user_name":frappe.session.user }
-		central_delivery = self.get_central_delivery()
+		central_delivery = get_central_delivery()
 		frappe.sendmail(recipients=central_delivery, sender=None, subject=subject,
 			message=frappe.get_template(template).render(args))
-
-	def get_central_delivery(self):
-		central_delivery = frappe.get_list("UserRole", filters={"role":"Central Delivery","parent":["!=", "Administrator"]}, fields=["parent"])
-		central_delivery = [user.get("parent") for user in central_delivery]
-		return central_delivery
 
 
 	def after_insert(self):
 		ass_mnt = frappe.get_doc("Assessment", self.assessment)
 		ass_mnt.training_name = self.name
 		ass_mnt.save(ignore_permissions=1)
-	
+
+
+
+def get_permission_query_conditions(user):
+	if not user: user = frappe.session.user
+	roles = frappe.get_roles()
+	if "Central Delivery" not in roles and frappe.session.user != "Administrator":
+		return """(`tabTraining`.owner = '{user}'  )""".format(user = frappe.session.user)

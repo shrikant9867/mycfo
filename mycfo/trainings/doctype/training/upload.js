@@ -63,7 +63,7 @@ upload = Class.extend({
  		var file_list = [];
  		var file_names = [];		
 		if( ! $(this.wrapper).find(".uploaded-filename").children().length) {
-			msgprint(__("Please attach a file or set a URL"));
+			msgprint(__("Please attach a file"));
 			return;
 		}
 

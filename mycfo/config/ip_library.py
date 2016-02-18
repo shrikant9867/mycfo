@@ -61,7 +61,7 @@ def get_data():
 					"name": "ip-file-dashboard",
 					"icon": "icon-sitemap",
 					"label": _("Global IP File Search Dashboard"),
-					"route": "ip-file-dashboard",
+					"route": "ip-file-dashboard",		
 					"description": _("Search Ip File from here")
 				}
 			]

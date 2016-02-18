@@ -59,10 +59,10 @@ class TrainingApprover(Document):
 
 	def send_mail(self, template):
 		subject = "Training Document Notification"
-		first_nm, last_nm = frappe.db.get_value("User", {"name":self.training_author}, ["first_name", "last_name"])
+		first_nm, last_nm, email = frappe.db.get_value("User", {"name":self.training_author}, ["first_name", "last_name", "email"])
 		args = {"training_name":self.training_name, "cd":frappe.session.user, "status":self.training_status,
 					"first_name":first_nm, "last_name":last_nm , "comments":self.central_delivery_comments }
-		frappe.sendmail(recipients= self.training_author, sender=None, subject=subject,
+		frappe.sendmail(recipients= email, sender=None, subject=subject,
 			message=frappe.get_template(template).render(args))
 
 
