@@ -228,6 +228,14 @@ margin-left: 60px;
 }
 
 
+.tr-tbody {
+  margin-right: -550px;
+  display: block; /* important */
+  height: 100px;
+  overflow-y: scroll;
+}
+
+
 html {
   min-height: 100%;
 }

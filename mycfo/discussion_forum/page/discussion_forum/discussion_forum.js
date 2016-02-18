@@ -37,14 +37,17 @@ df.discussion_forum = Class.extend({
 		$('.home').on('click',function(){
 			me.user_name.input.value = ''
 			$('a.category').removeClass('active')
-			me.search_topic.input.value = '' 
+			$('a.self-assign').removeClass('active')
+			me.search_topic.input.value = ''
 			me.get_discussions() 
 		})
 	},
 	get_discussions: function(args,paginate) {
 		var me = this;
 		category =  $('.category.active').attr('data-name')
+		assigned_to_me = $('.self-assign.active').attr('data-name')
 		if (!args) args = {}
+
 		if (category){
 			args["category"] = category
 		}
@@ -53,6 +56,10 @@ df.discussion_forum = Class.extend({
 				args["user"] = me.user_name.input.value	
 			}
 		}
+		if (assigned_to_me){
+			args["assigned_to_me"] = assigned_to_me
+		}
+
 		return frappe.call({
 			method: "mycfo.discussion_forum.page.discussion_forum.discussion_forum.get_data",
 			freeze: true,
@@ -128,6 +135,8 @@ df.discussion_forum = Class.extend({
 	},
 	render_topic:function(data,topic_name){
 		var me = this;
+		$(me.wrapper).empty()
+		me.page.clear_menu();
 		$(frappe.render_template("discussion",data)).appendTo(me.wrapper);
 		$(me.wrapper).find('.add-comment').on("click",function(){me.show_comment_dailog(topic_name)})
 		$(me.wrapper).find('.user-posts').on("click",function(){
@@ -135,6 +144,7 @@ df.discussion_forum = Class.extend({
 			me.get_discussions({"user":user})
 		})
 		if (frappe.user.has_role(['Administrator', 'System Manager', 'Central Delivery'])){
+			this.page.add_menu_item(__('Refresh'), function() { frappe.ui.toolbar.clear_cache() }, true);
 			this.page.add_menu_item(__('Assign'), function() { me.show_assign_dialog(topic_name,data) }, true);
 		}
 		me.get_comments(topic_name)
@@ -157,7 +167,6 @@ df.discussion_forum = Class.extend({
 						me.init_pagination_comment(total_pages,current_page,topic_name)
 					}
 					me.render_ratings({"comment_list":data},topic_name)
-
 				}
 				else{
 					$('.no-comment').toggle()
@@ -260,7 +269,18 @@ df.discussion_forum = Class.extend({
 		me.get_categories()
 		me.make_search()
 		me.make_user_filter()
+		me.render_assign()
 
+	},
+	render_assign:function(){
+		var me = this;
+		$('.self-assign').on("click",function(){
+			$(me.wrapper).empty()
+			$('a.category').removeClass('active')
+			$(this).addClass('active')
+			assigned_to_me = $(this).attr('data-name')
+			me.get_discussions({"assigned_to_me":assigned_to_me})
+		})
 	},
 	get_categories:function(){
 		var me = this;
@@ -274,17 +294,18 @@ df.discussion_forum = Class.extend({
 	},
 	render_categories:function(data){
 		var me = this;
-
 		$(frappe.render_template("discussion_categories",{"post":data})).appendTo($('.cat'));
 		$('.category').on("click",function(){
 			$(me.wrapper).empty()
 			$(this).siblings('.category').removeClass('active')
+			$('a.self-assign').removeClass('active')
 			$(this).addClass('active')
 			category = $(this).attr('data-name')
 			me.get_discussions({"category":category})
 		})
 		$('.head').on('click',function(){
 			$('a.category').removeClass('active')
+			$('a.self-assign').removeClass('active')
 			me.get_discussions()	
 		})
 	},
@@ -302,9 +323,10 @@ df.discussion_forum = Class.extend({
 			only_input: true,
 		});
 		this.search_topic.make_input();
-		$('<button btn btn-primary btn-sm primary-action>\
+		$('<button btn btn-primary btn-sm primary-action id="get-topic">\
 			Get Topic</button>').on("click",function(){
 				$('a.category').removeClass('active')
+				$('a.self-assign').removeClass('active')
 				me.user_name.input.value = ''
 				me.make_topic(me.search_topic.input.value)
 			}).appendTo('.top').css({"background-color":"#0072BC","color":"#ffffff","border-radius":"1px"})
@@ -365,34 +387,30 @@ df.discussion_forum = Class.extend({
 	},
 	show_assign_dialog:function(topic_name,data){
 		var me = this;
-		if(!me.dialog) {
-			me.dialog = new frappe.ui.Dialog({
-				title: __('Assign Topic to Multiple User'),
-				fields: [
-					{fieldtype:'Link', fieldname:'assign_to', options:'User',
-						label:__("Assign To"),description:__("Add to To Do List Of"),reqd:true},
-					{fieldtype:'Text', fieldname:'description', label:__("Description"), reqd:true},
-					{fieldtype:'Button', fieldname:'add_users', label:__("Add Users")},
-					{fieldtype: 'HTML', fieldname: 'assign_tr_html'},
-				],
-				primary_action: function() { me.assign_topic(topic_name); },
-				primary_action_label: __("Assign")
-			});
-			/*me.dialog.fields_dict.assign_to.get_query = "mycfo.discussion_forum.page.discussion_forum.discussion_forum.user_query";*/
-			me.dialog.fields_dict['assign_to'].get_query = function(){
-				return{ 
-					query: "mycfo.discussion_forum.page.discussion_forum.discussion_forum.users_query",
-					filters: {
-						'doc': data['owner'],
-						'doc_name':topic_name
-					}
+		me.dialog = new frappe.ui.Dialog({
+			title: __('Assign Topic to Multiple User'),
+			fields: [
+				{fieldtype:'Link', fieldname:'assign_to', options:'User',
+					label:__("Assign To"),description:__("Add to To Do List Of")},
+				{fieldtype:'Text', fieldname:'description', label:__("Description"), reqd:true},
+				{fieldtype:'Button', fieldname:'add_users', label:__("Add Users")},
+				{fieldtype: 'HTML', fieldname: 'assign_tr_html'},
+			],
+			primary_action: function() { me.assign_topic(topic_name); },
+			primary_action_label: __("Assign")
+		});
+		/*me.dialog.fields_dict.assign_to.get_query = "mycfo.discussion_forum.page.discussion_forum.discussion_forum.user_query";*/
+		me.dialog.fields_dict['assign_to'].get_query = function(){
+			return{ 
+				query: "mycfo.discussion_forum.page.discussion_forum.discussion_forum.users_query",
+				filters: {
+					'doc': data['owner'],
+					'doc_name':topic_name
 				}
 			}
-			// this.dialog.clear();		
-		}
-		
-		this.dialog.show();
-		this.init_for_add_users();	
+		}		
+		me.dialog.show();
+		me.init_for_add_users();	
 	},
 
 	init_for_add_users: function(){
@@ -402,7 +420,8 @@ df.discussion_forum = Class.extend({
 			if (me.check_for_duplicate_users()){
 				me.render_table_head();
 				me.render_table_row();
-			}	
+				me.dialog.fields_dict.assign_to.input.value = ''
+			}
 		})
 	},
 	
@@ -415,6 +434,7 @@ df.discussion_forum = Class.extend({
 		var filtered_tr_data = this.assign_topic_data.filter(isduplicate);
 		if (filtered_tr_data.length){
 			msgprint(repl("Assign table already contains user %(employee)s",{employee:emp}))
+			me.dialog.fields_dict.assign_to.input.value = ''
 			return false
 		}
 		return true	
@@ -424,7 +444,7 @@ df.discussion_forum = Class.extend({
 	render_table_head:function(){
 		if (! $(cur_dialog.body).find("#tr-table").length){
 			$(this.dialog.fields_dict.assign_tr_html.$wrapper).append("<table class='table' id='tr-table'><thead><tr class='row'>\
-				<th class='col-xs-8'>User</th><th class='col-xs-4'>Remove</th></tr></thead><tbody class='tr-tbody'></tbody></table>")
+				<th class='col-xs-7'>User</th><th class='col-xs-5'>Remove</th></tr></thead><tbody class='tr-tbody'></tbody></table>")
 		}
 	},
 
@@ -457,11 +477,6 @@ df.discussion_forum = Class.extend({
 				employee_list.push(this.assign_topic_data[i].employee);	
 			}
 			var assign_emp = employee_list
-		}
-		else{
-			msgprint(repl("Add user"))
-		}	
-		if(this.assign_topic_data.length) {
 			return frappe.call({
 				method:'mycfo.discussion_forum.page.discussion_forum.discussion_forum.assign_topic',
 				args: $.extend(args, {
@@ -479,5 +494,8 @@ df.discussion_forum = Class.extend({
 				btn: this
 			});
 		}
+		else{
+			msgprint(repl("Click On Add user "))
+		}	
 	},
 })

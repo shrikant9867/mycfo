@@ -1,7 +1,7 @@
 <div class="panel panel-primary question-panel" qtn-id="{{ question_dict.name }}" qtn-type="{{ question_dict.question_type }}">
   <div class="panel-heading">Question {{ qtn_index }} of {{ qtn_count }}.</div>
 	<div class="panel-body row question">	
-		<p><strong>Q.{{ qtn_index }} {{ question_dict.question_name }} ?<strong></p>
+		<p><strong>Q.{{ qtn_index }} {{ question_dict.question_name }} <strong></p>
 		{% var option_list = ["option_a", "option_b", "option_c", "option_d", "option_e"] %}
 		{% var mapper = { "option_a":"A", "option_b":"B", "option_c":"C", "option_d":"D", "option_e":"E" } %}
 		{% if( question_dict.question_type == "Objective" ) { %}

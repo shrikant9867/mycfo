@@ -17,9 +17,11 @@ no_cache = 1
 no_sitemap = 1
 
 @frappe.whitelist(allow_guest=True)
-def get_data(category=None,user=None,page_no=0,limit=3):
+def get_data(category=None,user=None,assigned_to_me=None,page_no=0,limit=3):
 	"""Returns processed HTML page for a standard listing."""
 	conditions = []
+	assign_condition = []
+	todo_owner = ''
 	if page_no:
 		offset = (cint(page_no) * cint(limit))
 	else:
@@ -27,27 +29,36 @@ def get_data(category=None,user=None,page_no=0,limit=3):
 	#next_start = cint(limit_start) + cint(limit_page_length)
 	if user:
 		conditions.append('t1.post_by="%s"' % frappe.db.escape(user))
+
 	if category:
 		conditions.append('t1.blog_category="%s"' % frappe.db.escape(category))
 
+	if assigned_to_me:
+		assign_condition.append('left join `tabToDo`t3 on t1.name = t3.reference_name ')
+		todo_owner = ' and t3.owner="%s" '% frappe.db.escape(frappe.session.user)	
+		
 	limit_query = " limit %(start)s offset %(page_len)s"%{"start": limit, "page_len":offset }
  
 	query = """\
 		select
-			t1.title, t1.name, t1.blog_category, t1.published_on,
+			distinct t1.name,t1.title, t1.blog_category, t1.published_on,
 				t1.published_on as creation,
 				ifnull(t1.intro, t1.content) as content,
 				t2.employee_name,t1.post_by,
 				(select count(name) from `tabComment` where
 					comment_doctype='Discussion Topic' and comment_docname=t1.name and comment_type="Comment") as comments
-		from `tabDiscussion Topic` t1, `tabEmployee` t2
+		from `tabDiscussion Topic` t1 left join 
+		`tabEmployee` t2 
+		on t1.post_by = t2.name
+		{assign_condition} 
 		where ifnull(t1.published,0)=1
-		and t1.post_by = t2.name
-		%(condition)s
-		order by published_on desc, name asc""" % {
-			"condition": (" and " + " and ".join(conditions)) if conditions else ""
-		}
-
+		{condition} {to_do_and}
+		order by published_on desc, name asc""".format(
+			condition= (" and "  + " and ".join(conditions)) if conditions else "",
+			to_do_and = todo_owner,
+			assign_condition = (" and ".join(assign_condition)) if assign_condition else "",
+		)
+	
 	posts = frappe.db.sql(query+ limit_query, as_dict=1)
 
 	for post in posts:
@@ -61,7 +72,7 @@ def get_data(category=None,user=None,page_no=0,limit=3):
 		else:
 			post.comment_text = _('{0} comments').format(str(post.comments))
 
-	total_records = get_total_topics(conditions)
+	total_records = get_total_topics(query)
 	paginate = True if total_records > limit else False
 	total_pages = math.ceil(total_records/flt(limit))
 	return posts,total_pages,int(page_no)+1,paginate  if posts else {}
@@ -71,13 +82,15 @@ def check_if_assigned(post):
 		{"owner":frappe.session.user,"reference_type":"Discussion Topic","reference_name":post.name},"name")
 	return 1 if assigned else 0
 
-# def list_of_assigned_topics(post);
-# 	ass_topic = frappe.db.sql("""select t1.name from `tabDiscussion Topic`t1,`tabToDo`t2 where t2.reference_name = t1.name and t2.reference_name ='{0}'""".format(post.name),as_list=1,debug=1)	
 
-def get_total_topics(conditions):
-	condition = (" and " + " and ".join(conditions)) if conditions else ""
-	return frappe.db.sql("""select count(*) from `tabDiscussion Topic` as t1
-		where ifnull(t1.published,0)=1 {0}""".format(condition),as_list=1)[0][0] or 0
+def get_total_topics(query):
+	executable_query = frappe.db.sql(query, as_list=1)
+	return len([topic for topic in executable_query if topic])	
+
+# def get_total_topics(conditions):
+# 	condition = (" and " + " and ".join(conditions)) if conditions else ""
+# 	return frappe.db.sql("""select count(*) from `tabDiscussion Topic` as t1
+# 		where ifnull(t1.published,0)=1 {0}""".format(condition),as_list=1)[0][0] or 0
 
 @frappe.whitelist(allow_guest=True)
 def get_post(topic_name):
@@ -206,27 +219,27 @@ def assign_topic(args=None):
 
 	return
 
-def user_query(doctype, txt, searchfield, start, page_len, filters):
-	from frappe.desk.reportview import get_match_cond
-	txt = "%{}%".format(txt)
-	return frappe.db.sql("""select name, concat_ws(' ', first_name, middle_name, last_name)
-		from `tabUser`
-		where ifnull(enabled, 0)=1
-			and docstatus < 2
-			and name not in ({standard_users})
-			and user_type != 'Website User'
-			and name in (select parent from `tabUserRole` where role='Employee')
-			and ({key} like %s
-				or concat_ws(' ', first_name, middle_name, last_name) like %s)
-			{mcond}
-		order by
-			case when name like %s then 0 else 1 end,
-			case when concat_ws(' ', first_name, middle_name, last_name) like %s
-				then 0 else 1 end,
-			name asc
-		limit %s, %s""".format(standard_users=", ".join(["%s"]*len(STANDARD_USERS)),
-			key=searchfield, mcond=get_match_cond(doctype)),
-			tuple(list(STANDARD_USERS) + [txt, txt, txt, txt, start, page_len]))
+# def user_query(doctype, txt, searchfield, start, page_len, filters):
+# 	from frappe.desk.reportview import get_match_cond
+# 	txt = "%{}%".format(txt)
+# 	return frappe.db.sql("""select name, concat_ws(' ', first_name, middle_name, last_name)
+# 		from `tabUser`
+# 		where ifnull(enabled, 0)=1
+# 			and docstatus < 2
+# 			and name not in ({standard_users})
+# 			and user_type != 'Website User'
+# 			and name in (select parent from `tabUserRole` where role='Employee')
+# 			and ({key} like %s
+# 				or concat_ws(' ', first_name, middle_name, last_name) like %s)
+# 			{mcond}
+# 		order by
+# 			case when name like %s then 0 else 1 end,
+# 			case when concat_ws(' ', first_name, middle_name, last_name) like %s
+# 				then 0 else 1 end,
+# 			name asc
+# 		limit %s, %s""".format(standard_users=", ".join(["%s"]*len(STANDARD_USERS)),
+# 			key=searchfield, mcond=get_match_cond(doctype)),
+# 			tuple(list(STANDARD_USERS) + [txt, txt, txt, txt, start, page_len]))
 
 
 def users_query(doctype, txt, searchfield, start, page_len, filters):
@@ -236,7 +249,10 @@ def users_query(doctype, txt, searchfield, start, page_len, filters):
 								and usr.name != '{1}'
 								and usr.name not in ( select owner from `tabToDo` 
 														where  reference_type= "Discussion Topic" and reference_name= "{2}" and status="Open") 
-								""".format(filters['doc'],frappe.session.user,filters['doc_name']),as_list=1 )
+								and (usr.name like '{txt}'
+											or usr.first_name like '{txt}' )
+									limit 20
+								""".format(filters['doc'],frappe.session.user,filters['doc_name'],txt= "%%%s%%" % txt),as_list=1)
 
 
 @frappe.whitelist(allow_guest=True)
