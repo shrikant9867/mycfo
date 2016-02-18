@@ -210,9 +210,14 @@ def create_ip_download_log(file_name, download_form, validity):
 	start_download_validity_count_down(download_form, validity)
 	idl = frappe.new_doc("IP Download Log")
 	idl.user_id = frappe.session.user
+	idl.full_name = get_full_name_of_user()
 	idl.file_name = file_name
 	idl.downloaded_datetime = now()
 	idl.save(ignore_permissions=True)
+
+def get_full_name_of_user():
+	first_name, last_name = frappe.db.get_value("User", {"name":frappe.session.user}, ["first_name", "last_name"])
+	return   first_name + " " + last_name  if last_name else first_name	
 
 
 @frappe.whitelist()
