@@ -32,15 +32,15 @@ def format_question_list(qtn_list):
 @frappe.whitelist()
 def update_user_answer(request_data):
 	request_data = json.loads(request_data)
-	request_data["user_answer"] = request_data.get("user_answer") if request_data.get("user_answer") else ""
 	common_update_answer(request_data)
 	frappe.db.sql(""" update `tabAnswer Sheet` 
 						set last_attempted_question = %(qtn)s where name = %(ans_sheet)s """,
-						{"qtn":request_data.get("new_qtn_id"), "ans_sheet":request_data.get("ans_sheet")})
+						{"qtn":request_data.get("new_qtn_id"), "ans_sheet":request_data.get("ans_sheet")} )
 	frappe.db.commit()
 
 
 def common_update_answer(request_data):
+	request_data["user_answer"] = request_data.get("user_answer") if request_data.get("user_answer") else ""
 	mapper = {"Objective":"user_answer = '{0}' ".format(request_data.get("user_answer")), "Subjective":"user_subjective_answer = '{0}' ".format(request_data.get("user_answer"))}
 	frappe.db.sql(""" update `tabAssessment Answers` 
 						set {col_nm}, visited_flag = 1 
@@ -62,11 +62,20 @@ def end_test(request_data):
 	ansr_sheet = frappe.get_doc("Answer Sheet", request_data.get("ans_sheet")) 
 	ansr_sheet.answer_sheet_status = "Open"
 	ansr_sheet.save(ignore_permissions=True)
-	marks_message = """ Congratulations, You have successfully completed test. You have got {0} marks out of {1} &
-						your percentage score is {2}%. """.format(ansr_sheet.marks_obtained, ansr_sheet.total_marks,
-							ansr_sheet.percentage_score)	
-	if ansr_sheet.subjective_flag == "Yes":
-		marks_message += "Subjective questions will be evaluated later by evaluator." 
+	marks_message = """ Congratulations, You have successfully completed test."""
+	if not check_if_all_subjective_questions(ansr_sheet):	
+		marks_message += """ You have got {0} marks out of {1} & your percentage score is {2}%. 
+							""".format(ansr_sheet.marks_obtained, ansr_sheet.total_marks,
+								ansr_sheet.percentage_score)
+	if not ansr_sheet.subjective_flag == "Yes":
+		ansr_sheet.submit()
 	else:
-		ansr_sheet.submit()	
+		marks_message += "Subjective questions will be evaluated later by evaluator."
 	return marks_message
+
+
+def check_if_all_subjective_questions(doc):
+	for row in doc.table_5: 
+		if row.question_type == "Objective":
+			return False
+	return True		

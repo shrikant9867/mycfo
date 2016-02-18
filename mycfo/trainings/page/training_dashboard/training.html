@@ -21,7 +21,7 @@
       <div class="col-xs-12">	
 		  <ul class="nav nav-tabs">
 		    <li class="active"><a data-toggle="tab" href="#home{{ i }}">Training Information</a></li>
-		    <li><a data-toggle="tab" href="#reviews-menu{{ i }}">Reviews & Downalods</a>
+		    <li><a data-toggle="tab" href="#reviews-menu{{ i }}">Reviews & Downloads</a>
 		    </li>
 		  </ul>
 
@@ -30,41 +30,41 @@
 		     <div class="row">
 		     	<div class="col-xs-6">
 		     		<div class="row tr-row">
-		     			<div class="col-xs-6"><label class="tr-label">Training Name</label></div>
+		     			<div class="col-xs-6"><label class="tr-label">Training Name:</label></div>
 		     			<div class="col-xs-6">{{ training_data[i].name }}</div>
 		     		</div>
 		     		<div class="row tr-row">
-		     			<div class="col-xs-6"><label class="tr-label">Validity for Completion</label></div>
+		     			<div class="col-xs-6"><label class="tr-label">Validity for Completion:</label></div>
 		     			<div class="col-xs-6">{{ training_data[i].validity_for_completion }}</div>
 		     		</div>	
 		     	</div>
 		     	<div class="col-xs-6">
 		     		<div class="row tr-row">
-		     			<div class="col-xs-6"><label class="tr-label">Document Type</label></div>
+		     			<div class="col-xs-6"><label class="tr-label">Document Type:</label></div>
 		     			<div class="col-xs-6">{{ training_data[i].document_type }}</div>
 		     		</div>
 		     		<div class="row tr-row">
-		     			<div class="col-xs-6"><label class="tr-label">Industry</label></div>
+		     			<div class="col-xs-6"><label class="tr-label">Industry:</label></div>
 		     			<div class="col-xs-6">{{ training_data[i].industry }}</div>
 		     		</div>
 		     	</div>
 		     </div>
 		    <div class="row tr-row">
-		    	<div class="col-xs-3"><label class="tr-label">Training Description</label></div>
+		    	<div class="col-xs-3"><label class="tr-label">Training Description:</label></div>
 		    	<div class="col-xs-9">{{ training_data[i].description }}</div>
 		    </div>
 		    </div>
 		    <div id="reviews-menu{{ i }}" class="tab-pane fade">
 		      	<div class="row tr-row">
-		     		<div class="col-xs-4"><label class="tr-label">Downloads</label></div>
+		     		<div class="col-xs-4"><label class="tr-label">Downloads:</label></div>
 		     		<div class="col-xs-8">{{ training_data[i].download_count }}</div>
 		     	</div>
 		     	<div class="row tr-row">
-		     		<div class="col-xs-4"><label class="tr-label">Avg Ratings</label></div>
+		     		<div class="col-xs-4"><label class="tr-label">Avg Ratings:</label></div>
 		     		<div class="col-xs-8"  id ="avg-rateYo{{ i }}"></div>
 		     	</div> 
 		     	  	<div class="row tr-row">
-		     		<div class="col-xs-4"><label class="tr-label">User Comments</label></div>
+		     		<div class="col-xs-4"><label class="tr-label">User Comments:</label></div>
 		     		<div class="col-xs-8">
 		     			<div class="row comments-row">
 			     			{% for(var j=0, k= training_data[i].comments.length; j < k; j++) { %}

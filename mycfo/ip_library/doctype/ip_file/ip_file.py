@@ -9,14 +9,21 @@ from frappe.utils import cint , getdate
 import base64
 import json
 import os
+from mycfo.mycfo_utils import get_central_delivery
 
 
 class IPFile(Document):
 	
 	def validate(self):
+		self.validity_for_cd_users()
 		self.validate_for_file_data()
 		self.store_document()
 		self.create_request_for_ip_approval()
+
+	def validity_for_cd_users(self):
+		if not len(get_central_delivery()):		
+			frappe.throw("There are no Central Delivery users in system.Please upload IP File later.")
+	
 
 	def init_for_add_comment(self):
 		self.add_comment("File status Changed to {0} for request_type {1}".format(self.file_status, self.request_type))	

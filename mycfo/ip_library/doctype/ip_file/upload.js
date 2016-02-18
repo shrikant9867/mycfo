@@ -79,7 +79,7 @@ upload = {
 	upload_file: function(fileobj, args, opts) {
 		if(!fileobj && !args.file_url) {
 			console.log("just code")
-			msgprint(__("Please attach a file or set a URL"));
+			msgprint(__("Please attach a file."));
 			return;
 		}
 		else if (! (upload.check_extension(fileobj.name))){

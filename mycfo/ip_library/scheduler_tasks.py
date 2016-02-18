@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 from frappe.utils import now, today
 import frappe
+from mycfo.mycfo_utils import get_central_delivery
 
 
 
@@ -29,17 +30,18 @@ def send_mail(result):
 	subject = "IP Document Expiry Notification"
 	template = "/templates/ip_library_templates/ip_library_expiry_notification.html"
 	central_delivery = get_central_delivery()
+	print central_delivery
 	for response in result:
-		first, last = frappe.db.get_value("User", {"email":response.get("owner")}, ["first_name", "last_name"])
+		first, last, email = frappe.db.get_value("User", {"name":response.get("owner")}, ["first_name", "last_name", "email"])
 		response["first_name"] = first
 		response["last_name"] = last 
-		frappe.sendmail(recipients=response.get("owner"), sender=None, subject=subject,
+		frappe.sendmail(recipients=email, sender=None, subject=subject,
 			message=frappe.get_template(template).render(response), cc=central_delivery)
 
-def get_central_delivery():
-	central_delivery = frappe.get_list("UserRole", filters={"role":"Central Delivery","parent":["!=", "Administrator"]}, fields=["parent"])
-	central_delivery = [user.get("parent") for user in central_delivery]
-	return central_delivery	
+# def get_central_delivery():
+# 	central_delivery = frappe.get_list("UserRole", filters={"role":"Central Delivery","parent":["!=", "Administrator"]}, fields=["parent"])
+# 	central_delivery = [user.get("parent") for user in central_delivery]
+# 	return central_delivery	
 
 def archive_document():
 	result = frappe.db.sql(""" select name,file_name, validity_end_date from `tabIP File` 
