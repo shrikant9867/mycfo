@@ -444,7 +444,7 @@ df.discussion_forum = Class.extend({
 	render_table_head:function(){
 		if (! $(cur_dialog.body).find("#tr-table").length){
 			$(this.dialog.fields_dict.assign_tr_html.$wrapper).append("<table class='table' id='tr-table'><thead><tr class='row'>\
-				<th class='col-xs-7'>User</th><th class='col-xs-5'>Remove</th></tr></thead><tbody class='tr-tbody'></tbody></table>")
+				<th class='col-xs-4'>User</th><th class='col-xs-4'></th><th class='col-xs-4'>Remove</th></tr></thead><tbody class='tr-tbody'></tbody></table>")
 		}
 	},
 
