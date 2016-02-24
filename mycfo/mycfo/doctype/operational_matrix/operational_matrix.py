@@ -14,6 +14,7 @@ class OperationalMatrix(Document):
 		self.validate_child_table_duplication()
 		if self.get('operation_details'):
 			self.validate_duplicate_entry()
+		self.update_child_table_of_ompc()	
 
 	def delink_operational_matrix(self):
 		operational_data = frappe.db.sql("""select name from `tabOperation And Project Commercial` where operational_matrix_status='Active'
@@ -42,7 +43,25 @@ class OperationalMatrix(Document):
 				else:
 					frappe.msgprint("No duplicate record is allowed to be enter in Operation Details child table",raise_exception=1)
 
-
+	def update_child_table_of_ompc(self):
+		if self.operation_details:
+			ompc = frappe.db.sql("""select t1.name from `tabOperation And Project Commercial`t1,
+									`tabOperational Matrix`t2 
+									where t1.operational_id = t2.name 
+									and t2.name = '{0}'""".format(self.name),as_list=1)
+			ompc_list = [e[0] for e in ompc]
+			
+			opm = ''
+			for omp in ompc_list:
+				om_pc = frappe.get_doc("Operation And Project Commercial",omp)
+				om_pc.set("operation_details", [])
+				for item in self.operation_details:
+					child = om_pc.append("operation_details", {})
+					child.role = item.role
+					child.email_id = item.email_id
+					child.user_name = item.user_name
+					child.contact = item.contact	 
+				om_pc.save(ignore_permissions = True)
 
 	def validate_duplicate_entry(self):
 		pass
