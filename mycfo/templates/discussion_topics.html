@@ -1,0 +1,64 @@
+<html>
+<head>
+	<h3>{{_("Disucssion Topic Notification")}}</h3>
+	<style>
+		table {
+		    border-collapse: collapse;
+		}
+
+		table, td, th {
+		    border: 1px solid black;
+		}
+
+	</style>
+</head>	
+<body>
+<div style="display: inline-block;">	
+	<h4>{{_(" New Discussions Topics")}}</h4>	
+	<table class="table">
+		<thead>
+			<tr>
+				<th width="50%">{{ _("Topic") }}</b></th>
+				<th width="50%">{{ _("Post By") }}</th>
+			</tr>
+		</thead>
+		<tbody>
+			{%- for topic in p_day_topic -%}
+			<tr>
+				<td width="50%">{{ topic.get("title") }}</td>
+				<td width="50%">{{ topic.get("post_by") }}</td>
+			</tr>
+			{%- endfor -%}
+		</tbody>
+	</table>
+</div>
+
+<div style="display: inline-block;">
+	<h4 style="margin-left: 150px;">{{_(" Unanswered Discussions Topics")}}</h4>
+	<table class="table" style="margin-left: 150px;">
+		<thead>
+			<tr>
+				<th width="50%">{{ _("Topic") }}</b></th>
+				<th width="50%">{{ _("Post By") }}</th>
+			</tr>
+		</thead>
+		<tbody>
+			{%- for topic in unans -%}
+			<tr>
+				<td width="50%">{{ topic.get("title") }}</td>
+				<td width="50%">{{ topic.get("post_by") }}</td>
+			</tr>
+			{%- endfor -%}
+		</tbody>
+	</table>
+</div>
+
+<br>
+<p>{{_("Thank you")}}.<br></p>
+<p>Team MyCFO</p>
+</body>
+</html>
+
+
+
+  
