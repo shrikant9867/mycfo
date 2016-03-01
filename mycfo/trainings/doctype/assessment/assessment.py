@@ -29,6 +29,8 @@ class Assessment(Document):
 		for row in self.table_5:
 			options = [ row.get(option).strip() for option in ["option_a", "option_b", "option_c", "option_d", "option_e"] if row.get(option)]
 			if row.question_type == "Objective":
+				if not row.option_a or not row.option_b:
+					frappe.throw("Option A and option B are mandatory for objective questions for row no {0}".format(row.idx))
 				if not row.objective_answer or not row.get(mapper.get(row.objective_answer)):
 					frappe.throw("Please provide valid answer for row no {0}".format(row.idx))
 				if len(set(options)) != len(options):
