@@ -957,9 +957,9 @@
   "field_name": null, 
   "modified": "2015-12-02 11:24:22.530917", 
   "name": "Contact-search_fields", 
-  "property": "search_fields", 
+  "property": "search_fields",
   "property_type": "Data", 
-  "value": "email,mobile"
+  "value": ""
  }, 
  {
   "default_value": null, 
