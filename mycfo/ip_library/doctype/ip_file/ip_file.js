@@ -15,9 +15,9 @@ frappe.ui.form.on("IP File", {
 			refresh_field(["request_type", "file_approver"])
 		}
 		else{
-			cur_frm.set_df_property("document_type", "read_only", 1)
-			cur_frm.set_df_property("file_approver", "read_only", 1)
-			cur_frm.set_df_property("file_name", "read_only", 1)
+			$.each(["document_type", "file_approver", "file_name", "customer"], function(index, value){
+				cur_frm.set_df_property(value, "read_only", 1)
+			})
 		}
 			
 		if (inList(["Published", "Republished", "Rejected by CD (Archive)", "Rejected by CD (Edit)", "Validity Upgraded", "Rejected by CD (Validity)"], frm.doc.file_status)){
@@ -107,6 +107,12 @@ cur_frm.set_query("skill_matrix_120", function() {
    	}
 });
 
+cur_frm.set_query("customer", function() {
+   	return {
+   		query: "mycfo.ip_library.doctype.ip_file.ip_file.get_customer_list",
+   	}
+});
+
 
 init_for_archive_file =  function(frm){
 	cur_frm.add_custom_button(__('Archive File'), function(){ 
@@ -149,7 +155,7 @@ validity_upgrade = Class.extend({
 						primary_action_label: "Upgrade Validity",
 						primary_action: function(doc) {
 								validity = me.dialog.fields_dict.validity.input.value
-								me.frm.doc.new_validity = validity
+								// me.frm.doc.new_validity = validity
 								if (validity){
 										me.dialog.hide();
 										return frappe.call({
@@ -171,6 +177,18 @@ validity_upgrade = Class.extend({
 							}							
 						})
 		this.dialog.show();
+
+		this.dialog.fields_dict.validity.$input.change(function(){
+			var formatted_date = frappe.datetime.user_to_str($(this).val());
+			if(frappe.datetime.get_day_diff(formatted_date, me.frm.doc.validity_end_date) <= 0){
+				me.dialog.fields_dict.validity.input.value = ""	
+				frappe.msgprint("Validity end date must be greater than current validity end date {0}.".replace("{0}", me.frm.doc.validity_end_date) )
+			}
+	
+		})
+
+
+
 	}
 
 })

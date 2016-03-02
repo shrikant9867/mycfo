@@ -348,7 +348,11 @@ IpFileDashboard = Class.extend({
 				query: "mycfo.ip_library.doctype.ip_file.ip_file.get_approver_list",
 				filters: { "customer":me.dialog.fields_dict.customer.input.value }
 			}
-		}	
+		}
+
+		this.dialog.fields_dict.customer.$input.change(function(){
+			me.dialog.fields_dict.employee_id.input.value = ""	
+		})
 	},
 	make_download_request:function(file_name, request_button, my_dict){
 		var me = this
