@@ -15,10 +15,17 @@ from mycfo.mycfo_utils import get_central_delivery
 class IPFile(Document):
 	
 	def validate(self):
+		self.validate_for_duplicate_file_name()
 		self.validity_for_cd_users()
 		self.validate_for_file_data()
 		self.store_document()
 		self.create_request_for_ip_approval()
+
+	def validate_for_duplicate_file_name(self):
+		if cint(self.get("__islocal")):
+			if frappe.db.get_value("IP File", {"name":self.file_name}, "name"):
+				frappe.throw("Ip File with same name already exists.")
+			
 
 	def validity_for_cd_users(self):
 		if not len(get_central_delivery()):		
@@ -238,3 +245,13 @@ def get_permission_query_conditions(user):
 		ip_files = frappe.db.sql(""" select name from `tabIP File` where owner = '{0}' or file_approver = '{1}' """.format(frappe.session.user, emp_name),as_dict=1)
 		ip_files = "', '".join([ipf.get("name") for ipf in ip_files if ipf])
 		return """(`tabIP File`.name in ('{files}') )""".format(files = ip_files)
+
+
+@frappe.whitelist()
+def get_customer_list(doctype, txt, searchfield, start, page_len, filters):
+	return frappe.db.sql(""" select  name, customer_group 
+								from `tabCustomer` 
+								where (name like %(txt)s
+								or customer_group like %(txt)s)
+								limit 20
+	 		""", {'txt': "%%%s%%" % txt}, as_list=1)

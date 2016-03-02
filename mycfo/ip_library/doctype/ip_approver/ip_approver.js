@@ -50,6 +50,16 @@ frappe.ui.form.on("IP Approver", "central_delivery_status", function(frm){
 })
 
 
+frappe.ui.form.on("IP Approver", "validity_end_date", function(frm){
+	if(frappe.datetime.get_day_diff(frm.doc.validity_end_date, frappe.datetime.nowdate()) <= 0){
+		frm.doc.validity_end_date = "";
+		refresh_field(["validity_end_date"])
+		frappe.msgprint("Validity end date must be greater than current date.")
+	}
+
+})
+
+
 cur_frm.set_query("central_delivery", function() {
    	return {
    		query:"mycfo.ip_library.doctype.ip_approver.ip_approver.get_central_delivery_user"
