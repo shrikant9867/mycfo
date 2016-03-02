@@ -11,7 +11,7 @@ from mycfo.mycfo_utils import get_central_delivery
 
 @frappe.whitelist()
 def get_global_search_suggestions(filters):
-	query = """  select  file_name from `tabIP File` where published_flag = 1
+	query = """  select  file_name from `tabIP File` where ( published_flag = 1 or file_status = 'Archived' )
 						and file_name like '%{0}%' 
 						union select name from `tabSkill Matrix 18` where name like '%{0}%'
 						union select name from `tabSkill Matrix 120` where name like '%{0}%'
@@ -31,8 +31,8 @@ def get_published_ip_file(search_filters):
 	search_filters = json.loads(search_filters)
 	limit_query = "LIMIT 5 OFFSET {0}".format(search_filters.get("page_no") * 5 )
 	my_query = """ select * from `tabIP File` ipf
-						where 
-						( ipf.skill_matrix_18 like '%{0}%' or ipf.file_name like '%{0}%' 
+						where ( ipf.published_flag = 1 or ipf.file_status = 'Archived' )
+						and ( ipf.skill_matrix_18 like '%{0}%' or ipf.file_name like '%{0}%' 
 						or ipf.security_level like '%{0}%' 
 						or ipf.skill_matrix_120 like '%{0}%' or ipf.document_type like '%{0}%' )  order by ipf.uploaded_date desc """.format(search_filters.get("filters"))
 	
