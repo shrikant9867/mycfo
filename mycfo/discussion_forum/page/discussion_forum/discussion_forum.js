@@ -347,11 +347,13 @@ df.discussion_forum = Class.extend({
 		this.user_name.make_input();
 		$('<button btn btn-primary btn-sm primary-action>\
 			Search</button>').on("click",function(){
+				/*$('a.category').removeClass('active')*/
+				$('a.self-assign').removeClass('active')
 				me.search_topic.input.value = ''
 				me.get_discussions({"user":me.user_name.input.value})
 			}).appendTo('.usr').css({"background-color":"#0072BC","color":"#ffffff","border-radius":"1px"})
 	},
-	show_comment_dailog:function(topic_name){
+	/*show_comment_dailog:function(topic_name){
 		var me = this;
 		if(!me.dialog) {
 			me.dialog = new frappe.ui.Dialog({
@@ -364,6 +366,18 @@ df.discussion_forum = Class.extend({
 			});
 		}
 		me.dialog.clear();
+		me.dialog.show();
+	},*/
+	show_comment_dailog:function(topic_name){
+		var me = this;
+		me.dialog = new frappe.ui.Dialog({
+			title: __('Comment on Topic'),
+			fields: [
+				{fieldtype:'Long Text', fieldname:'comment', label:__("Comment")},
+			],
+			primary_action: function() { me.add_comment(topic_name); },
+			primary_action_label: __("Comment")
+		});
 		me.dialog.show();
 	},
 	add_comment: function(topic_name) {
