@@ -50,7 +50,7 @@ cur_frm.cscript.end_date = function(doc,cdt,cdn){
 
 //algorithm implimentation for weightage calculation
 frappe.ui.form.on("KPI", "validate", function(frm,cdt,cdn) {
-
+    var total=0;
 
 	 //2nd
     if(frm.doc.kpi_people_details){
@@ -155,7 +155,6 @@ frappe.ui.form.on("KPI", "validate", function(frm,cdt,cdn) {
 			var b=0;
 			var c=0;	
 			var d=0;
-			var total=0
 			if(frm.doc.kpi_business_details[i].priority==""){
 				a =0;
 			}
