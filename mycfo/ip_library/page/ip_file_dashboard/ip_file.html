@@ -32,7 +32,7 @@ download-validity = "{{ file_data[i].download_validity_end_date }}" id="{{ i }}"
 		  <ul class="nav nav-tabs">
 		    <li class="active"><a data-toggle="tab" href="#home{{ i }}">Basic Information</a></li>
 		    <li><a data-toggle="tab" href="#approval-menu{{ i }}">Approval</a></li>
-		    <li><a data-toggle="tab" href="#reviews-menu{{ i }}">Reviews & Downalods</a></li>
+		    <li><a data-toggle="tab" href="#reviews-menu{{ i }}">Reviews & Downloads</a></li>
 		    {% if(file_data[i].download_flag) { %}
 		    <li><a data-toggle="tab" href="#feedback-menu{{ i }}" class="feedback-li">Write Feedback</a></li>
 		  	{% } %}

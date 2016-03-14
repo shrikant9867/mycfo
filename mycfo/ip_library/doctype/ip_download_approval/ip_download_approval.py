@@ -41,7 +41,7 @@ class IPDownloadApproval(Document):
 						"2-Level":{"status":self.central_delivery_status, "comments":self.central_delivery_comments}}	
 		status_mapper = level_mapper.get(self.level_of_approval)
 		args.update(status_mapper)
-		self.send_notification("IP Docuemnt {0} {1}".format(self.file_name, args.get("status")), email, 
+		self.send_notification("IP Document {0} {1}".format(self.file_name, args.get("status")), email, 
 									"templates/ip_library_templates/download_request_approval.html",args)
 
 	
