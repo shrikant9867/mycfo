@@ -69,7 +69,7 @@ class IPApprover(Document):
 
 	def validate_validity_end_date(self):
 		if getdate(self.validity_end_date) < getdate(today()):
-			frappe.throw("Validity end date must be greater than current date.")
+			frappe.throw("Validity End Date must be greater than Current Date.")
 
 	def validate_for_central_delivery(self):
 		if not self.central_delivery or not self.central_delivery_status:
@@ -112,7 +112,7 @@ class IPApprover(Document):
 	
 	def prepare_for_published_notification(self):
 		args, email = self.get_requester_data()
-		self.send_notification("IP Docuemnt {0} Published".format(self.file_name), email, 
+		self.send_notification("IP Document {0} Published".format(self.file_name), email, 
 									"templates/ip_library_templates/cd_upload_notification.html",args)
 
 	

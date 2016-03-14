@@ -54,7 +54,7 @@ frappe.ui.form.on("IP Approver", "validity_end_date", function(frm){
 	if(frappe.datetime.get_day_diff(frm.doc.validity_end_date, frappe.datetime.nowdate()) <= 0){
 		frm.doc.validity_end_date = "";
 		refresh_field(["validity_end_date"])
-		frappe.msgprint("Validity end date must be greater than current date.")
+		frappe.msgprint("Validity End Date must be greater than Current Date.")
 	}
 
 })
