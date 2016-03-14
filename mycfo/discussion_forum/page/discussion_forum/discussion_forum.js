@@ -2,6 +2,7 @@ frappe.provide("df.discussion_forum");
 frappe.pages['discussion-forum'].on_page_load = function(parent) {
 	df.discussion_forum = new df.discussion_forum(parent)
 }
+var is_sorted=false;
 df.discussion_forum = Class.extend({
 	init: function(parent) {
 		/*
@@ -139,6 +140,9 @@ df.discussion_forum = Class.extend({
 		me.page.clear_menu();
 		$(frappe.render_template("discussion",data)).appendTo(me.wrapper);
 		$(me.wrapper).find('.add-comment').on("click",function(){me.show_comment_dailog(topic_name)})
+		$(me.wrapper).find('.sort-comment').on("click",function(){me.sort_comments(topic_name)})		
+		$('.upload-file').find('.upload-file') .on("click",function(){me.sort_comments(topic_name)})		
+		// $(me.wrapper).find('.upload-file').on("click",function(){me.sort_comments(topic_name)})		
 		$(me.wrapper).find('.user-posts').on("click",function(){
 			user = $(this).attr('data-name')
 			me.get_discussions({"user":user})
@@ -153,6 +157,37 @@ df.discussion_forum = Class.extend({
 		var me = this;
 		return frappe.call({
 			method: "mycfo.discussion_forum.page.discussion_forum.discussion_forum.get_comments",
+			args:{"topic_name":topic_name,"page_no":current_page,"is_sorted":is_sorted},
+			callback: function(r) {
+				data = r.message[0]
+				total_pages = r.message[1]
+				current_page = r.message[2]
+				paginate = r.message[3]
+				if (data){
+					$(me.wrapper).find('#comment-list').empty()
+					$(frappe.render_template("discussion_comments",
+						{"comment_list":data})).appendTo($(me.wrapper).find('#comment-list'));
+					if (paginate){
+						me.init_pagination_comment(total_pages,current_page,topic_name)
+					}
+					me.render_ratings({"comment_list":data},topic_name)
+				}
+				else{
+					$('.no-comment').toggle()
+				}
+			}
+		});
+	},
+	sort_comments:function(topic_name,current_page){
+		if(is_sorted == true){
+			is_sorted=false;
+		}
+		else{
+			is_sorted=true;
+		}
+		var me = this;
+		return frappe.call({
+			method: "mycfo.discussion_forum.page.discussion_forum.discussion_forum.sort_comments",
 			args:{"topic_name":topic_name,"page_no":current_page},
 			callback: function(r) {
 				data = r.message[0]
