@@ -155,7 +155,7 @@ validity_upgrade = Class.extend({
 						primary_action_label: "Upgrade Validity",
 						primary_action: function(doc) {
 								validity = me.dialog.fields_dict.validity.input.value
-								// me.frm.doc.new_validity = validity
+								me.frm.doc.new_validity = validity
 								if (validity){
 										me.dialog.hide();
 										return frappe.call({

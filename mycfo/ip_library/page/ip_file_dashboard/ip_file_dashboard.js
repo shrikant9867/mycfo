@@ -328,7 +328,7 @@ IpFileDashboard = Class.extend({
 									me.make_download_request(file_name, request_button, my_dict)
 									me.dialog.hide();
 								}else{
-									frappe.msgprint("Mandatory Field Employee & Customer")
+									frappe.msgprint("Mandatory Fields Employee and Customer")
 								}
 							}							
 						})
