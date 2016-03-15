@@ -147,6 +147,7 @@ df.discussion_forum = Class.extend({
 			user = $(this).attr('data-name')
 			me.get_discussions({"user":user})
 		})
+
 		if (frappe.user.has_role(['Administrator', 'System Manager', 'Central Delivery'])){
 			this.page.add_menu_item(__('Refresh'), function() { frappe.ui.toolbar.clear_cache() }, true);
 			this.page.add_menu_item(__('Assign'), function() { me.show_assign_dialog(topic_name,data) }, true);
@@ -246,6 +247,26 @@ df.discussion_forum = Class.extend({
 	  		});
 	  		me.toggle_ratings(index,value,topic_name)
 		})
+		//start upload code
+		$.each(data.comment_list, function(index, value){
+			$(".upload-file{0}".replace("{0}",index)).on("click",function(){
+				$upf=$(".upload-file{0}".replace("{0}",index))
+				abc=$upf.attr("data-name")
+				var me = this;
+				args={
+					from_form: 1,
+					doctype: "Comment",
+					docname: abc,
+				}
+				this.dialog = frappe.ui.get_upload_dialog({
+					"args": args,
+					"callback": function(attachment, r) { me.attachment_uploaded(attachment, r) },
+				});
+				this.dialog.show();	
+	  		})
+
+		})
+		//end upload code
 
 	},
 	toggle_ratings:function(index,value,topic_name){

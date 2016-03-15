@@ -118,9 +118,17 @@ def get_comments(topic_name,page_no=0,is_sorted='false', limit=3):
 			"average_rating":ratings.get("avg",0.0),
 			"ratings":ratings.get("ratings",0),
 			"user_rating":ratings.get("user_rating"),
-			"no_of_users":ratings.get("number_of_users")
+			"no_of_users":ratings.get("number_of_users"),
+			"get_attachments": get_attachments("Comment",comment['name']) 
 		})
+		print frappe.request.url
 	return comment_list,total_pages,page_no,paginate,is_sorted
+
+@frappe.whitelist(allow_guest=True)
+def get_attachments(dt, dn):
+	print "in atachment"	
+	return frappe.get_all("File", fields=["name", "file_name", "file_url"],
+		filters = {"attached_to_name": dn, "attached_to_doctype": dt})
 
 @frappe.whitelist(allow_guest=True)
 def sort_comments(topic_name,page_no=0,limit=3):
@@ -298,10 +306,6 @@ def users_query(doctype, txt, searchfield, start, page_len, filters):
 @frappe.whitelist(allow_guest=True)
 def get_categories():
 	return frappe.get_list("Discussion Category", fields=["name","title"],ignore_permissions=1)
-
-
-
-
 
 
 

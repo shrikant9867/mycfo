@@ -9,7 +9,7 @@
 			<h4 itemprop="name">{{ comment_list[i].comment_by_fullname }}
 				<br>
 				<div class="col-sm-12" style="padding-left:0px">
-					<div class="inline-block col-sm-8" style="padding-left:0px">
+					<div class="inline-block col-sm-7" style="padding-left:0px">
 						<small class="text-muted">
 							<span itemprop="commentTime">{{ comment_list[i].creation }}</span>
 						</small>
@@ -17,21 +17,28 @@
 							<div class="text-muted avg-ratings-info" id ="number_of_users{{ i }}"><label><font size="1.5">{{comment_list[i].average_rating}}  &nbsp; ({{comment_list[i].no_of_users}}  Ratings)</font></label>
 							</div>
 					</div>
-					<div class="inline-block col-sm-4">
+					<div class="inline-block col-sm-3">
 						<span class="your_rating">
 							<strong>Your Rating</strong>
 							<div class="show_rating{{ i }} hidden"></div>
 							<div class="add_rating{{ i }} hidden"><div class="edit_rating{{ i }} inline-block"></div><a class="rate_topic{{ i }} btn inline-block" style="background-color:#4CDD04;padding:3px 8px;font-size:10px" data-name="{{ comment_list[i].name }}">Rate</a></div>
 						</span>
 					</div>
-<!-- 					<div class="inline-block col-sm-1">
-						<a class="upload-file btn btn-default btn-sm">Upload File</a>
-					</div> -->
+					<div class="inline-block col-sm-2">
+						<a class="upload-file{{ i }} btn btn-default btn-sm" data-name="{{ comment_list[i].name }}">Upload File</a>
+					</div>
 				</div>
 				<br>	
 			</h4>
 			<hr style="border-bottom:0.3px!important">
 			<div itemprop="commentText">{{ comment_list[i].comment }}</div>
+			<div itemprop="commentAtachment">
+			{% for(var j=0, k=comment_list[i].get_attachments.length; j < k; j++) { %}
+			<br>
+			<a href="{{ frappe.urllib.get_full_url(comment_list[i].get_attachments[j]["file_url"]) }}
+			" target="_blank">{{ comment_list[i].get_attachments[j]["file_name"] }}</a> 
+			{% } %}
+			</div>
 		</div>
 	</div>
 {% } %}
