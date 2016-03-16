@@ -207,6 +207,7 @@ df.discussion_forum = Class.extend({
 				else{
 					$('.no-comment').toggle()
 				}
+				me.make_topic(topic_name);
 			}
 		});
 	},

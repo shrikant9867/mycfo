@@ -144,7 +144,8 @@ def sort_comments(topic_name,page_no=0,limit=3):
 			"average_rating":ratings.get("avg",0.0),
 			"ratings":ratings.get("ratings",0),
 			"user_rating":ratings.get("user_rating"),
-			"no_of_users":ratings.get("number_of_users")
+			"no_of_users":ratings.get("number_of_users"),
+			"get_attachments": get_attachments("Comment",comment['name']) 
 		})
 	comment_list.sort(key=lambda x: x['average_rating'],reverse=True)
 	return comment_list,total_pages,page_no,paginate
