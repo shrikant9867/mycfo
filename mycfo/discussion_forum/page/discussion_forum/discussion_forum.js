@@ -254,16 +254,36 @@ df.discussion_forum = Class.extend({
 				$upf=$(".upload-file{0}".replace("{0}",index))
 				abc=$upf.attr("data-name")
 				var me = this;
-				args={
-					from_form: 1,
-					doctype: "Comment",
-					docname: abc,
-				}
-				this.dialog = frappe.ui.get_upload_dialog({
-					"args": args,
-					"callback": function(attachment, r) { me.attachment_uploaded(attachment, r) },
-				});
-				this.dialog.show();	
+				// var d = frappe.get_doc({"doctype": "","docname": });
+				frappe.call({
+			        'method': 'frappe.client.get_value',
+			        'args': {
+			            'doctype': 'Comment',
+			            'fieldname': 'comment_by',
+				            'filters': {
+				              'name': abc
+				            }
+			        	},
+			           callback: function(r){
+			               if ( msgprint(r.message.comment_by!=frappe.user.name)){
+			                   frappe.throw("You can attach file only to your comment")
+			               }
+			               else{
+				               	args={
+									from_form: 1,
+									doctype: "Comment",
+									docname: abc,
+								}
+								this.dialog = frappe.ui.get_upload_dialog({
+									"args": args,
+									"callback": function(attachment, r) { msgprint("File uploaded successfully") },
+								});
+								this.dialog.show();	
+
+			               }
+			           }
+			    });
+				
 	  		})
 
 		})
