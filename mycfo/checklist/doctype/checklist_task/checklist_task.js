@@ -67,3 +67,33 @@ frappe.ui.form.on("Checklist Task","validate",function(frm){
 		})
 	}
 })
+
+
+frappe.ui.form.on("Checklist Task","reassign_task",function(frm){
+	msgprint("Hi")
+})
+cur_frm.fields_dict.ct_reassign.grid.get_field("user").get_query = function(doc, cdt, cdn) {
+		var d  = locals[cdt][cdn];
+		return {
+		query: "mycfo.checklist.doctype.checklist_requisition.checklist_requisition.filter_user",
+		filters: {
+			'assignee': d.assignee
+		}
+	}
+}
+frappe.ui.form.on("Checklist Task Reassign","reopen",function(frm,cdt,cdn){
+	var d  = locals[cdt][cdn];	
+	return frappe.call({
+		method: "mycfo.checklist.doctype.checklist_requisition.checklist_requisition.reopen_task",
+		args: {
+		"task_id":d.task_id,
+		},
+		callback: function(r) {
+			if(r.message=="reopened"){
+				d.status="Open";
+				refresh_field("ct_reassign");
+			}
+		} 
+	})
+
+})

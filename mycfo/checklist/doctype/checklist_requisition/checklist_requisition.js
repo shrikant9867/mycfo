@@ -58,10 +58,26 @@ frappe.ui.form.on("Requisition Task","start_date",function(frm,cdt,cdn){
 	var cur_date = moment().format('YYYY-MM-DD')
 	var current_date = new Date(cur_date)
 	if(startDate && startDate < current_date){
-		msgprint(__("'Start Date Should Not Past Date "))
+		msgprint(__("Start Date Should Not Past Date "))
 		cur_frm.doc.cr_task[0].start_date = ""
 		refresh_field("cr_task")
 	}
+})
+frappe.ui.form.on("Requisition Task","reopen",function(frm,cdt,cdn){
+	var d  = locals[cdt][cdn];	
+	return frappe.call({
+		method: "mycfo.checklist.doctype.checklist_requisition.checklist_requisition.reopen_task",
+		args: {
+		"task_id":d.task_id,
+		},
+		callback: function(r) {
+			if(r.message=="reopened"){
+				d.status="Open";
+				refresh_field("cr_task");
+			}
+		} 
+	})
+
 })
 
 cur_frm.fields_dict.cr_task.grid.get_field("user").get_query = function(doc, cdt, cdn) {
