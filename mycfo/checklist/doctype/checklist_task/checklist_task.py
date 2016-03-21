@@ -17,6 +17,62 @@ class ChecklistTask(Document):
 	def validate(self):
 		self.validate_status()
 		self.validate_dates()
+		self.sync_tasks()
+		self.ct_reassign = []
+
+	def onload(self):
+		"""Load project tasks for quick view"""
+		if not self.get("ct_reassign"):
+			for task in self.get_tasks():
+				self.append("ct_reassign", {
+					"task_name": task.title,
+					"status": task.status,
+					"start_date": task.expected_start_date,
+					"end_date": task.expected_end_date,
+					"task_id": task.name,
+					"des": task.des,
+					"assignee": task.assignee,
+					"user":task.user,
+					"actual_end_date":task.end_date,
+					"count":task.count,
+					"tat":task.tat
+					# "actual_time":task.actual_time
+				})	
+
+	def get_tasks(self):
+		return frappe.get_all("Checklist Task", "*", {"project": self.project,"checklist_task":self.name}, order_by="expected_start_date asc")	
+
+	def sync_tasks(self):
+		if self.flags.dont_sync_tasks: return
+
+		task_names = []
+		for t in self.ct_reassign:
+			if t.task_id:
+				task = frappe.get_doc("Checklist Task", t.task_id)
+			else:
+				task = frappe.new_doc("Checklist Task")
+				task.project = self.project
+				task.checklist_task=self.name
+
+			task.update({
+				# ct:cr
+				"title": t.task_name,
+				"status": t.status,
+				"expected_start_date": t.start_date,
+				"expected_end_date": t.end_date,
+				"des": t.des,
+				"assignee":t.assignee,
+				"user":t.user,
+				"to_be_processed_for":self.to_be_processed_for,
+				"process_description":self.process_description,
+				"checklist_name":self.checklist_name,
+				"tat":t.tat
+			})
+
+			task.flags.ignore_links = True
+			task.flags.from_project = True
+			task.save(ignore_permissions = True)
+			t.task_id = task.name
 	
 	def on_submit(self):
 		if(self.status != "Closed"):
