@@ -49,7 +49,8 @@ class ChecklistRequisition(Document):
 		self.onload()
 
 	def get_tasks(self):
-		return frappe.get_all("Checklist Task", "*", {"project": self.name}, order_by="expected_start_date asc")	
+		# print frappe.db.sql("""select * from `tabChecklist Task` where project= %s and checklist_task <> "NULL" """,(self.name),as_dict=1)
+		return frappe.get_all("Checklist Task", "*", {"project": self.name,"checklist_task":''}, order_by="expected_start_date asc")	
 
 	def validate(self):
 		self.sync_tasks()
