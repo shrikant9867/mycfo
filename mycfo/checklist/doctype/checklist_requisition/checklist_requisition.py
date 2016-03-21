@@ -49,7 +49,8 @@ class ChecklistRequisition(Document):
 		self.onload()
 
 	def get_tasks(self):
-		return frappe.get_all("Checklist Task", "*", {"project": self.name}, order_by="expected_start_date asc")	
+		# print frappe.db.sql("""select * from `tabChecklist Task` where project= %s and checklist_task <> "NULL" """,(self.name),as_dict=1)
+		return frappe.get_all("Checklist Task", "*", {"project": self.name,"checklist_task":''}, order_by="expected_start_date asc")	
 
 	def validate(self):
 		self.sync_tasks()
@@ -150,23 +151,16 @@ class ChecklistRequisition(Document):
 		where h2.parent = h1.name and h1.name = 'Mycfo' and h2.holiday_date >= %s and  h2.holiday_date <= %s""",(nowdate(),due_date.strftime("%Y-%m-%d")))
 		return tot_hol[0][0]
 
-	# def get_status(self):
-	# 	if(self.cr_task):
-	# 		if(len(self.cr_task) == len(filter(lambda x: x.status=="Closed",self.cr_task))):
-	# 			Date = datetime.now()
-	# 			return {"status":"Closed","date":Date.date()}
-		# status_of_all = frappe.db.sql("""select status from `tabChecklist Task`t1 where t1.project = '{0}'""".format(self.name),as_list=1)
-		# chain = itertools.chain(*status_of_all)
-		# sot =  list(chain)
-		# sot.count("Closed")
-		# if(("Open" not in sot)and("WIP" not in sot)and("Awaiting Inputs" not in sot)and("Completed" not in sot)and("Hold" not in sot)and("Not Required" not in sot)and("Deferred" not in sot)):
-		# 	return "Closed"
-		# if(("Open" not in sot)and("Closed" not in sot)and("Awaiting Inputs" not in sot)and("Completed" not in sot)and("Hold" not in sot)and("Not Required" not in sot)and("Deferred" not in sot)):
-		# 	return "WIP"
-		# if(("Open" not in sot)and("WIP" not in sot)and("Awaiting Inputs" not in sot)and("Closed" not in sot)and("Hold" not in sot)and("Not Required" not in sot)and("Deferred" not in sot)):
-		# 	return "Completed"		
-		# else:
-		# 	return "Open"
+@frappe.whitelist()
+def reopen_task(task_id):
+	try:
+		checklist_task = frappe.get_doc("Checklist Task",task_id)
+		checklist_task.status="Open"
+		checklist_task.save()
+		frappe.msgprint("Checklist Task Reopend")
+		return "reopened"
+	except Exception, e:
+		frappe.msgprint(e)
 
 @frappe.whitelist()
 def filter_user(doctype, txt, searchfield, start, page_len, filters):
