@@ -30,19 +30,20 @@ class FFWW(Document):
 						contact.save()
 					else:
 						main_contact = frappe.get_doc('Contact',self.contact)
-						ch = main_contact.append('contacts', {})
-						ch.contact_type = d.contact_type
-						ch.country_name = d.country_name
-						ch.country_code = d.country_code
-						ch.mobile_no = d.mobile_no
-						ch.email_id = d.email_id
-						ch.landline = d.landline
-						ch.ffww = self.name
-						main_contact.save()
-						if ch.name:
-							ffww_contact = frappe.get_doc("FFWW Contact Details", d.name)
-							ffww_contact.contact_name = ch.name
-							ffww_contact.save()
+						if not filter(lambda co:co.email_id == d.email_id, main_contact.contacts):
+							ch = main_contact.append('contacts', {})
+							ch.contact_type = d.contact_type
+							ch.country_name = d.country_name
+							ch.country_code = d.country_code
+							ch.mobile_no = d.mobile_no
+							ch.email_id = d.email_id
+							ch.landline = d.landline
+							ch.ffww = self.name
+							main_contact.save()
+							if ch.name:
+								ffww_contact = frappe.get_doc("FFWW Contact Details", d.name)
+								ffww_contact.contact_name = ch.name
+								ffww_contact.save()
 
 					if d.name and d.ffww == 'New FFWW 1':
 						ffww_contact = frappe.get_doc("FFWW Contact Details", d.name)
@@ -74,7 +75,7 @@ class FFWW(Document):
 		email_list = []
 		if self.get('more_contact_details'):
 			for d in self.get('more_contact_details'):
-				if d.email_id not in email_list:
+				if d.email_id  not in email_list:
 					email_list.append(d.email_id)
 				else:
 					frappe.msgprint("Duplicate Email ID is not allowed",raise_exception=1)
