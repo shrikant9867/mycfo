@@ -1,6 +1,6 @@
 {
  "allow_copy": 0, 
- "allow_import": 0, 
+ "allow_import": 1, 
  "allow_rename": 0, 
  "autoname": "", 
  "creation": "2016-01-05 13:21:32.590039", 
@@ -312,7 +312,7 @@
  "is_submittable": 1, 
  "issingle": 0, 
  "istable": 0, 
- "modified": "2016-01-29 16:57:38.278786", 
+ "modified": "2016-03-18 18:33:34.202163", 
  "modified_by": "Administrator", 
  "module": "Checklist", 
  "name": "Checklist Requisition", 

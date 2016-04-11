@@ -246,6 +246,25 @@ frappe.ui.form.on("KPI", "validate", function(frm,cdt,cdn) {
 // });
 
 //before submit validate kpi status and customer accpet all % complition
+// frappe.ui.form.on("KPI Business Details", "client_kpi_acceptance", function(frm,cdt,cdn) {
+
+//     if(frm.doc.kpi_business_details){
+//     	var k_status = true;
+// 		for(i=0;i<frm.doc.kpi_business_details.length;i++){
+// 			if(frm.doc.kpi_business_details[i].client_kpi_acceptance=="Reject" || frm.doc.kpi_business_details[i].client_kpi_acceptance==""){
+// 				k_status = false;
+// 			}
+// 		 }
+// 		if(k_status){
+// 			cd_fields = ['task','due_date','priority','criticality','resouce_assigned','skill_matrix_120','client_kpi_acceptance','client_kpi_acceptance_comment']
+
+// 			$.each(cd_fields, function(index, value){
+// 				var df = frappe.meta.get_docfield("KPI Business Details",value, cur_frm.doc.name);
+// 				df.read_only = 1;
+// 			})
+// 		}
+//     }	
+// });
 frappe.ui.form.on("KPI", "before_submit", function(frm,cdt,cdn) {
 	var k_status = true;
 

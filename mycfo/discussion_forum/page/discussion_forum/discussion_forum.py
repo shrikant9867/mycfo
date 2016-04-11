@@ -102,8 +102,11 @@ def get_post(topic_name):
 	return topic
 
 @frappe.whitelist(allow_guest=True)
-def get_comments(topic_name,page_no=0,limit=3):
-	comment_list = get_comment_list("Discussion Topic",topic_name,page_no,limit)
+def get_comments(topic_name,page_no=0,is_sorted='false', limit=3):
+	if is_sorted=="true":
+		comment_list = get_sorted_comment_list("Discussion Topic",topic_name,page_no,limit)
+	else:
+		comment_list = get_comment_list("Discussion Topic",topic_name,page_no,limit)
 	total_records = get_comment_count(topic_name)
 	paginate = True if total_records > limit else False
 	total_pages = math.ceil(total_records/flt(limit))
@@ -115,13 +118,56 @@ def get_comments(topic_name,page_no=0,limit=3):
 			"average_rating":ratings.get("avg",0.0),
 			"ratings":ratings.get("ratings",0),
 			"user_rating":ratings.get("user_rating"),
-			"no_of_users":ratings.get("number_of_users")
+			"no_of_users":ratings.get("number_of_users"),
+			"get_attachments": get_attachments("Comment",comment['name']) 
 		})
+		print frappe.request.url
+	return comment_list,total_pages,page_no,paginate,is_sorted
+
+@frappe.whitelist(allow_guest=True)
+def get_attachments(dt, dn):
+	print "in atachment"	
+	return frappe.get_all("File", fields=["name", "file_name", "file_url"],
+		filters = {"attached_to_name": dn, "attached_to_doctype": dt})
+
+@frappe.whitelist(allow_guest=True)
+def sort_comments(topic_name,page_no=0,limit=3):
+	comment_list = get_sorted_comment_list("Discussion Topic",topic_name,page_no,limit)
+	total_records = get_comment_count(topic_name)
+	paginate = True if total_records > limit else False
+	total_pages = math.ceil(total_records/flt(limit))
+	page_no = int(page_no) + 1
+	for comment in comment_list:
+		ratings = get_rating_details(comment)
+		comment["creation"] = comment.creation.strftime('%d-%m-%Y,%I:%M %p')
+		comment.update({
+			"average_rating":ratings.get("avg",0.0),
+			"ratings":ratings.get("ratings",0),
+			"user_rating":ratings.get("user_rating"),
+			"no_of_users":ratings.get("number_of_users"),
+			"get_attachments": get_attachments("Comment",comment['name']) 
+		})
+	comment_list.sort(key=lambda x: x['average_rating'],reverse=True)
 	return comment_list,total_pages,page_no,paginate
 
 def get_comment_count(topic_name):
 	return frappe.get_list("Comment",fields=["count(*)"],
 		filters={"comment_type":"Comment","comment_docname":topic_name},as_list=1,ignore_permissions=1)[0][0] or 0
+
+
+def get_sorted_comment_list(doctype, name,page_no,limit):
+	if page_no:
+		offset = (cint(page_no) * cint(limit))
+	else:
+		offset = 0
+	return frappe.db.sql("""select
+		name,comment, comment_by_fullname, creation, comment_by, name as cname,
+		CASE WHEN 5!=6 then (select avg(ratings) from `tabTopic Ratings` where comment=cname)
+		ELSE " "
+		END AS ratings
+		from `tabComment` where comment_doctype=%s
+		and ifnull(comment_type, "Comment")="Comment"
+		and comment_docname=%s order by ratings desc limit %s offset %s""",(doctype,name,limit,offset), as_dict=1) or []
 
 def get_comment_list(doctype, name,page_no,limit):
 	if page_no:
@@ -157,11 +203,14 @@ def add_comment(comment,topic_name):
 		"comment_doctype":"Discussion Topic",
 		"comment_docname": topic_name,
 		"comment": comment,
-		"comment_type":"Comment",
+		"comment_type":"Comment"
 	}).insert(ignore_permissions=True)
 
 @frappe.whitelist(allow_guest=True)
 def add_rating(rating,comment,topic_name):
+	comment_doc = frappe.get_doc("Comment",comment)
+	if(comment_doc.comment_by==frappe.session.user):
+		frappe.throw("You can not rate your own comments")
 	import datetime
 	frappe.get_doc({
 		"doctype":"Topic Ratings",
@@ -258,10 +307,6 @@ def users_query(doctype, txt, searchfield, start, page_len, filters):
 @frappe.whitelist(allow_guest=True)
 def get_categories():
 	return frappe.get_list("Discussion Category", fields=["name","title"],ignore_permissions=1)
-
-
-
-
 
 
 
