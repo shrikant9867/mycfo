@@ -7,12 +7,12 @@
  "doctype": "Report", 
  "idx": 0, 
  "is_standard": "Yes", 
- "modified": "2016-04-11 10:33:15.280208", 
+ "modified": "2016-04-11 19:19:10.351600", 
  "modified_by": "Administrator", 
  "module": "mycfo", 
  "name": "Login Report", 
  "owner": "Administrator", 
- "ref_doctype": "Feed", 
+ "ref_doctype": "Login Log", 
  "report_name": "Login Report", 
  "report_type": "Script Report"
 }
