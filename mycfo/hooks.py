@@ -50,6 +50,10 @@ app_include_js = ["/assets/mycfo/js/jquery.rateyo.min.js","/assets/mycfo/js/jque
 
 # notification_config = "mycfo.notifications.get_notification_config"
 
+on_session_creation = "mycfo.mycfo_utils.make_login_log"
+on_logout = "mycfo.mycfo_utils.update_login_log"
+
+
 fixtures = ['Custom Field', 'Property Setter', "Role","Discussion Category"]
 # Permissions
 # -----------
