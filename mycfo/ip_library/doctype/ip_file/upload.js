@@ -74,7 +74,7 @@ upload = {
 		});
 	},
 	check_extension:function(filename){
-		return (/\.(gif|jpg|jpeg|tiff|png|svg|doc|docx|xlsx|xls|ppt|pptx|pdf|txt|csv)$/i).test(filename);
+		return (/\.(gif|jpg|jpeg|tiff|png|svg|doc|docx|xlsx|xls|ppt|pptx|pdf|txt|csv|zip)$/i).test(filename);
 	},
 	upload_file: function(fileobj, args, opts) {
 		if(!fileobj && !args.file_url) {
