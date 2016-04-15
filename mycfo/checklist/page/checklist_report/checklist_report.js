@@ -30,5 +30,5 @@ frappe.pages['checklist-report'].on_page_load = function(wrapper) {
 		}
 	}
 
-	// new report.graphicalReports(wrapper, page, opts)
+	new report.graphicalReports(wrapper, page, opts)
 }

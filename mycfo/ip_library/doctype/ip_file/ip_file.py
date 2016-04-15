@@ -126,7 +126,19 @@ class IPFile(Document):
 		ipa.save(ignore_permissions=True)
 		return ipa	
 
+	# def after_insert(self):
+	# 	self.submit_ip_approver_form_for_central_delivery_role()
 
+
+	# def submit_ip_approver_form_for_central_delivery_role(self):
+	# 	if "Central Delivery" in frappe.get_roles() and self.request_type == "New" and self.approver_link:
+	# 		ip_approver_form = frappe.get_doc("IP Approver", self.approver_link)
+	# 		ip_approver_form.central_delivery = frappe.session.user
+	# 		ip_approver_form.central_delivery_status = "Approved"
+	# 		ip_approver_form.approver_status = "Approved"
+	# 		ip_approver_form.submit()
+		
+		
 	def prepare_for_cd_notification(self):
 		template = "/templates/ip_library_templates/upgrade_validity_request_notification.html"
 		subject = "IP Document Upgrade Validity Notification"

@@ -35,4 +35,16 @@ def get_data():
 				},
 			]
 		},
+		{
+			"label": _("Standard Reports"),
+			"icon": "icon-star",
+			"items": [
+				{
+					"type": "report",
+					"name": "Discussion Forum Report",
+					"is_query_report": True,
+					"doctype": "Discussion Topic"
+				}
+			]
+		}
 	]
