@@ -16,9 +16,11 @@ frappe.ui.form.on("IP Approver", {
 			cd_fields = ["central_delivery_status", "central_delivery", "central_delivery_comments"]
 			
 		}else{
-			cd_fields = ["approver_status", "approver", "approver_comments"]
-			frm.doc.central_delivery = frappe.user.name
-			refresh_field(["central_delivery"])																																																																																																																																																																																																																																																															
+			cd_fields = ["approver_status", "approver_comments"]
+				if(frm.doc.docstatus != 1){
+					frm.doc.central_delivery = frappe.user.name
+					refresh_field(["central_delivery"])																																																																																																																																																																																																																																																															
+				}
 		}
 		make_read_only_fields(cd_fields)
 		check_for_validity_upgrade()

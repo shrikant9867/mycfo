@@ -53,7 +53,14 @@ def get_data():
 					"name": "Task Wise Analysis",
 					"description": _("Tasks Report"),
 					"doctype": "Checklist Task",
-				}
+				},
+				{
+					"type": "page",
+					"name": "checklist-report",
+					"icon": "icon-sitemap",
+					"label": _("Graphical Reports"),
+					"description": _("Graphical Report for Checklist"),
+				},
 			]
 		},	
 

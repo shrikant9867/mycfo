@@ -13,9 +13,11 @@ frappe.ui.form.on("IP File", {
 			frm.doc.request_type = "New"
 			frm.doc.file_approver = ""
 			refresh_field(["request_type", "file_approver"])
+			// make_fields_mandatory_for_cd_role()
 		}
 		else{
-			$.each(["document_type", "file_approver", "file_name", "customer"], function(index, value){
+			var fields = ["document_type", "file_approver", "file_name", "customer"]
+			$.each(fields, function(index, value){
 				cur_frm.set_df_property(value, "read_only", 1)
 			})
 		}
@@ -25,6 +27,7 @@ frappe.ui.form.on("IP File", {
 			init_for_validity_upgrade(frm)
 		}
 		prepare_for_edit_file(frm, cdt, cdn)
+
 			
 	}
 });
@@ -199,4 +202,14 @@ prepare_for_edit_file = function(frm, cdt, cdn){
 		cur_frm.add_custom_button(__('Upload File'), function(){ init_for_upload_file(frm, cdt, cdn) });	
 	}
 	
+}
+
+make_fields_mandatory_for_cd_role = function(){
+	if(in_list(user_roles, "Central Delivery")){
+		console.log("in if block")
+		var fields = ["security_level", "validity_end_date"];
+		$.each(fields, function(index, value){
+			cur_frm.set_df_property(value, "reqd", 1)
+		})
+	}
 }
