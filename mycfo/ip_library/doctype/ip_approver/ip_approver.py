@@ -156,7 +156,9 @@ class IPApprover(Document):
 			"file_path":file_path,
 			"file_status":file_status,
 			"uploaded_date":today(),
-			"published_flag":1
+			"published_flag":1,
+			"customer":self.customer,
+			"file_approver":self.approver
 
 		}
 		cond = ""
