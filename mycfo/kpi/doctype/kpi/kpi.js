@@ -305,19 +305,3 @@ frappe.ui.form.on("KPI", "before_submit", function(frm,cdt,cdn) {
 		 }
 	
 });
-
-
-
-// frappe.ui.form.on("KPI Business Details", "kpi_business_details_get_open_form", function(frm){
-// 	console.log(frm, "in on form rendered")
-// })
-
-// frappe.ui.form.on("KPI Business Details", "kpi_business_details_form_render", function(frm){
-// 	console.log(frm, "in formm rendere")
-// })
-
-
-// cur_frm.cscript.kpi_business_details_on_form_rendered = function(doc, cdt, cdn){
-// 	var row = locals["KPI Business Details"][cdn];
-// 	console.log("in form render",row)
-// }
