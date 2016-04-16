@@ -158,7 +158,8 @@ class IPApprover(Document):
 			"uploaded_date":today(),
 			"published_flag":1,
 			"customer":self.customer,
-			"file_approver":self.approver
+			"file_approver":self.approver,
+			"employee_name":self.employee_name
 
 		}
 		cond = ""
