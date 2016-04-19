@@ -305,3 +305,52 @@ frappe.ui.form.on("KPI", "before_submit", function(frm,cdt,cdn) {
 		 }
 	
 });
+
+//read only mycfo user fields on accept on kpi by customer
+cur_frm.cscript.kpi_business_details_on_form_rendered = function(doc, cdt, cdn){	
+	var row = cur_frm.cur_grid.get_open_form(); 
+	if (row.doc.client_kpi_acceptance == "Accept"){
+		console.log("in if")
+		toggle_read_only_property_of_fields(1,"kpi_business_details")
+	}else{
+		console.log("in else")
+		toggle_read_only_property_of_fields(0,"kpi_business_details")
+	}	
+}
+cur_frm.cscript.kpi_people_details_on_form_rendered = function(doc, cdt, cdn){	
+	var row = cur_frm.cur_grid.get_open_form(); 
+	if (row.doc.client_kpi_acceptance == "Accept"){
+		console.log("in if")
+		toggle_read_only_property_of_fields(1,"kpi_people_details")
+	}else{
+		console.log("in else")
+		toggle_read_only_property_of_fields(0,"kpi_people_details")
+	}	
+}
+cur_frm.cscript.kpi_finance_details_on_form_rendered = function(doc, cdt, cdn){	
+	var row = cur_frm.cur_grid.get_open_form(); 
+	if (row.doc.client_kpi_acceptance == "Accept"){
+		console.log("in if")
+		toggle_read_only_property_of_fields(1,"kpi_finance_details")
+	}else{
+		console.log("in else")
+		toggle_read_only_property_of_fields(0,"kpi_finance_details")
+	}	
+}
+cur_frm.cscript.kpi_process_details_on_form_rendered = function(doc, cdt, cdn){	
+	var row = cur_frm.cur_grid.get_open_form(); 
+	if (row.doc.client_kpi_acceptance == "Accept"){
+		console.log("in if")
+		toggle_read_only_property_of_fields(1,"kpi_process_details")
+	}else{
+		console.log("in else")
+		toggle_read_only_property_of_fields(0,"kpi_process_details")
+	}	
+}
+toggle_read_only_property_of_fields = function(property,table_name){
+	var field_index = [0,1,2,3];	
+	$.each(field_index, function(i, value){
+		cur_frm.get_field(table_name).grid.docfields[value].read_only = property;
+	})
+	refresh_field(table_name)	
+}
