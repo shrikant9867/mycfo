@@ -25,7 +25,7 @@ cur_frm.fields_dict["kpi_process_details"].grid.get_field("resouce_assigned").ge
 }
 
 
-cur_frm.add_fetch("skill_matrix_120", "skill_matrix_18", "skill_matrix_18")
+cur_frm.add_fetch("skill_matrix_120", "skill_matrix_18", "skill_matrix_18");
 
 
 //Validation kpi start date
@@ -211,22 +211,63 @@ frappe.ui.form.on("KPI", "validate", function(frm,cdt,cdn) {
 
 
     //accept all child client status on Accepting KPI Status.
-    if(frm.doc.kpi_status=="Accepted"){
-		for(i=0;i<frm.doc.kpi_business_details.length;i++){
-			frm.doc.kpi_business_details[i].client_status = "Accept";
-		 };
-		 for(i=0;i<frm.doc.kpi_finance_details.length;i++){
-			frm.doc.kpi_finance_details[i].client_status = "Accept";
-		 };
-		 for(i=0;i<frm.doc.kpi_people_details.length;i++){
-			frm.doc.kpi_people_details[i].client_status = "Accept";
-		 };
-		 for(i=0;i<frm.doc.kpi_process_details.length;i++){
-			frm.doc.kpi_process_details[i].client_status = "Accept";
-		 };
-    }
+  //   if(frm.doc.kpi_status=="Accepted"){
+		// for(i=0;i<frm.doc.kpi_business_details.length;i++){
+		// 	frm.doc.kpi_business_details[i].client_status = "Accept";
+		//  };
+		//  for(i=0;i<frm.doc.kpi_finance_details.length;i++){
+		// 	frm.doc.kpi_finance_details[i].client_status = "Accept";
+		//  };
+		//  for(i=0;i<frm.doc.kpi_people_details.length;i++){
+		// 	frm.doc.kpi_people_details[i].client_status = "Accept";
+		//  };
+		//  for(i=0;i<frm.doc.kpi_process_details.length;i++){
+		// 	frm.doc.kpi_process_details[i].client_status = "Accept";
+		//  };
+  //   }
 
 });
+
+// on save event, if customer accept all % complition, then kpi status will be closed
+frappe.ui.form.on("KPI", "validate", function(frm,cdt,cdn) {
+	var k_accpt_status = true;
+	if(frm.doc.kpi_business_details){
+		for(i=0;i<frm.doc.kpi_business_details.length;i++){
+			if(frm.doc.kpi_business_details[i].client_kpi_acceptance=="Reject" || frm.doc.kpi_business_details[i].client_kpi_acceptance==""){
+				k_accpt_status = false;
+			}
+		 }
+	}
+	if(frm.doc.kpi_people_details){
+		for(i=0;i<frm.doc.kpi_people_details.length;i++){
+			if(frm.doc.kpi_people_details[i].client_kpi_acceptance=="Reject" || frm.doc.kpi_people_details[i].client_kpi_acceptance==""){
+				k_accpt_status = false;
+			}
+		 }
+	}
+	if(frm.doc.kpi_finance_details){
+		for(i=0;i<frm.doc.kpi_finance_details.length;i++){
+			if(frm.doc.kpi_finance_details[i].client_kpi_acceptance=="Reject" || frm.doc.kpi_finance_details[i].client_kpi_acceptance==""){
+				k_accpt_status = false;
+			}
+		 }
+	}
+	if(frm.doc.kpi_process_details){
+		for(i=0;i<frm.doc.kpi_process_details.length;i++){
+			if(frm.doc.kpi_process_details[i].client_kpi_acceptance=="Reject" || frm.doc.kpi_process_details[i].client_kpi_acceptance==""){
+				k_accpt_status = false;
+			}
+		 }
+	}
+	if(k_accpt_status){
+		frm.doc.kpi_status="Accepted";
+	}
+	else{
+		frm.doc.kpi_status="Open";
+	}
+
+});
+
 
 //on save event, if customer accept all % complition, then kpi status will be closed
 // frappe.ui.form.on("KPI", "validate", function(frm,cdt,cdn) {
@@ -282,6 +323,22 @@ frappe.ui.form.on("KPI", "validate", function(frm,cdt,cdn) {
 // 		}
 //     }	
 // });
+frappe.ui.form.on("KPI", "onload", function(frm,cdt,cdn) {
+	if(frm.doc.kpi_status=="Accepted"){
+		cur_frm.set_df_property("kpi_status", "read_only", 1);
+	}
+	else{
+		cur_frm.set_df_property("kpi_status", "read_only", 0);
+	}
+});
+frappe.ui.form.on("KPI", "refresh", function(frm,cdt,cdn) {
+	if(frm.doc.kpi_status=="Accepted"){
+		cur_frm.set_df_property("kpi_status", "read_only", 1);
+	}
+	else{
+		cur_frm.set_df_property("kpi_status", "read_only", 0);
+	}
+});
 frappe.ui.form.on("KPI", "before_submit", function(frm,cdt,cdn) {
 	var k_status = true;
 
