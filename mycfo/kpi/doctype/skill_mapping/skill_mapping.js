@@ -28,6 +28,11 @@ frappe.require("assets/frappe/js/lib/slickgrid/plugins/slick.rowselectionmodel.j
 cur_frm.add_fetch('employee', 'employee_name', 'employee_name');
 cur_frm.add_fetch("employee", "user_id", "user_id");
 
+//
+frappe.ui.form.on("Skill Mapping", "refresh", function(frm,cdt,cdn) {
+    cur_frm.set_value("total_experience",frm.doc.previous_employer_experience+frm.doc.mycfo_experience);
+});
+
 //Validation Skill Mapping start date
 cur_frm.cscript.start_date = function(doc,cdt,cdn){
   if(doc.start_date && doc.end_date){
