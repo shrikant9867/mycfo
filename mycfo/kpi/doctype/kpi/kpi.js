@@ -209,6 +209,23 @@ frappe.ui.form.on("KPI", "validate", function(frm,cdt,cdn) {
 		 }
     }
 
+
+    //accept all child client status on Accepting KPI Status.
+    if(frm.doc.kpi_status=="Accepted"){
+		for(i=0;i<frm.doc.kpi_business_details.length;i++){
+			frm.doc.kpi_business_details[i].client_status = "Accept";
+		 };
+		 for(i=0;i<frm.doc.kpi_finance_details.length;i++){
+			frm.doc.kpi_finance_details[i].client_status = "Accept";
+		 };
+		 for(i=0;i<frm.doc.kpi_people_details.length;i++){
+			frm.doc.kpi_people_details[i].client_status = "Accept";
+		 };
+		 for(i=0;i<frm.doc.kpi_process_details.length;i++){
+			frm.doc.kpi_process_details[i].client_status = "Accept";
+		 };
+    }
+
 });
 
 //on save event, if customer accept all % complition, then kpi status will be closed
@@ -300,8 +317,8 @@ frappe.ui.form.on("KPI", "before_submit", function(frm,cdt,cdn) {
 		 if(!k_status){
 		 	frappe.throw("Customer should accept all Actual Completion (%) befor KPI Submision");
 		 }
-		 if(frm.doc.kpi_status!="Closed"){
-		 	frappe.throw("KPI Status should be closed befor KPI Submision");
+		 if(frm.doc.kpi_status=="Open" || frm.doc.kpi_status==""){
+		 	frappe.throw("KPI Status should be Closed/Accepted befor KPI Submision");
 		 }
 	
 });
