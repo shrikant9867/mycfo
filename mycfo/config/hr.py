@@ -13,10 +13,11 @@ def get_data():
 					"description": _("Skill Mapping Details"),
 				},
 				{
-					"type": "page",
-					"name": "resourcepool",
-					"label": _("Resource Pool "),
-					"description": _("Resource Pool Details"),
+					"type": "report",
+					"is_query_report": True,
+					"name": "Resource Pool",
+					"description": _("Resource Pool"),
+					"doctype": "Skill Mapping",
 				},
 			]
 		},
