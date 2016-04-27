@@ -1,6 +1,19 @@
 [
  {
   "default_value": null, 
+  "doc_type": "Comment", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocType", 
+  "field_name": null, 
+  "modified": "2016-03-11 19:15:41.316658", 
+  "name": "Comment-read_only_onload", 
+  "property": "read_only_onload", 
+  "property_type": "Check", 
+  "value": null
+ }, 
+ {
+  "default_value": null, 
   "doc_type": "IP Approver", 
   "docstatus": 0, 
   "doctype": "Property Setter", 
@@ -1766,5 +1779,31 @@
   "property": "previous_field", 
   "property_type": "Data", 
   "value": "p_details"
+ }, 
+ {
+  "default_value": null, 
+  "doc_type": "KPI", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocType", 
+  "field_name": null, 
+  "modified": "2016-04-25 11:39:06.560336", 
+  "name": "KPI-read_only_onload", 
+  "property": "read_only_onload", 
+  "property_type": "Check", 
+  "value": null
+ }, 
+ {
+  "default_value": null, 
+  "doc_type": "KPI", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocField", 
+  "field_name": "kpi_status", 
+  "modified": "2016-04-25 11:39:06.688844", 
+  "name": "KPI-kpi_status-options", 
+  "property": "options", 
+  "property_type": "Text", 
+  "value": "Open\nClosed\nAccepted"
  }
 ]

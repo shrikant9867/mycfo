@@ -25,7 +25,7 @@ cur_frm.fields_dict["kpi_process_details"].grid.get_field("resouce_assigned").ge
 }
 
 
-cur_frm.add_fetch("skill_matrix_120", "skill_matrix_18", "skill_matrix_18")
+cur_frm.add_fetch("skill_matrix_120", "skill_matrix_18", "skill_matrix_18");
 
 
 //Validation kpi start date
@@ -209,7 +209,65 @@ frappe.ui.form.on("KPI", "validate", function(frm,cdt,cdn) {
 		 }
     }
 
+
+    //accept all child client status on Accepting KPI Status.
+  //   if(frm.doc.kpi_status=="Accepted"){
+		// for(i=0;i<frm.doc.kpi_business_details.length;i++){
+		// 	frm.doc.kpi_business_details[i].client_status = "Accept";
+		//  };
+		//  for(i=0;i<frm.doc.kpi_finance_details.length;i++){
+		// 	frm.doc.kpi_finance_details[i].client_status = "Accept";
+		//  };
+		//  for(i=0;i<frm.doc.kpi_people_details.length;i++){
+		// 	frm.doc.kpi_people_details[i].client_status = "Accept";
+		//  };
+		//  for(i=0;i<frm.doc.kpi_process_details.length;i++){
+		// 	frm.doc.kpi_process_details[i].client_status = "Accept";
+		//  };
+  //   }
+
 });
+
+// on save event, if customer accept all % complition, then kpi status will be closed
+frappe.ui.form.on("KPI", "validate", function(frm,cdt,cdn) {
+	var k_accpt_status = true;
+	if(frm.doc.kpi_business_details){
+		for(i=0;i<frm.doc.kpi_business_details.length;i++){
+			if(frm.doc.kpi_business_details[i].client_kpi_acceptance=="Reject" || frm.doc.kpi_business_details[i].client_kpi_acceptance==""){
+				k_accpt_status = false;
+			}
+		 }
+	}
+	if(frm.doc.kpi_people_details){
+		for(i=0;i<frm.doc.kpi_people_details.length;i++){
+			if(frm.doc.kpi_people_details[i].client_kpi_acceptance=="Reject" || frm.doc.kpi_people_details[i].client_kpi_acceptance==""){
+				k_accpt_status = false;
+			}
+		 }
+	}
+	if(frm.doc.kpi_finance_details){
+		for(i=0;i<frm.doc.kpi_finance_details.length;i++){
+			if(frm.doc.kpi_finance_details[i].client_kpi_acceptance=="Reject" || frm.doc.kpi_finance_details[i].client_kpi_acceptance==""){
+				k_accpt_status = false;
+			}
+		 }
+	}
+	if(frm.doc.kpi_process_details){
+		for(i=0;i<frm.doc.kpi_process_details.length;i++){
+			if(frm.doc.kpi_process_details[i].client_kpi_acceptance=="Reject" || frm.doc.kpi_process_details[i].client_kpi_acceptance==""){
+				k_accpt_status = false;
+			}
+		 }
+	}
+	if(k_accpt_status){
+		frm.doc.kpi_status="Accepted";
+	}
+	else{
+		frm.doc.kpi_status="Open";
+	}
+
+});
+
 
 //on save event, if customer accept all % complition, then kpi status will be closed
 // frappe.ui.form.on("KPI", "validate", function(frm,cdt,cdn) {
@@ -265,6 +323,22 @@ frappe.ui.form.on("KPI", "validate", function(frm,cdt,cdn) {
 // 		}
 //     }	
 // });
+frappe.ui.form.on("KPI", "onload", function(frm,cdt,cdn) {
+	if(frm.doc.kpi_status=="Accepted"){
+		cur_frm.set_df_property("kpi_status", "read_only", 1);
+	}
+	else{
+		cur_frm.set_df_property("kpi_status", "read_only", 0);
+	}
+});
+frappe.ui.form.on("KPI", "refresh", function(frm,cdt,cdn) {
+	if(frm.doc.kpi_status=="Accepted"){
+		cur_frm.set_df_property("kpi_status", "read_only", 1);
+	}
+	else{
+		cur_frm.set_df_property("kpi_status", "read_only", 0);
+	}
+});
 frappe.ui.form.on("KPI", "before_submit", function(frm,cdt,cdn) {
 	var k_status = true;
 
@@ -300,8 +374,57 @@ frappe.ui.form.on("KPI", "before_submit", function(frm,cdt,cdn) {
 		 if(!k_status){
 		 	frappe.throw("Customer should accept all Actual Completion (%) befor KPI Submision");
 		 }
-		 if(frm.doc.kpi_status!="Closed"){
-		 	frappe.throw("KPI Status should be closed befor KPI Submision");
+		 if(frm.doc.kpi_status=="Open" || frm.doc.kpi_status==""){
+		 	frappe.throw("KPI Status should be Closed/Accepted befor KPI Submision");
 		 }
 	
 });
+
+//read only mycfo user fields on accept on kpi by customer
+cur_frm.cscript.kpi_business_details_on_form_rendered = function(doc, cdt, cdn){	
+	var row = cur_frm.cur_grid.get_open_form(); 
+	if (row.doc.client_kpi_acceptance == "Accept"){
+		console.log("in if")
+		toggle_read_only_property_of_fields(1,"kpi_business_details")
+	}else{
+		console.log("in else")
+		toggle_read_only_property_of_fields(0,"kpi_business_details")
+	}	
+}
+cur_frm.cscript.kpi_people_details_on_form_rendered = function(doc, cdt, cdn){	
+	var row = cur_frm.cur_grid.get_open_form(); 
+	if (row.doc.client_kpi_acceptance == "Accept"){
+		console.log("in if")
+		toggle_read_only_property_of_fields(1,"kpi_people_details")
+	}else{
+		console.log("in else")
+		toggle_read_only_property_of_fields(0,"kpi_people_details")
+	}	
+}
+cur_frm.cscript.kpi_finance_details_on_form_rendered = function(doc, cdt, cdn){	
+	var row = cur_frm.cur_grid.get_open_form(); 
+	if (row.doc.client_kpi_acceptance == "Accept"){
+		console.log("in if")
+		toggle_read_only_property_of_fields(1,"kpi_finance_details")
+	}else{
+		console.log("in else")
+		toggle_read_only_property_of_fields(0,"kpi_finance_details")
+	}	
+}
+cur_frm.cscript.kpi_process_details_on_form_rendered = function(doc, cdt, cdn){	
+	var row = cur_frm.cur_grid.get_open_form(); 
+	if (row.doc.client_kpi_acceptance == "Accept"){
+		console.log("in if")
+		toggle_read_only_property_of_fields(1,"kpi_process_details")
+	}else{
+		console.log("in else")
+		toggle_read_only_property_of_fields(0,"kpi_process_details")
+	}	
+}
+toggle_read_only_property_of_fields = function(property,table_name){
+	var field_index = [0,1,2,3];	
+	$.each(field_index, function(i, value){
+		cur_frm.get_field(table_name).grid.docfields[value].read_only = property;
+	})
+	refresh_field(table_name)	
+}
