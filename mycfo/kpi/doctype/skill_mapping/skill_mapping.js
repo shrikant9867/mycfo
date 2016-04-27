@@ -26,37 +26,81 @@ frappe.require("assets/frappe/js/lib/slickgrid/plugins/slick.rowselectionmodel.j
 
 
 cur_frm.add_fetch('employee', 'employee_name', 'employee_name');
+cur_frm.add_fetch('sub_industry', 'industry', 'industry');
 cur_frm.add_fetch("employee", "user_id", "user_id");
 
-//
-frappe.ui.form.on("Skill Mapping", "refresh", function(frm,cdt,cdn) {
-    cur_frm.set_value("total_experience",frm.doc.previous_employer_experience+frm.doc.mycfo_experience);
+//calculate year of year_of_experience in all three tables
+frappe.ui.form.on("Previouse Employer Details", "from", function(frm,cdt,cdn) {
+  var d = locals[cdt][cdn];
+  console.log(d.from)
+  var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
+  frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
+});
+frappe.ui.form.on("Previouse Employer Details", "to", function(frm,cdt,cdn) {
+  var d = locals[cdt][cdn];
+  console.log(d.from)
+  var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
+  frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
 });
 
-//Validation Skill Mapping start date
-cur_frm.cscript.start_date = function(doc,cdt,cdn){
-  if(doc.start_date && doc.end_date){
-    var start_date = new Date(doc.start_date);
-    var end_date = new Date(doc.end_date);
-    if(start_date>end_date)
-      msgprint("End Date must be greater than Start Date")
-  }
-}
+frappe.ui.form.on("Previous Employer Project Details", "from", function(frm,cdt,cdn) {
+  var d = locals[cdt][cdn];
+  console.log(d.from)
+  var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
+  frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
+});
+frappe.ui.form.on("Previous Employer Project Details", "to", function(frm,cdt,cdn) {
+  var d = locals[cdt][cdn];
+  console.log(d.from)
+  var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
+  frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
+});
 
-//validation Skill Mapping end date
-cur_frm.cscript.end_date = function(doc,cdt,cdn){
-  if(doc.start_date && doc.end_date){
-    var start_date = new Date(doc.start_date);
-    var end_date = new Date(doc.end_date);
-    if(start_date>end_date)
-      msgprint("End Date must be greater than Start Date")
-  }
-}
-//calculate experience in month
+frappe.ui.form.on("MyCFO Projects Experience", "from", function(frm,cdt,cdn) {
+  var d = locals[cdt][cdn];
+  console.log(d.from)
+  var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
+  frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
+});
+frappe.ui.form.on("MyCFO Projects Experience", "to", function(frm,cdt,cdn) {
+  var d = locals[cdt][cdn];
+  console.log(d.from)
+  var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
+  frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
+});
+
 frappe.ui.form.on("Skill Mapping", "validate", function(frm) {
-var a = (Date.parse(frm.doc.end_date)-Date.parse(frm.doc.start_date))/(1000 * 3600 * 24*30);;
-frm.doc.total_experience=Math.floor(a); 
+      if(frm.doc.previous_employer_details){
+        previous_exp = [];
+        for(i=0;i<frm.doc.previous_employer_details.length;i++){
+          console.log(i);
+            previous_exp.push(parseFloat(frm.doc.previous_employer_details[i].year_of_experience));
+         }
+         console.log(previous_exp);
+         var sum = previous_exp.reduce((a, b) => a + b, 0); 
+        cur_frm.set_value("previous_employer_experience", sum);
+      }
+
+      if(frm.doc.mycfo_projects_experience){
+        mycfo_exp = [];
+        for(i=0;i<frm.doc.mycfo_projects_experience.length;i++){
+          console.log(i);
+            mycfo_exp.push(parseFloat(frm.doc.mycfo_projects_experience[i].year_of_experience));
+         }
+         console.log(mycfo_exp);
+         var sum2 = mycfo_exp.reduce((a, b) => a + b, 0); 
+        cur_frm.set_value("mycfo_experience", sum2);
+      }
+
+      cur_frm.set_value("total_experience",frm.doc.previous_employer_experience+frm.doc.mycfo_experience);
 });
+
+
+//
+// frappe.ui.form.on("Skill Mapping", "refresh", function(frm,cdt,cdn) {
+// });
+
+
 
 frappe.ui.form.on("Skill Mapping", "onload", function(frm,doctype,name) {
 
@@ -105,7 +149,7 @@ frappe.ui.form.on("Skill Mapping", {
 {id: "sel", name: "#", field: "num", cssClass: "cell-selection", width: 40, resizable: false, selectable: false, focusable: false },
         {id: "industry", name: "Skills", field: "industry", width: 330, cssClass: "cell-title", validator: requiredFieldValidator},
         {id: "none_field", name: "None \(0\)", field: "none_field",width: 100,editor: Slick.Editors.Text, validator: requiredNoneFieldValidator},
-        {id: "beginner", name: "Beginner \(1-4\)", field: "beginner",width: 100,editor: Slick.Editors.Text, validator: requiredBeginnerFieldValidator  },
+        {id: "beginner", name: "Beginner \(1-4\)", field: "beginner",width: 100, editor: Slick.Editors.Checkbox, validator: requiredBeginnerFieldValidator  },
         {id: "imtermediatory", name: "Imtermediatory \(5-7\)", field: "imtermediatory",width: 140, minWidth: 60, editor: Slick.Editors.Text, validator: requiredImtermediatoryFieldValidator},
         {id: "expert", name: "Expert \(8-10\)", field: "expert", minWidth: 60, width: 120,editor: Slick.Editors.Text, validator: requiredExpertFieldValidator}
         // {id: "master_industry", name: "Skill 18", field: "master_industry", width: 180, cssClass: "cell-title", validator: requiredFieldValidator}
@@ -119,6 +163,9 @@ frappe.ui.form.on("Skill Mapping", {
           return {valid: false, msg: msgprint("This is a required field") };
         }
       }
+      // function formatter(cellValue, option) {
+      //     return '<input type="radio" name="radio_/>';
+      // }
       function requiredNoneFieldValidator(value) {
         if (value==0) {
           return {valid: true, msg: null};
