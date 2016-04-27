@@ -129,7 +129,12 @@ DMS = Class.extend({
 					}
 
 				},	
-			]
+			],
+			onrender: function(node) {
+				if (node.data && node.data.count !== undefined) {
+					$('<strong><span class="balance-area pull-right text-muted small">'+ node.data.count +'</span></strong>').insertBefore(node.$ul);
+				}
+			}
 
 		});
 	}, 
