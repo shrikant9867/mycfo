@@ -26,6 +26,9 @@ class SkillMapping(Document):
 		self.save()
 		frappe.msgprint("Skill Mapping Details Saved")
 
+	def validate(self):
+		pass
+
 @frappe.whitelist()
 def get_sample_data():
 	return {
