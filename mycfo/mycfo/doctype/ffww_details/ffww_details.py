@@ -102,7 +102,6 @@ def get_children():
 	docn = {}
 
 
-
 	if args.get('parent') == 'Category':
 		single_types = frappe.db.sql("""Select distinct name from `tabCategory` where is_child=0""",as_dict=1)
 		[response.append({"value":d["name"],"expandable":1,"type":"Parent"}) for d in single_types]
@@ -117,9 +116,30 @@ def get_children():
 		[doctypes.append(d["name"]) for d in child_name]
 
 
+
 	elif args.get('parent') in doctypes:
 		doctypes_list = frappe.db.sql("""select distinct contact from `tabFFWW` where customer = '%s' and name in (select parent from `tabFFWW Designation` where designation='%s')"""%(args['customer'],args.get('parent')),as_dict=1)	
 		[response.append({"value":d["contact"],"expandable":0,"type":"contact"}) for d in doctypes_list]
-	
 
+	calculate_count_against_category(response, args)	
 	return response
+
+
+def calculate_count_against_category(response, args):
+	for record in response:
+		if record.get("expandable"):
+			mapper = {"Parent":calculate_contact_against_parent, "child":calculate_contact_against_child}
+			result = mapper[record.get("type")](record, args)
+			record["count"] = result[0].get("contact_count", 0) if result else 0
+
+def calculate_contact_against_parent(record, args):
+	return frappe.db.sql("""select count(distinct contact) as contact_count from `tabFFWW` where customer = '%s' and name in 
+						(select parent from `tabFFWW Designation` where designation in 
+							( (select name from `tabCategory` where is_child=1 and parent_category='%s') , '%s') 
+					)""" %(args['customer'], record.get('value'), record.get('value')),as_dict=1)	
+
+
+def calculate_contact_against_child(record, args):
+	return frappe.db.sql("""select count(distinct contact) as contact_count from `tabFFWW` where customer = '%s' and 
+						name in (select parent from `tabFFWW Designation` where designation='%s')"""
+						%(args['customer'], record.get('value')),as_dict=1)	
