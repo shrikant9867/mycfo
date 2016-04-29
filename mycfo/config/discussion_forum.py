@@ -30,8 +30,8 @@ def get_data():
 			"items": [
 				{
 					"type": "doctype",
-					"name": "Category",
-					"description": _("Document Type"),
+					"name": "Discussion Category",
+					"description": _("Discussion Category Type"),
 				},
 			]
 		},
