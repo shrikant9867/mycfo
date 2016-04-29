@@ -9,12 +9,14 @@ from frappe.utils import flt
 def execute(filters=None):
 	columns, data = [], []
 	columns = get_colums()
-	data = get_data()
+	data = get_data(filters)
 	return columns, data
 
-def get_data():
+def get_data(filters):
 	if 1==1:
-		result = frappe.db.sql("""select 
+		print filters.get("status")
+		print "in active"
+		result = frappe.db.sql("""select * from (select 
 			CASE WHEN skill !='' then (select employee_name from `tabSkill Mapping` where name=`tabSkill Mapping Details`.parent)\
 			    else null\
 			END AS emp,\
@@ -26,10 +28,94 @@ def get_data():
 			none_field as "None::130",
 			beginner as "Beginner::130",
 			imtermediatory as "Intermediatory::130",
-			expert as "Expert::130"
-	    from `tabSkill Mapping Details` where skill is not null 
-	    order by sub_skill""",as_list=1,debug=1)
+			expert as "Expert::130",
+			CASE WHEN skill !='' then (select employee from `tabSkill Mapping` where name=`tabSkill Mapping Details`.parent)\
+			    else null\
+			END AS emp_s,\
+			CASE WHEN skill !='' then (select status from `tabEmployee` where name=emp_s)\
+			    else null\
+			END AS emp_status
+		from `tabSkill Mapping Details` where skill is not null
+		order by sub_skill) as innerTable""",as_list=1,debug=1)
+	
+		# result.append([])
+		# result.append(["Total Item",str(total_item[0][0])])
+		final_result_active = []
+		final_result_left = []
 
+		for i in result:
+			if i[9] == "Active":
+				final_result_active.append(i)
+			if i[9] == "Left":
+				final_result_left.append(i)
+				print i[8]
+
+		if filters.get("status") == "Active":
+			return final_result_active
+		elif filters.get("status") == "Left":
+			return final_result_left
+		print "final result"
+		# return final_result
+	else:
+		final_result = []
+		return final_result	
+
+def get_total_item():
+	return "11"
+
+def  get_colums():
+	columns = ["Employee::120"]+["Industry::150"]+["Skill Matrix 18::165"]+ ["Skill Matrix 120::265"] +["None::130"]\
+		+["Beginner::130"]+ ["Intermediatory::130"] +["Expert::130"] + ["Employee ID::130"] + ["Employee Status::130"] 
+	return columns
+
+
+
+# elif filters.get("status") == "Left":
+	# 	print filters.get("status")
+	# 	print "in left"
+	# 	result = frappe.db.sql("""select * from (select 
+	# 		CASE WHEN skill !='' then (select employee_name from `tabSkill Mapping` where name=`tabSkill Mapping Details`.parent)
+	# 		else "" END AS emp,
+	# 		CASE WHEN skill !='' then (select industry from `tabSkill Mapping` where name=`tabSkill Mapping Details`.parent)
+	# 		else "" 
+	# 		END AS ind,
+	# 		skill as "Skill Matrix 18::140",
+	# 		sub_skill as "Skill Matrix 120::150",
+	# 		none_field as "None::130",
+	# 		beginner as "Beginner::130",
+	# 		imtermediatory as "Intermediatory::130",
+	# 		expert as "Expert::130",
+	# 		CASE WHEN skill !='' then (select employee from `tabSkill Mapping` where name=`tabSkill Mapping Details`.parent)
+	# 		else "null"
+	# 		END AS emp_s,
+	# 		CASE WHEN skill !='' then (select status from `tabEmployee` where name=emp_s)
+	# 		else "null"
+	# 		END AS emp_status
+	# 	from `tabSkill Mapping Details` where skill is not null
+	# 	order by sub_skill) as innerTable where emp_status = 'Left'""",as_list=1,debug=1)
+	
+	# if filters.get("status") == "Left":
+	# 	result = frappe.db.sql("""select * from (select 
+	# 		CASE WHEN skill !='' then (select employee_name from `tabSkill Mapping` where name=`tabSkill Mapping Details`.parent)\
+	# 		    else null\
+	# 		END AS emp,\
+	# 		CASE WHEN skill !='' then (select industry from `tabSkill Mapping` where name=`tabSkill Mapping Details`.parent)\
+	# 		    else null\
+	# 		END AS ind,\
+	# 		skill as "Skill Matrix 18::140",
+	# 		sub_skill as "Skill Matrix 120::150",
+	# 		none_field as "None::130",
+	# 		beginner as "Beginner::130",
+	# 		imtermediatory as "Intermediatory::130",
+	# 		expert as "Expert::130",
+	# 		CASE WHEN skill !='' then (select employee from `tabSkill Mapping` where name=`tabSkill Mapping Details`.parent)\
+	# 		    else null\
+	# 		END AS emp_s,\
+	# 		CASE WHEN skill !='' then (select status from `tabEmployee` where name=emp_s)\
+	# 		    else null\
+	# 		END AS emp_status
+	#     from `tabSkill Mapping Details` where skill is not null
+	#     order by sub_skill) as innerTable where emp_status = 'Left'""",as_list=1,debug=1)
 		# result = frappe.db.sql("""select 
 		#     item_code "Item:Link/Item:150",
 		#     inventory_maintained_by as "Inventory Maintained By::100",
@@ -44,20 +130,6 @@ def get_data():
 		# 	from
 		#  `tabItem`b LEFT JOIN `tabItem Master Rate`c ON c.parent=b.name
 		# order by item_code""",as_list=1,debug=1)
-
-		total_item = frappe.db.sql("""select count(name) from tabItem where ISNULL(variant_of)""",as_list=1,debug=1)
-
-		abc = total_item[0][0]
-		# result.append([])
-		# result.append(["Total Item",str(total_item[0][0])])
-		return result
-	else:
-		result = []
-		return result	
-
-def get_total_item():
-	return "11"
-
 # def get_conditions(filters):
 # 	cond = ''
 # 	if filters.get('checklist_requisition') and filters.get('status') and filters.get('user'):
@@ -81,11 +153,3 @@ def get_total_item():
 # 	elif filters.get('status'):
 # 		cond = "where status='{0}'".format(filters.get("status"))	
 # 	return cond
-
-def  get_colums():
-	columns = ["Employee::120"]+["Industry::150"]+["Skill Matrix 18::165"]+ ["Skill Matrix 120::265"] +["None::130"]\
-		+["Beginner::130"]+ ["Intermediatory::130"] +["Expert::130"]
-	return columns
-
-
-

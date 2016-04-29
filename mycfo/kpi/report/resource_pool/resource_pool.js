@@ -3,6 +3,15 @@
 
 frappe.query_reports["Resource Pool"] = {
 	"filters": [
+		{
+			"fieldname":"status",
+			"label": __("Employess Status"),
+			"Placeholder":"Employess Status",
+			"fieldtype": "Select",
+			"options":"\nActive\nLeft",
+			"default": "Active",
+			"width": "60px"
+		},
 
 	]
 }
