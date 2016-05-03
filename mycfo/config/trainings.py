@@ -49,6 +49,19 @@ def get_data():
 					"description": _("Search or Assign trainings from here")
 				}
 			]
+		},
+		{
+			"label": _("Standard Reports"),
+			"icon": "icon-star",
+			"items": [
+				{
+					"type": "page",
+					"name": "training-report",
+					"icon": "icon-sitemap",
+					"label": _("Graphical Reports"),
+					"description": _("Graphical Report for Trainings"),
+				}
+			]
 		}	
 
 	]

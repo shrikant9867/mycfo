@@ -113,6 +113,7 @@ frappe.ui.form.on("Skill Mapping", "onload", function(frm,doctype,name) {
     </td>\
   </tr>\
 </table>" );
+   
 
 });
 
@@ -148,10 +149,10 @@ frappe.ui.form.on("Skill Mapping", {
               columns.push(
 {id: "sel", name: "#", field: "num", cssClass: "cell-selection", width: 40, resizable: false, selectable: false, focusable: false },
         {id: "industry", name: "Skills", field: "industry", width: 330, cssClass: "cell-title", validator: requiredFieldValidator},
-        {id: "none_field", name: "None \(0\)", field: "none_field",width: 100,editor: Slick.Editors.Text, validator: requiredNoneFieldValidator},
-        {id: "beginner", name: "Beginner \(1-4\)", field: "beginner",width: 100, editor: Slick.Editors.Checkbox, validator: requiredBeginnerFieldValidator  },
-        {id: "imtermediatory", name: "Imtermediatory \(5-7\)", field: "imtermediatory",width: 140, minWidth: 60, editor: Slick.Editors.Text, validator: requiredImtermediatoryFieldValidator},
-        {id: "expert", name: "Expert \(8-10\)", field: "expert", minWidth: 60, width: 120,editor: Slick.Editors.Text, validator: requiredExpertFieldValidator}
+        {id: "none_field", name: "None", field: "none_field",width: 100,editor: Slick.Editors.Checkbox, validator: requiredNoneFieldValidator, formatter:init_checkbox_formatter},
+        {id: "beginner", name: "Beginner", field: "beginner",width: 100, editor: Slick.Editors.Checkbox, validator: requiredBeginnerFieldValidator, formatter:init_checkbox_formatter},
+        {id: "imtermediatory", name: "Imtermediatory", field: "imtermediatory",width: 140, minWidth: 60, editor: Slick.Editors.Checkbox, validator: requiredImtermediatoryFieldValidator, formatter:init_checkbox_formatter},
+        {id: "expert", name: "Expert", field: "expert", minWidth: 60, width: 120,editor: Slick.Editors.Checkbox, validator: requiredExpertFieldValidator, formatter:init_checkbox_formatter}
         // {id: "master_industry", name: "Skill 18", field: "master_industry", width: 180, cssClass: "cell-title", validator: requiredFieldValidator}
              );
 
@@ -193,6 +194,10 @@ frappe.ui.form.on("Skill Mapping", {
         } else {
           return {valid: false, msg: msgprint("Value should be 8 to 10") };
         }
+      }
+
+      function init_checkbox_formatter(row, cell, value, columnDef, dataContext){
+         return value ? '<input  type="checkbox" data-name="checkbox" row-number='+ row +' class="editor-checkbox slick-checkbox checkbox_' + row + '" checked/>': "";
       }
 
   var columnFilters = {};
@@ -382,7 +387,7 @@ make_grid:function(data1,columns,options){
           grid.render();
           selectedData.push((item));
         });
-
+         init_for_checkbox_trigger(grid , dataView)
     //end
         
   },
@@ -405,7 +410,6 @@ make_grid:function(data1,columns,options){
       'doc': frm.doc,
       'data': data
     }
-    console.log(args)
       get_server_fields('update_skill_mapping_details', args, '', frm.doc,'','',1, function(r){
         frm.refresh()
       })
@@ -413,3 +417,41 @@ make_grid:function(data1,columns,options){
 
 })
 
+
+
+init_for_checkbox_trigger = function(grid, dataview){
+
+  var criteria_list = ["none_field", "beginner", "imtermediatory", "expert"]
+  $("#myGrid").on("change", $("[data-name=checkbox]"), function(event){
+    
+      this.mapper = {2:"none_field", 3:"beginner", 4:"imtermediatory", 5:"expert"}
+      var active_cell = grid.getActiveCell()
+      var data = dataview.getItems();
+      var current_row_data = grid.getDataItem(active_cell.row)
+      var master_skill = current_row_data.master_industry 
+      var sub_skill = current_row_data.industry
+      var field = this.mapper[active_cell.cell]
+      var field_value = $(event.target).prop("checked") ? 1 :0
+      var new_dict = {}
+      new_dict[field] = field_value
+      delete this.mapper[active_cell.cell]
+      get_updated_dict(this.mapper, new_dict)
+      $.extend(current_row_data, new_dict) 
+      data[current_row_data.id] = current_row_data
+      grid.updateRow(active_cell.row)
+
+  })
+}
+
+
+get_data_index = function(element, master_skill, sub_skill){
+  if (element.master_industry == master_skill  && element.industry == sub_skill){
+     return element
+  }
+}
+
+get_updated_dict = function(mapper, new_dict){
+  $.each(mapper, function(key, value){
+     new_dict[value] = 0
+  })
+}

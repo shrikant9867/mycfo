@@ -17,6 +17,7 @@ class SkillMapping(Document):
 		for data in args.get('data'):
 			if data.get('industry')!=None:
 				nl = self.append('skill_mapping_details',{})
+				print data, "in dattaaaaaaaa"
 				nl.skill = data.get('master_industry')
 				nl.sub_skill = data.get('industry')
 				nl.beginner = data.get('beginner')
@@ -32,11 +33,11 @@ class SkillMapping(Document):
 @frappe.whitelist()
 def get_sample_data():
 	return {
-	"get_sample_data": frappe.db.sql("""select skill_matrix_18,sub_skill from `tabSkill Matrix 120` order by skill_matrix_18""", as_list=1)
+	"get_sample_data": frappe.db.sql("""select skill_matrix_18,sub_skill from `tabSkill Matrix 120` order by skill_matrix_18 asc, sub_skill asc""", as_list=1)
 	}
 
 @frappe.whitelist()
 def get_sample_data_from_table(doc_name):
 	return {
-	"get_sample_data": frappe.db.sql("""select skill,sub_skill,none_field,beginner,imtermediatory,expert from `tabSkill Mapping Details` where parent='%s' order by skill"""%doc_name, as_list=1)
+	"get_sample_data": frappe.db.sql("""select skill,sub_skill,none_field,beginner,imtermediatory,expert from `tabSkill Mapping Details` where parent='%s' order by skill asc, sub_skill asc"""%doc_name, as_list=1)
 	}
