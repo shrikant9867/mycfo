@@ -1,0 +1,22 @@
+{
+ "content": null, 
+ "creation": "2016-05-03 17:28:34.194674", 
+ "docstatus": 0, 
+ "doctype": "Page", 
+ "idx": 0, 
+ "modified": "2016-05-03 17:28:49.273791", 
+ "modified_by": "Administrator", 
+ "module": "Trainings", 
+ "name": "training-report", 
+ "owner": "Administrator", 
+ "page_name": "Training Report", 
+ "roles": [
+  {
+   "role": "All"
+  }
+ ], 
+ "script": null, 
+ "standard": "Yes", 
+ "style": null, 
+ "title": "Graphical Reports"
+}
