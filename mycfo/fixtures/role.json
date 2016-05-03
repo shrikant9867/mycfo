@@ -278,5 +278,12 @@
   "modified": "2016-01-07 18:47:18.457746", 
   "name": "Mycfo User", 
   "role_name": "Mycfo User"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2016-05-02 19:10:17.989459", 
+  "name": "Checklist Manager", 
+  "role_name": "Checklist Manager"
  }
 ]
