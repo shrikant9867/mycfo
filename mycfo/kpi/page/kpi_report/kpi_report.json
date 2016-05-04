@@ -1,0 +1,22 @@
+{
+ "content": null, 
+ "creation": "2016-05-04 16:20:48.006856", 
+ "docstatus": 0, 
+ "doctype": "Page", 
+ "idx": 0, 
+ "modified": "2016-05-04 16:21:05.024341", 
+ "modified_by": "Administrator", 
+ "module": "KPI", 
+ "name": "kpi-report", 
+ "owner": "Administrator", 
+ "page_name": "KPI Report", 
+ "roles": [
+  {
+   "role": "All"
+  }
+ ], 
+ "script": null, 
+ "standard": "Yes", 
+ "style": null, 
+ "title": "Graphical Reports"
+}
