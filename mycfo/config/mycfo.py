@@ -105,13 +105,20 @@ def get_data():
 					"name": "project-commercial-report",
 					"icon": "icon-sitemap",
 					"label": _("Graphical Reports"),
-					"description": _("Graphical Report for Request and IP Library"),
+					"description": _("Graphical Report for Project Commercial"),
 				},
 				{
 					"type": "report",
 					"name": "Login Report",
 					"is_query_report": True,
 					"doctype": "Login Log"
+				},
+				{
+					"type": "page",
+					"name": "kpi-report",
+					"icon": "icon-sitemap",
+					"label": _("KPI Graphical Reports"),
+					"description": _("Graphical Report for KPI"),
 				}
 			]
 		}
