@@ -17,7 +17,6 @@ class SkillMapping(Document):
 		for data in args.get('data'):
 			if data.get('industry')!=None:
 				nl = self.append('skill_mapping_details',{})
-				print data, "in dattaaaaaaaa"
 				nl.skill = data.get('master_industry')
 				nl.sub_skill = data.get('industry')
 				nl.beginner = data.get('beginner')
