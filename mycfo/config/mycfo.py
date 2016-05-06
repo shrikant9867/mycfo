@@ -39,6 +39,11 @@ def get_data():
 				},
 				{
 					"type": "doctype",
+					"name": "Customer Skill Mapping",
+					"description": _("Customer Skill Mapping Details"),
+				},
+				{
+					"type": "doctype",
 					"name": "KPI",
 					"description": _("KPI Details"),
 				},	
@@ -112,13 +117,6 @@ def get_data():
 					"name": "Login Report",
 					"is_query_report": True,
 					"doctype": "Login Log"
-				},
-				{
-					"type": "page",
-					"name": "kpi-report",
-					"icon": "icon-sitemap",
-					"label": _("KPI Graphical Reports"),
-					"description": _("Graphical Report for KPI"),
 				}
 			]
 		}
