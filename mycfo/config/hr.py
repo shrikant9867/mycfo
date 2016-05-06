@@ -19,6 +19,13 @@ def get_data():
 					"description": _("Resource Pool"),
 					"doctype": "Skill Mapping",
 				},
+				{
+					"type": "page",
+					"name": "kpi-report",
+					"icon": "icon-sitemap",
+					"label": _("KPI Graphical Reports"),
+					"description": _("Graphical Report for KPI"),
+				}
 			]
 		},
 	]
