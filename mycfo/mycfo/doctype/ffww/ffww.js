@@ -144,6 +144,6 @@ cur_frm.fields_dict['contact'].get_query = function(doc) {
 	return{	query:"mycfo.mycfo.doctype.ffww.ffww.get_contact_list" }
 }
 
-cur_frm.fields_dict['customer'].get_query = function(doc) {
-	return{	query:"mycfo.mycfo.doctype.ffww.ffww.get_active_customers" }
-}
+// cur_frm.fields_dict['customer'].get_query = function(doc) {
+// 	return{	query:"mycfo.mycfo.doctype.ffww.ffww.get_active_customers" }
+// }
