@@ -84,24 +84,9 @@ var calculate_total_shares = function(doc, dt, dn) {
 // 	return{	query: "erpnext.controllers.queries.employee_query" }
 // }
 
-cur_frm.cscript.annual_sales = function(doc,cdt,cdn){
-	if(doc.annual_sales<=0){
-		msgprint("Annual Sales value must be greater than zero")
-		doc.annual_sales =''
-		refresh_field('annual_sales');
-	}
-
-}
 
 
 cur_frm.cscript.ebidta = function(doc,cdt,cdn){
-	
-	if(doc.ebidta<=0){
-		msgprint("EBIIDTA value must be greater than zero")
-		doc.ebidta=''
-		refresh_field('ebidta');
-	}
-
 	if(doc.annual_sales){
 		if(doc.ebidta>=doc.annual_sales){
 			msgprint("EBIIDTA value must be less than Annual Sales")
@@ -117,12 +102,6 @@ cur_frm.cscript.ebidta = function(doc,cdt,cdn){
 }
 
 cur_frm.cscript.pbt = function(doc,cdt,cdn){
-	
-	if(doc.pbt<=0){
-		msgprint("PBT value must be greater than zero")
-		doc.pbt=''
-		refresh_field('pbt');
-	}
 	if(doc.annual_sales){
 		if(doc.pbt>=doc.annual_sales){
 			msgprint("PBT value must be less than Annual Sales")
@@ -139,12 +118,6 @@ cur_frm.cscript.pbt = function(doc,cdt,cdn){
 
 cur_frm.cscript.pat = function(doc,cdt,cdn){
 	
-	if(doc.pat<=0){
-		msgprint("PAT values must be greater than zero")
-		doc.pat=''
-		refresh_field('pat');
-	}
-
 	if(doc.annual_sales){
 		if(doc.pat>=doc.annual_sales){
 			msgprint("PAT value must be less than Annual Sales")

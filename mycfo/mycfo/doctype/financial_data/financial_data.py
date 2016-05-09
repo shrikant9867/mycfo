@@ -13,7 +13,7 @@ class FinancialData(Document):
 		self.validate_yearlydata_against_customer()
 		if self.is_pe_vc == 'Yes':
 			self.validate_fund_type()
-		self.validate_fiscal_year()
+		# self.validate_fiscal_year()
 
 	def validate_fund_name(self):
 		fund_list = []
