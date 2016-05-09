@@ -124,10 +124,14 @@ def make_contact(contact=None):
 		return contact_details
 
 def get_active_customers(doctype, txt, searchfield, start, page_len, filters):
-	from frappe.desk.reportview import get_match_cond
-	txt = "%{}%".format(txt)
 	return frappe.db.sql("""select distinct customer
 		from `tabProject Commercial`
 		where docstatus < 2
 		and customer is not null
-			and project_status='Active'""")
+			and project_status='Active' and customer like %(txt)s """,{"txt":"%%%s%%" % txt}, as_list=1)
+
+def get_contact_list(doctype, txt, searchfield, start, page_len, filters):
+	return frappe.db.sql(""" select name, email, mobile
+								from `tabContact` 
+								where name like %(txt)s or email like %(txt)s 
+								or mobile like %(txt)s """,{"txt": "%%%s%%" % txt}, as_list=1)
