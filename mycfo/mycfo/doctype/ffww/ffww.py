@@ -123,10 +123,10 @@ def make_contact(contact=None):
 	else:
 		return contact_details
 
-# def get_active_customers(doctype, txt, searchfield, start, page_len, filters):
-# 	return frappe.db.sql("""select name, customer
-# 							from `tabCustomer` where customer like %(txt)s 
-# 							or name like %(txt)s""",{"txt":"%%%s%%" % txt}, as_list=1)
+def get_active_customers(doctype, txt, searchfield, start, page_len, filters):
+	return frappe.db.sql("""select name, customer_name
+							from `tabCustomer` where customer_name like %(txt)s 
+							or name like %(txt)s""",{"txt":"%%%s%%" % txt}, as_list=1)
 
 def get_contact_list(doctype, txt, searchfield, start, page_len, filters):
 	return frappe.db.sql(""" select name, email, mobile
