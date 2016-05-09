@@ -31,6 +31,8 @@ frappe.ui.form.on("Customer Skill Mapping", {
     refresh:function(frm){
       if(!frm.doc.__islocal){
         cur_frm.events.render();
+        frm.set_df_property("save_record", "hidden", 0);
+        frm.set_df_property("sb3", "hidden", 0);
       }
     },
     render: function(frm){
