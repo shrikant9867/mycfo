@@ -142,3 +142,7 @@ cur_frm.cscript.country_name = function(doc,cdt,cdn){
 		}
 	}
 }
+
+cur_frm.fields_dict['contact'].get_query = function(doc) {
+	return{	filters:{"name":["not in", [" "]] } }
+}
