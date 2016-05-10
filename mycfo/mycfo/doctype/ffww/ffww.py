@@ -14,7 +14,7 @@ class FFWW(Document):
 		self.validate_designation()
 		self.validate_ffww()
 		self.validate_duplication_emailid()
-		self.validate_dupicate_designation()
+		# self.validate_dupicate_designation()
 		self.set_fww_name()
 		if self.contact:
 			self.update_contact_status()
