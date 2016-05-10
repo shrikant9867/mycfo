@@ -1,26 +1,19 @@
-frappe.require("assets/mycfo/js/slick/lib/firebugx.js");
-frappe.require("assets/mycfo/js/slick/plugins/slick.cellrangedecorator.js");
-frappe.require("assets/mycfo/js/slick/plugins/slick.cellrangeselector.js");
-frappe.require("assets/mycfo/js/slick/plugins/slick.cellselectionmodel.js");
-
-frappe.require("assets/mycfo/js/slick/slick.formatters.js");
-frappe.require("assets/mycfo/js/slick/slick.editors.js");
-frappe.require("assets/mycfo/js/slick/slick.grid.js");
-frappe.require("assets/mycfo/js/slick/slick.core.js");
-
-frappe.require("assets/mycfo/js/slick/slick.groupitemmetadataprovider.js");
-frappe.require("assets/mycfo/js/slick/slick.dataview.js");
-frappe.require("assets/mycfo/js/slick/controls/slick.pager.js");
-frappe.require("assets/mycfo/js/slick/controls/slick.columnpicker.js");
-
-frappe.require("assets/mycfo/js/slick/plugins/slick.checkboxselectcolumn.js");
-frappe.require("assets/mycfo/js/slick/plugins/slick.rowselectionmodel.js");
-frappe.require("assets/mycfo/js/slick/plugins/slick.autotooltips.js");
-frappe.require("assets/mycfo/js/slick/plugins/slick.cellcopymanager.js");
-// frappe.require("assets/mycfo/js/slick/plugins/slick.cellexternalcopymanager.js");
-frappe.require("assets/mycfo/js/slick/plugins/slick.rowselectionmodel.js");
-
-
+{% include "public/js/slick/lib/firebugx.js" %};
+{% include "public/js/slick/plugins/slick.cellrangedecorator.js" %}
+{% include "public/js/slick/plugins/slick.cellrangeselector.js" %}
+{% include "public/js/slick/plugins/slick.cellselectionmodel.js" %}
+{% include "public/js/slick/slick.formatters.js" %}
+{% include "public/js/slick/slick.editors.js" %}
+{% include "public/js/slick/slick.grid.js" %}
+{% include "public/js/slick/slick.core.js" %}
+{% include "public/js/slick/slick.groupitemmetadataprovider.js" %}
+{% include "public/js/slick/slick.dataview.js" %}
+{% include "public/js/slick/controls/slick.pager.js" %}
+{% include "public/js/slick/controls/slick.columnpicker.js" %}
+{% include "public/js/slick/plugins/slick.checkboxselectcolumn.js" %}
+{% include "public/js/slick/plugins/slick.rowselectionmodel.js" %}
+{% include "public/js/slick/plugins/slick.autotooltips.js" %}
+{% include "public/js/slick/plugins/slick.cellcopymanager.js" %}
 
 
 var selected_grid_data;
