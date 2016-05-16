@@ -12,6 +12,7 @@ from datetime import date
 from datetime import datetime, timedelta
 from frappe.utils import getdate, date_diff, add_days, cstr
 from frappe.model.document import Document
+from frappe.model.naming import make_autoname
 
 class ChecklistTask(Document):
 	def validate(self):
@@ -19,6 +20,12 @@ class ChecklistTask(Document):
 		self.validate_dates()
 		self.sync_tasks()
 		self.ct_reassign = []
+
+	def autoname(self):
+		if self.checklist_task:
+			self.name = make_autoname(self.checklist_task + '-' + '.#')
+		else:
+			self.name = make_autoname('CLT' + '.####')
 
 	def onload(self):
 		"""Load project tasks for quick view"""

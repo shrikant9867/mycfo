@@ -80,12 +80,40 @@ frappe.ui.form.on("Requisition Task","reopen",function(frm,cdt,cdn){
 
 })
 
-cur_frm.fields_dict.cr_task.grid.get_field("user").get_query = function(doc, cdt, cdn) {
-		var d  = locals[cdt][cdn];
-		return {
-		query: "mycfo.checklist.doctype.checklist_requisition.checklist_requisition.filter_user",
-		filters: {
-			'assignee': d.assignee
-		}
-	}
-}
+frappe.ui.form.on("Requisition Task","show_subtask",function(frm,cdt,cdn){
+	var d  = locals[cdt][cdn];	
+	return frappe.call({
+		method: "mycfo.checklist.doctype.checklist_requisition.checklist_requisition.show_subtasks",
+		args: {
+		"task_id":d.task_id,
+		},
+		callback: function(r) {
+			if (r.message){
+				var di = new frappe.ui.Dialog({
+					title: __("Subtasks"),
+					fields: [
+						{fieldtype:"HTML", label:__("Subtasks"), reqd:1, fieldname:"subtasks"}
+					]
+				});
+
+				di.$wrapper.find(".modal-content").css({"width": "800px"})
+				$(di.body).find("[data-fieldname='subtasks']").html(frappe.render_template("checklist_requisition", {"data":r.message}))
+				di.show();
+			}
+			else{
+				msgprint(__("No any Subtask is created against this Task"))
+			}
+		} 
+	})
+
+})
+
+// cur_frm.fields_dict.cr_task.grid.get_field("user").get_query = function(doc, cdt, cdn) {
+// 		var d  = locals[cdt][cdn];
+// 		return {
+// 		query: "mycfo.checklist.doctype.checklist_requisition.checklist_requisition.filter_user",
+// 		filters: {
+// 			'assignee': d.assignee
+// 		}
+// 	}
+// }
