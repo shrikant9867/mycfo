@@ -38,7 +38,7 @@
    "bold": 0, 
    "collapsible": 0, 
    "fieldname": "checklist_name", 
-   "fieldtype": "Data", 
+   "fieldtype": "Link", 
    "hidden": 0, 
    "ignore_user_permissions": 0, 
    "in_filter": 0, 
@@ -46,6 +46,7 @@
    "label": "Checklist Name", 
    "length": 0, 
    "no_copy": 0, 
+   "options": "Checklist", 
    "permlevel": 0, 
    "precision": "", 
    "print_hide": 0, 
@@ -698,7 +699,7 @@
  "issingle": 0, 
  "istable": 0, 
  "max_attachments": 0, 
- "modified": "2016-05-14 16:53:08.548273", 
+ "modified": "2016-05-16 14:59:52.659211", 
  "modified_by": "Administrator", 
  "module": "Checklist", 
  "name": "Checklist Task", 
@@ -731,5 +732,6 @@
  "read_only_onload": 0, 
  "search_fields": "title", 
  "sort_field": "modified", 
- "sort_order": "DESC"
+ "sort_order": "DESC", 
+ "title_field": "title"
 }

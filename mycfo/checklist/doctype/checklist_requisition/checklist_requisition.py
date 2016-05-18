@@ -76,7 +76,7 @@ class ChecklistRequisition(Document):
 				"expected_end_date": t.end_date,
 				"des": t.des,
 				"assignee":t.assignee,
-				"user":t.user,
+				"user":t.assignee,
 				"to_be_processed_for":self.to_be_processed_for,
 				"process_description":self.process_description,
 				"checklist_name":self.checklist_name,
