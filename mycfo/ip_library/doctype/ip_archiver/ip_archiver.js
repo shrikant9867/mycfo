@@ -1,6 +1,6 @@
 frappe.ui.form.on("IP Archiver", {
 	refresh:function(frm){
-		if(inList(user_roles, "Central Delivery")){
+		if(inList(user_roles, "Central Delivery") && frm.doc.docstatus != 1){
 			frm.doc.central_delivery = frappe.user.name
 			refresh_field(["central_delivery"])
 		}

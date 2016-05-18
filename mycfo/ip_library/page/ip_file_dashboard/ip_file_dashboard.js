@@ -307,12 +307,11 @@ IpFileDashboard = Class.extend({
 			ip_file_name = $(this).closest(".panel").attr("ip-file-name")
 			file_name = $(this).closest(".panel").attr("file-name")
 			me.init_for_projects_el_pop_up(ip_file_name, file_name, this);
-			// me.make_download_request(ip_file_name, file_name, this);
 		})
 	},
 	init_for_projects_el_pop_up:function(ip_file_name, file_name, request_button){
 		var me = this;
-		// console.log(this)
+		this.el_flag = 0; 
 		this.dialog = new frappe.ui.Dialog({
 						title: "Make Download Request",
 						fields: [
@@ -321,26 +320,42 @@ IpFileDashboard = Class.extend({
 							],
 						primary_action_label: "Make Request",
 						primary_action: function(doc) {
-								customer = me.dialog.fields_dict.customer.input.value
-								employee_id = me.dialog.fields_dict.employee_id.input.value	
-								if (customer && employee_id){
-									my_dict = {"ip_file_name":ip_file_name, "customer":customer, "approver":employee_id}
-									me.make_download_request(file_name, request_button, my_dict)
-									me.dialog.hide();
-								}else{
-									frappe.msgprint("Mandatory Fields Employee and Customer")
-								}
+								me.init_for_primary_action(ip_file_name, file_name, request_button);
 							}							
 						})
 		this.dialog.show();
+		me.toggle_employee_field("none");
 		this.init_for_customer_employee_get_query()
+	},
+	init_for_primary_action:function(ip_file_name, file_name, request_button){
+		var me = this;
+		customer = me.dialog.fields_dict.customer.input.value
+		employee_id = me.dialog.fields_dict.employee_id.input.value	
+		my_dict = {"ip_file_name":ip_file_name, "customer":customer, "approver":employee_id}
+		console.log(my_dict)
+		if (me.el_flag){
+			if(customer){
+				me.make_download_request(file_name, request_button, my_dict)
+				me.dialog.hide();
+			}else{
+				frappe.msgprint("Mandatory Fields Customer")	
+			}
+			
+		}else{
+			if(customer && employee_id){
+				me.make_download_request(file_name, request_button, my_dict)
+				me.dialog.hide();
+			}else{
+				frappe.msgprint("Mandatory Fields Customer and Employee ID")	
+			}
+		}
 	},
 	init_for_customer_employee_get_query:function(){
 		var me = this;
 		this.dialog.fields_dict.customer.get_query = function(){
 			return{
 				query:"mycfo.ip_library.page.ip_file_dashboard.ip_file_dashboard.get_customer_list"
-			}
+			} 
 		}
 
 		this.dialog.fields_dict.employee_id.get_query = function(){
@@ -350,9 +365,42 @@ IpFileDashboard = Class.extend({
 			}
 		}
 
+		this.init_process_for_el();
+	},
+	init_process_for_el:function(){
+		var me = this;
 		this.dialog.fields_dict.customer.$input.change(function(){
-			me.dialog.fields_dict.employee_id.input.value = ""	
+			if($(this).val()){
+				frappe.call({
+					async:false,
+					freeze:true,	
+					method:"mycfo.ip_library.page.ip_file_dashboard.ip_file_dashboard.validate_user_is_el",
+					args:{"customer":$(this).val()},
+					callback:function(r){
+						if (r.message.is_el){
+							me.toggle_employee_field("none");
+							me.update_employee_value(1);
+						}else{
+							me.toggle_employee_field("block");
+							me.el_flag = 0;
+						}
+
+					}
+				});	
+			}else{
+				me.toggle_employee_field("none");
+				me.update_employee_value(0);
+			}
 		})
+	},
+	toggle_employee_field:function(property_value){
+		var me = this;
+		$(me.dialog.body).find("div[data-fieldname=employee_id]").css("display", property_value);
+	},
+	update_employee_value:function(el_flag){
+		var me = this;
+		me.dialog.fields_dict.employee_id.input.value = "";
+		me.el_flag = el_flag;
 	},
 	make_download_request:function(file_name, request_button, my_dict){
 		var me = this

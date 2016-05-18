@@ -20,10 +20,15 @@ class IPDownloadApproval(Document):
 
 
 	def before_submit(self):
-		self.validate_for_download_request_submission()
-		self.prepare_for_user_notification()
-		level_mapper = {"1-Level":self.set_approval_status_for_level1, "2-Level":self.set_approval_status_for_level2}
-		level_mapper.get(self.level_of_approval)()
+		if self.approver:		# this condition is to check if download requester is EL or not because EL requests are directly sunmmited by CD
+			self.validate_for_download_request_submission()
+			self.prepare_for_user_notification()
+			level_mapper = {"1-Level":self.set_approval_status_for_level1, "2-Level":self.set_approval_status_for_level2}
+			level_mapper.get(self.level_of_approval)()
+		else:
+			status_mapper = {"status":self.central_delivery_status, "comments":self.central_delivery_comments}
+			self.set_approval_status_for_level2()
+			self.init_for_send_mail(status_mapper)
 
 	def set_approval_status_for_level1(self):
 		status_dict = {"Rejected":"Rejected", "Approved":"Download Allowed"}
@@ -40,11 +45,16 @@ class IPDownloadApproval(Document):
 		level_mapper = {"1-Level":{"status":self.approver_status, "comments":self.approver_comments}, 
 						"2-Level":{"status":self.central_delivery_status, "comments":self.central_delivery_comments}}	
 		status_mapper = level_mapper.get(self.level_of_approval)
+		self.init_for_send_mail(status_mapper)
+		
+	
+	def init_for_send_mail(self, status_mapper):	
+		args, email = self.get_requester_data()
 		args.update(status_mapper)
 		self.send_notification("IP Document {0} {1}".format(self.file_name, args.get("status")), email, 
 									"templates/ip_library_templates/download_request_approval.html",args)
 
-	
+
 	def get_requester_data(self):
 		email, first_name, last_name = frappe.db.get_value("User", {"name":self.ip_file_requester}, ["email", "first_name", "last_name"])
 		args = {"file_name":self.file_name, "first_name":first_name, "last_name":last_name}

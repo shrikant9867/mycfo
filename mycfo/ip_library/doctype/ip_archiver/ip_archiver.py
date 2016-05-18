@@ -8,6 +8,10 @@ from frappe.model.document import Document
 
 class IPArchiver(Document):
 	
+
+	def validate(self):
+		frappe.db.sql("""  update `tabIP File` set request_type='Archive', file_status='Archive Pending' where name= '%s' """%self.ip_file)
+
 	def before_submit(self):
 		self.validate_for_status()
 		self.set_current_status()
@@ -26,7 +30,7 @@ class IPArchiver(Document):
 	
 	def update_ip_file_status(self):
 		file_status_mapper = {"Archived":["Archived", 0], "Rejected":["Rejected by CD (Archive)", 1]}
-		query = " update `tabIP File` set file_status= '{0}' , published_flag = {1} where  name = '{2}' ".format(
+		query = " update `tabIP File` set file_status= '{0}' , published_flag = {1}, request_type = 'Archive' where  name = '{2}' ".format(
 						file_status_mapper.get(self.current_status)[0], file_status_mapper.get(self.current_status)[1], self.ip_file)
 		frappe.db.sql(query)
 		self.prepare_for_add_comment(file_status_mapper.get(self.current_status)[0])

@@ -1,20 +1,3 @@
-{% include "public/js/slick/lib/firebugx.js" %};
-{% include "public/js/slick/plugins/slick.cellrangedecorator.js" %}
-{% include "public/js/slick/plugins/slick.cellrangeselector.js" %}
-{% include "public/js/slick/plugins/slick.cellselectionmodel.js" %}
-{% include "public/js/slick/slick.formatters.js" %}
-{% include "public/js/slick/slick.editors.js" %}
-{% include "public/js/slick/slick.grid.js" %}
-{% include "public/js/slick/slick.core.js" %}
-{% include "public/js/slick/slick.groupitemmetadataprovider.js" %}
-{% include "public/js/slick/slick.dataview.js" %}
-{% include "public/js/slick/controls/slick.pager.js" %}
-{% include "public/js/slick/controls/slick.columnpicker.js" %}
-{% include "public/js/slick/plugins/slick.checkboxselectcolumn.js" %}
-{% include "public/js/slick/plugins/slick.rowselectionmodel.js" %}
-{% include "public/js/slick/plugins/slick.autotooltips.js" %}
-{% include "public/js/slick/plugins/slick.cellcopymanager.js" %}
-
 
 cur_frm.add_fetch('employee', 'employee_name', 'employee_name');
 cur_frm.add_fetch('sub_industry', 'industry', 'industry');
@@ -23,39 +6,33 @@ cur_frm.add_fetch("employee", "user_id", "user_id");
 //calculate year of year_of_experience in all three tables
 frappe.ui.form.on("Previouse Employer Details", "from", function(frm,cdt,cdn) {
   var d = locals[cdt][cdn];
-  console.log(d.from)
   var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
   frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
 });
 frappe.ui.form.on("Previouse Employer Details", "to", function(frm,cdt,cdn) {
   var d = locals[cdt][cdn];
-  console.log(d.from)
   var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
   frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
 });
 
 frappe.ui.form.on("Previous Employer Project Details", "from", function(frm,cdt,cdn) {
   var d = locals[cdt][cdn];
-  console.log(d.from)
   var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
   frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
 });
 frappe.ui.form.on("Previous Employer Project Details", "to", function(frm,cdt,cdn) {
   var d = locals[cdt][cdn];
-  console.log(d.from)
   var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
   frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
 });
 
 frappe.ui.form.on("MyCFO Projects Experience", "from", function(frm,cdt,cdn) {
   var d = locals[cdt][cdn];
-  console.log(d.from)
   var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
   frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
 });
 frappe.ui.form.on("MyCFO Projects Experience", "to", function(frm,cdt,cdn) {
   var d = locals[cdt][cdn];
-  console.log(d.from)
   var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
   frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
 });
@@ -64,10 +41,9 @@ frappe.ui.form.on("Skill Mapping", "validate", function(frm) {
       if(frm.doc.previous_employer_details){
         previous_exp = [];
         for(i=0;i<frm.doc.previous_employer_details.length;i++){
-          console.log(i);
             previous_exp.push(parseFloat(frm.doc.previous_employer_details[i].year_of_experience));
          }
-         console.log(previous_exp);
+
          var sum = previous_exp.reduce((a, b) => a + b, 0); 
         cur_frm.set_value("previous_employer_experience", sum);
       }
@@ -75,10 +51,8 @@ frappe.ui.form.on("Skill Mapping", "validate", function(frm) {
       if(frm.doc.mycfo_projects_experience){
         mycfo_exp = [];
         for(i=0;i<frm.doc.mycfo_projects_experience.length;i++){
-          console.log(i);
             mycfo_exp.push(parseFloat(frm.doc.mycfo_projects_experience[i].year_of_experience));
          }
-         console.log(mycfo_exp);
          var sum2 = mycfo_exp.reduce((a, b) => a + b, 0); 
         cur_frm.set_value("mycfo_experience", sum2);
       }
@@ -396,10 +370,9 @@ make_grid:function(data1,columns,options){
 
 
 init_for_checkbox_trigger = function(grid, dataview){
-
   var criteria_list = ["none_field", "beginner", "imtermediatory", "expert"]
-  $("#myGrid").on("change", $("[data-name=checkbox]"), function(event){
-    
+  $(cur_frm.body).find("#myGrid").on("change", $("[data-name=checkbox]"), function(event){
+
       this.mapper = {2:"none_field", 3:"beginner", 4:"imtermediatory", 5:"expert"}
       var active_cell = grid.getActiveCell()
       var data = dataview.getItems();
