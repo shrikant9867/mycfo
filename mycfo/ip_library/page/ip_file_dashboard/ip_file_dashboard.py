@@ -142,8 +142,8 @@ def create_ip_download_request(ip_file_name, customer, approver):
 		ipa.skill_matrix_18 = file_data.get("skill_matrix_18")
 		ipa.skill_matrix_120 = file_data.get("skill_matrix_120")
 		ipa.file_path = file_data.get("file_path")
-		ipa.approver = approver
-		ipa.employee_name = frappe.db.get_value("Employee", {"name":approver}, 'employee_name')
+		ipa.approver = approver or ""
+		ipa.employee_name = frappe.db.get_value("Employee", {"name":approver}, 'employee_name') if approver else ""
 		ipa.ip_file_requester = frappe.session.user
 		ipa.level_of_approval = file_data.get("security_level")
 		ipa.approval_status = "Pending" 
@@ -166,9 +166,9 @@ def check_for_existing_download_approval_form(file_data):
 
 def prepare_for_todo_creation(file_data, emp_id):
 	users = []
-	user_id = frappe.db.get_value("Employee", emp_id, 'user_id')
-	users.append(user_id)
-	if file_data.get("security_level") ==  "2-Level":
+	user_id = frappe.db.get_value("Employee", emp_id, 'user_id') if emp_id else ""
+	users.append(user_id) if user_id else ""
+	if file_data.get("security_level") ==  "2-Level" or not user_id:
 		central_delivery = get_central_delivery()
 		users.extend(central_delivery)
 	make_todo(users, file_data)	
@@ -305,3 +305,17 @@ def get_comments_reviews(response):
 def get_customer_list(doctype, txt, searchfield, start, page_len, filters):
 	return frappe.db.sql(""" select name from `tabCustomer` 
 								where name like %(txt)s limit 10 """, {"txt":"%%%s%%" % txt }, as_list=1)
+
+@frappe.whitelist()
+def validate_user_is_el(customer):
+	employee = frappe.db.get_value("Employee", {"user_id":frappe.session.user}, "name")
+	response = frappe.db.sql(""" select  distinct(opd.user_name), emp.employee_name 
+								from `tabOperation And Project Details` opd
+								join `tabOperation And Project Commercial` opc
+								on opd.parent = opc.name
+								join `tabEmployee` emp
+								on  emp.name  = opd.user_name 
+								where opd.role in ("EL")
+								and opd.user_name = '%s'  
+								and opc.customer = '%s' """%(employee, customer), as_list=1)
+	return {"is_el":1} if len(response) else {"is_el":0}

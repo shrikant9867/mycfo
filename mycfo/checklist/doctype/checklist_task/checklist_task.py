@@ -12,6 +12,7 @@ from datetime import date
 from datetime import datetime, timedelta
 from frappe.utils import getdate, date_diff, add_days, cstr
 from frappe.model.document import Document
+from frappe.model.naming import make_autoname
 
 class ChecklistTask(Document):
 	def validate(self):
@@ -19,6 +20,12 @@ class ChecklistTask(Document):
 		self.validate_dates()
 		self.sync_tasks()
 		self.ct_reassign = []
+
+	def autoname(self):
+		if self.checklist_task:
+			self.name = make_autoname(self.checklist_task + '-' + '.#')
+		else:
+			self.name = make_autoname('CLT' + '.####')
 
 	def onload(self):
 		"""Load project tasks for quick view"""
@@ -37,7 +44,15 @@ class ChecklistTask(Document):
 					"count":task.count,
 					"tat":task.tat
 					# "actual_time":task.actual_time
-				})	
+				})
+
+		self.validate_depends_on_status()
+
+	def validate_depends_on_status(self):
+		for d in self.get("ct_depend_task"):
+			depends_task = frappe.db.get_values("Checklist Task", {"name":d.task}, ["status"], as_dict=True)
+			if depends_task:
+				d.status = depends_task[0]["status"]
 
 	def get_tasks(self):
 		return frappe.get_all("Checklist Task", "*", {"project": self.project,"checklist_task":self.name}, order_by="expected_start_date asc")	
@@ -62,7 +77,7 @@ class ChecklistTask(Document):
 				"expected_end_date": t.end_date,
 				"des": t.des,
 				"assignee":t.assignee,
-				"user":t.user,
+				"user":t.assignee,
 				"to_be_processed_for":self.to_be_processed_for,
 				"process_description":self.process_description,
 				"checklist_name":self.checklist_name,

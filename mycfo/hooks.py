@@ -15,7 +15,7 @@ app_version = "0.0.1"
 
 # include js, css files in header of desk.html
 app_include_css = ["/assets/mycfo/css/jquery.rateyo.min.css", "/assets/mycfo/css/mycfo.css"]
-app_include_js = ["/assets/mycfo/js/jquery.rateyo.min.js","/assets/mycfo/js/jquery.twbsPagination.min.js"]
+app_include_js = ["/assets/mycfo/js/jquery.rateyo.min.js","/assets/mycfo/js/jquery.twbsPagination.min.js", "assets/js/mycfo_report.min.js"]
 
 # include js, css files in header of web template
 # web_include_css = "/assets/mycfo/css/mycfo.css"

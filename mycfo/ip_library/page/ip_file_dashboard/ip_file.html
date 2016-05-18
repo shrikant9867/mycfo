@@ -2,7 +2,7 @@
 <div class="{{ file_data[i].panel_class }}" file-name = "{{ file_data[i].file_name }}" ip-file-name= "{{ file_data[i].name }}" file-url="{{ file_data[i].file_path }}"
 download-validity = "{{ file_data[i].download_validity_end_date }}" id="{{ i }}" download-form= "{{ file_data[i].download_form }}">
       <div class="panel-heading panel-heading-custom2">{{ file_data[i].file_name }}
-		{% if (file_data[i].security_level == "0-Level" || file_data[i].approval_status == "Download Allowed"  ) { %}
+		{% if (file_data[i].security_level == "0-Level" || file_data[i].approval_status == "Download Allowed"  || inList(user_roles, "Central Delivery") ) { %}
 			
 			{% if (file_data[i].download_validity_end_date) { %}
 				

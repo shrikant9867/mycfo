@@ -14,6 +14,15 @@ if(frm.doc.task){
 	refresh_field('counter')
 }
 })
+
+frappe.ui.form.on("Process Task","task_add",function(frm,cdt,cdn){
+	var row = frappe.get_doc(cdt,cdn)
+	if(cur_frm.doc.assignee1) {
+		if(!row.assignee) row.assignee = cur_frm.doc.assignee1;
+	}
+		
+})
+
 /*frappe.ui.form.on("Process Task","task_name",function(frm,cdt,cdn){
 	var d  = locals[cdt][cdn];
 	var regex = /^[a-zA-Z, ]*$/

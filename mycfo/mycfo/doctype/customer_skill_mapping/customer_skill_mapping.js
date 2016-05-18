@@ -1,20 +1,3 @@
-{% include "public/js/slick/lib/firebugx.js" %};
-{% include "public/js/slick/plugins/slick.cellrangedecorator.js" %}
-{% include "public/js/slick/plugins/slick.cellrangeselector.js" %}
-{% include "public/js/slick/plugins/slick.cellselectionmodel.js" %}
-{% include "public/js/slick/slick.formatters.js" %}
-{% include "public/js/slick/slick.editors.js" %}
-{% include "public/js/slick/slick.grid.js" %}
-{% include "public/js/slick/slick.core.js" %}
-{% include "public/js/slick/slick.groupitemmetadataprovider.js" %}
-{% include "public/js/slick/slick.dataview.js" %}
-{% include "public/js/slick/controls/slick.pager.js" %}
-{% include "public/js/slick/controls/slick.columnpicker.js" %}
-{% include "public/js/slick/plugins/slick.checkboxselectcolumn.js" %}
-{% include "public/js/slick/plugins/slick.rowselectionmodel.js" %}
-{% include "public/js/slick/plugins/slick.autotooltips.js" %}
-{% include "public/js/slick/plugins/slick.cellcopymanager.js" %}
-
 
 var selected_grid_data;
 var grid_data;
@@ -131,7 +114,7 @@ frappe.ui.form.on("Customer Skill Mapping", {
 
 
               //call to create grid report
-            grid = new Slick.Grid("#myGrid", dataView, columns, options);
+            grid = new Slick.Grid("#customer-myGrid", dataView, columns, options);
 
             //filter start working
             grid.registerPlugin(groupItemMetadataProvider);
@@ -233,7 +216,7 @@ frappe.ui.form.on("Customer Skill Mapping", {
           grid.render();
           selectedData.push((item));
         });
-         init_for_checkbox_trigger(grid , dataView)
+         init_for_checkbox_trigger_of_csm(grid , dataView)
     //end
         
   },
@@ -252,10 +235,9 @@ frappe.ui.form.on("Customer Skill Mapping", {
 
 
 
-init_for_checkbox_trigger = function(grid, dataview){
-
+init_for_checkbox_trigger_of_csm = function(grid, dataview){
   var criteria_list = ["none_field", "beginner", "imtermediatory", "expert"]
-  $("#myGrid").on("change", $("[data-name=checkbox]"), function(event){
+  $(cur_frm.body).find("#customer-myGrid").on("change", $("[data-name=checkbox]"), function(event){
     
       this.mapper = {2:"none_field", 3:"beginner", 4:"imtermediatory", 5:"expert"}
       var active_cell = grid.getActiveCell()

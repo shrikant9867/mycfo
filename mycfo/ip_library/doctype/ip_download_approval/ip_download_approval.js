@@ -18,8 +18,11 @@ frappe.ui.form.on("IP Download Approval", {
 			cd_fields = ["central_delivery_status", "central_delivery", "central_delivery_comments"]			
 		}
 		else{
-			frm.doc.central_delivery = frappe.user.name
-			refresh_field(["central_delivery"])
+			if (frm.doc.docstatus != 1){
+				frm.doc.central_delivery = frappe.user.name;
+				refresh_field(["central_delivery"]);	
+			}
+			cd_fields =  frm.doc.approver ? []:["approver_status"] 
 		}
 
 		$.each(cd_fields, function(index, value){
