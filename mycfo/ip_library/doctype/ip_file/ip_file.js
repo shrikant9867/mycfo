@@ -13,10 +13,10 @@ frappe.ui.form.on("IP File", {
 			frm.doc.request_type = "New"
 			frm.doc.file_approver = ""
 			refresh_field(["request_type", "file_approver"])
-			// make_fields_mandatory_for_cd_role()
+			cur_frm.set_df_property("file_approver", "hidden", 1)
 		}
 		else{
-			var fields = ["document_type", "file_approver", "file_name", "customer"]
+			var fields = ["document_type", "file_approver", "file_name", "customer", "validity_end_date", "security_level"]
 			$.each(fields, function(index, value){
 				cur_frm.set_df_property(value, "read_only", 1)
 			})
@@ -29,7 +29,35 @@ frappe.ui.form.on("IP File", {
 		prepare_for_edit_file(frm, cdt, cdn)
 
 			
+	},
+	customer:function(frm){
+		if(frm.doc.customer && !inList(user_roles, "Central Delivery") ){
+			frappe.call({
+				async:false,
+				freeze:true,	
+				method:"mycfo.ip_library.page.ip_file_dashboard.ip_file_dashboard.validate_user_is_el",
+				args:{"customer":frm.doc.customer},
+				callback:function(r){
+					if (r.message.is_el){
+						toggle_approver_fields();
+					}else{
+						init_for_post_customer_selection_process(0, 1)
+					}
+
+				}
+			});	
+		}else{
+			toggle_approver_fields();
+		}				
+	},
+	after_save:function(){
+		cur_frm.reload_doc();
+		cur_frm.refresh();
+		if(inList(user_roles, "Central Delivery") && inList(["New", "Edit"], cur_frm.doc.request_type) && cur_frm.doc.approver_link){
+			window.location.reload();
+		}
 	}
+
 });
 
 
@@ -126,10 +154,12 @@ init_for_archive_file =  function(frm){
 						method:"mycfo.ip_library.doctype.ip_file.ip_file.init_for_archive_request",
 						args:{"doc":frm.doc},
 						callback:function(r){
-							frm.doc.file_status = "Archive Pending"
-							frm.doc.request_type = "Archive"
-							frm.save()
-							frappe.msgprint("IP Archive Request created successfully.")
+							if(inList(user_roles, "Central Delivery")){
+								frappe.msgprint("IP File archived successfully.")
+							}else{
+								frappe.msgprint("IP Archive Request created successfully.")	
+							}
+							cur_frm.reload_doc();
 						}
 				})
 		});	
@@ -167,9 +197,13 @@ validity_upgrade = Class.extend({
 											method:"init_for_validity_upgradation",
 											doc: me.frm.doc,
 											callback:function(r){
+												if(inList(user_roles, "Central Delivery")){
+													frappe.msgprint("Validity upgraded successfully")
+												}else{
+													frappe.msgprint("IP File validity upgrade request created successfully.")
+												}
+												cur_frm.reload_doc();
 												
-												cur_frm.refresh();
-												frappe.msgprint("IP File validity upgrade request created successfully.")
 											}
 										})
 
@@ -206,10 +240,23 @@ prepare_for_edit_file = function(frm, cdt, cdn){
 
 make_fields_mandatory_for_cd_role = function(){
 	if(in_list(user_roles, "Central Delivery")){
-		console.log("in if block")
 		var fields = ["security_level", "validity_end_date"];
 		$.each(fields, function(index, value){
 			cur_frm.set_df_property(value, "reqd", 1)
 		})
 	}
+}
+
+init_for_post_customer_selection_process = function(hidden_value, reqd_value){
+	$.each(["file_approver", "employee_name"], function(index, value){
+		cur_frm.set_df_property(value, "hidden", hidden_value);
+		cur_frm.set_df_property(value, "reqd", reqd_value);
+	});
+}
+
+toggle_approver_fields = function(){
+	cur_frm.doc.file_approver = "";
+	cur_frm.doc.employee_name = "";
+	init_for_post_customer_selection_process(1, 0)
+	cur_frm.refresh_fields(["file_approver", "employee_name"])
 }

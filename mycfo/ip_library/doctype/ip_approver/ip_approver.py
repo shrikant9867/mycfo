@@ -12,7 +12,7 @@ from frappe.utils import today, getdate
 class IPApprover(Document):		
 
 	def validate(self):
-		if self.request_type != "Upgrade Validity":
+		if self.request_type != "Upgrade Validity" and self.approver:		# This (self.approver) condition  is to check whether the request is by EL or not.
 			self.check_if_file_rejected()
 			self.set_current_status_of_approval()
 			self.update_ip_file_status()
@@ -97,23 +97,22 @@ class IPApprover(Document):
 	def check_for_validity_upgrade(self):
 		if self.central_delivery_status == "Approved":
 			self.current_status = "Published"
-			cond  = " file_status = 'Validity Upgraded', validity_end_date= '{0}' ".format(self.validity_end_date)
-			self.update_ip_file(cond)
+			cond  = " file_status = 'Validity Upgraded', validity_end_date= '{0}', request_type = 'Upgrade Validity'  ".format(self.validity_end_date)
 			self.init_for_add_comment("Validity Upgraded")
-			self.init_for_validity_notification()
 		else:
 			self.current_status = "Rejected by CD"
-			cond  = " file_status = 'Rejected by CD (Validity)' "
-			self.update_ip_file(cond)
+			cond  = " file_status = 'Rejected by CD (Validity)', request_type = 'Upgrade Validity' "
 			self.init_for_add_comment("Rejected by CD (Validity)")
-			self.init_for_validity_notification()
+		self.update_ip_file(cond)
+		self.init_for_validity_notification()
 					
 	
 	
 	def prepare_for_published_notification(self):
-		args, email = self.get_requester_data()
-		self.send_notification("IP Document {0} Published".format(self.file_name), email, 
-									"templates/ip_library_templates/cd_upload_notification.html",args)
+		if "Central Delivery" not in frappe.get_roles(self.ip_file_requester):			# condition to check if requester is central delivery or not
+			args, email = self.get_requester_data()
+			self.send_notification("IP Document {0} Published".format(self.file_name), email, 
+										"templates/ip_library_templates/cd_upload_notification.html",args)
 
 	
 
@@ -158,7 +157,7 @@ class IPApprover(Document):
 			"uploaded_date":today(),
 			"published_flag":1,
 			"customer":self.customer,
-			"file_approver":self.approver,
+			"file_approver":self.approver or "",
 			"employee_name":self.employee_name
 
 		}
@@ -185,8 +184,7 @@ class IPApprover(Document):
 		email_recipients = frappe.db.get_values("User", {"name":["in", [self.ip_file_requester, file_owner] ]}, ["email"], as_dict=1)
 		email = list(set([ recipient.get("email") for recipient in email_recipients if recipient.get("email") ] ))
 		args = {"status":self.central_delivery_status, "comments":self.central_delivery_comments, "file_name":self.file_name}
-		self.send_notification(subject, email, template, args)
-
+		self.send_notification(subject, email, template, args)	
 
 
 

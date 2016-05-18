@@ -76,7 +76,7 @@ class ChecklistRequisition(Document):
 				"expected_end_date": t.end_date,
 				"des": t.des,
 				"assignee":t.assignee,
-				"user":t.user,
+				"user":t.assignee,
 				"to_be_processed_for":self.to_be_processed_for,
 				"process_description":self.process_description,
 				"checklist_name":self.checklist_name,
@@ -110,7 +110,7 @@ class ChecklistRequisition(Document):
 				if todo:
 					todo1 = frappe.get_doc("ToDo",todo)
 					todo1.update({
-					"role": task.assignee,
+					# "role": task.assignee,
 					"reference_type": "Checklist Task",
 					"reference_name": task.task_id
 					})
@@ -122,7 +122,7 @@ class ChecklistRequisition(Document):
 		todo.description = self.name
 		todo.update({
 			# ct:cr
-			"role": task.assignee,
+			# "role": task.assignee,
 			"reference_type": "Checklist Task",
 			"reference_name": task.task_id,
 			"owner": task.user,
@@ -162,14 +162,14 @@ def reopen_task(task_id):
 	except Exception, e:
 		frappe.msgprint(e)
 
-@frappe.whitelist()
-def filter_user(doctype, txt, searchfield, start, page_len, filters):
-	"""
-	filter users according to Role
-	"""
-	user_list = frappe.db.sql("""select t1.email from `tabUser` t1,`tabUserRole` t2 
-		where t2.parent = t1.name and t2.role = '{0}'""".format(filters['assignee']),as_list =1)
-	return user_list
+# @frappe.whitelist()
+# def filter_user(doctype, txt, searchfield, start, page_len, filters):
+# 	"""
+# 	filter users according to Role
+# 	"""
+# 	user_list = frappe.db.sql("""select t1.email from `tabUser` t1,`tabUserRole` t2 
+# 		where t2.parent = t1.name and t2.role = '{0}'""".format(filters['assignee']),as_list =1)
+# 	return user_list
 
 @frappe.whitelist()
 def list_view(name):
@@ -179,3 +179,7 @@ def list_view(name):
 	closed_task = "{1} / {0} Closed".format(counter,closed_count)
 	return closed_task
 
+@frappe.whitelist()
+def show_subtasks(task_id):
+	subtasks = frappe.db.get_values("Checklist Task",{"checklist_task":task_id},["title","expected_start_date","expected_end_date","status","assignee","des"],as_dict=True)
+	return subtasks

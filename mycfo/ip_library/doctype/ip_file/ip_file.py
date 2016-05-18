@@ -74,28 +74,35 @@ class IPFile(Document):
 			ipa = self.create_ip_approver_form(self.validity_end_date, self.new_file_path)
 			self.approver_link = ipa.name
 			self.file_status = status_dict.get(self.request_type)
-			self.prepare_for_approver_notification()
-			self.init_for_add_comment()
+			if "Central Delivery" not in frappe.get_roles():
+				self.run_post_ip_approver_method()
 		elif self.file_data and self.approver_link:
 			ipa = frappe.get_doc("IP Approver", self.approver_link)		
 			ipa.file_path = self.new_file_path
 			ipa.save(ignore_permissions=True)
+			if "Central Delivery" not in frappe.get_roles():
+				self.run_post_ip_approver_method()
 			self.file_status = status_dict.get(self.request_type)
-			self.init_for_add_comment()
-			self.prepare_for_approver_notification()
 		self.file_data = ""
 
 		
 	
 	def init_for_validity_upgradation(self):
+		from datetime import datetime
+
 		self.request_type = "Upgrade Validity"
-		validity = getdate(self.new_validity)
-		self.create_ip_approver_form(validity, self.file_path)
-		self.file_status = "Upgrade Validity Pending"
-		self.new_validity = ""
-		self.init_for_add_comment()
-		self.prepare_for_cd_notification()
-		self.save()		
+		validity = datetime.strptime(self.new_validity, '%d-%m-%Y').strftime('%Y-%m-%d')
+		ipa = self.create_ip_approver_form(validity, self.file_path)
+		if "Central Delivery" in frappe.get_roles():
+			ipa.central_delivery = frappe.session.user
+			ipa.central_delivery_status = "Approved"
+			ipa.submit()
+		else:
+			self.file_status = "Upgrade Validity Pending"
+			self.new_validity = ""
+			self.init_for_add_comment()
+			self.prepare_for_cd_notification()
+			self.save()			
 
 	
 	def create_ip_approver_form(self, validity_end_date, file_path):
@@ -112,11 +119,10 @@ class IPFile(Document):
 		ipa.skill_matrix_18 = self.skill_matrix_18
 		ipa.skill_matrix_120 = self.skill_matrix_120
 		if self.request_type != "Upgrade Validity":
-			ipa.approver = self.file_approver
+			ipa.approver = self.file_approver or ""
 			ipa.employee_name = self.employee_name
 		else:
 			ipa.approver = ""
-			ipa.level_of_approval = self.security_level
 		ipa.validity_end_date = validity_end_date
 		ipa.file_path = self.new_file_path
 		ipa.ip_file_requester = frappe.session.user
@@ -124,20 +130,26 @@ class IPFile(Document):
 		ipa.level_of_approval = self.security_level
 		ipa.flags.ignore_mandatory = True
 		ipa.save(ignore_permissions=True)
-		return ipa	
-
-	# def after_insert(self):
-	# 	self.submit_ip_approver_form_for_central_delivery_role()
+		return ipa
 
 
-	# def submit_ip_approver_form_for_central_delivery_role(self):
-	# 	if "Central Delivery" in frappe.get_roles() and self.request_type == "New" and self.approver_link:
-	# 		ip_approver_form = frappe.get_doc("IP Approver", self.approver_link)
-	# 		ip_approver_form.central_delivery = frappe.session.user
-	# 		ip_approver_form.central_delivery_status = "Approved"
-	# 		ip_approver_form.approver_status = "Approved"
-	# 		ip_approver_form.submit()
+	def on_update(self):
+		self.submit_ip_approver_form_for_central_delivery_role()	
 		
+	def submit_ip_approver_form_for_central_delivery_role(self):
+		if "Central Delivery" in frappe.get_roles() and self.request_type in ["New", "Edit"] and self.approver_link:
+			ip_approver_form = frappe.get_doc("IP Approver", self.approver_link)
+			ip_approver_form.central_delivery = frappe.session.user
+			ip_approver_form.central_delivery_status = "Approved"
+			ip_approver_form.submit()
+			frappe.msgprint("Please reload the document.")
+			
+				
+	def run_post_ip_approver_method(self):
+		self.prepare_for_approver_notification()
+		self.init_for_add_comment()
+
+
 		
 	def prepare_for_cd_notification(self):
 		template = "/templates/ip_library_templates/upgrade_validity_request_notification.html"
@@ -151,9 +163,11 @@ class IPFile(Document):
 
 
 	def prepare_for_approver_notification(self):
-		full_name, user_id = frappe.db.get_value("Employee", self.file_approver, ["employee_name", "user_id"])
+		user_id = ""
+		if self.file_approver:
+			full_name, user_id = frappe.db.get_value("Employee", self.file_approver, ["employee_name", "user_id"])
 		central_delivery = self.get_central_delivery()
-		central_delivery.append( frappe.db.get_value("User",{"name":user_id}, "email") )
+		central_delivery.append( frappe.db.get_value("User",{"name":user_id}, "email") ) if user_id else ""
 		self.send_mail(central_delivery)
 
 	def get_central_delivery(self):
@@ -202,10 +216,15 @@ def get_approver_list(doctype, txt, searchfield, start, page_len, filters):
 def init_for_archive_request(doc):
 	doc = json.loads(doc)
 	validate_for_archive_request(doc)
-	create_archive_request(doc)
-	send_archive_notification(doc)
-	comment = "File status Changed to Archive Pending for request type Archive."
-	frappe.get_doc("IP File", doc.get("file_name")).add_comment(comment)
+	ip_arch = create_archive_request(doc)
+	if "Central Delivery" in frappe.get_roles():
+		ip_arch.central_delivery = frappe.session.user
+		ip_arch.central_delivery_status = "Approved"
+		ip_arch.submit()
+	else:
+		send_archive_notification(doc)
+		comment = "File status Changed to Archive Pending for request type Archive."
+		frappe.get_doc("IP File", doc.get("file_name")).add_comment(comment)
 
 
 def validate_for_archive_request(doc):
@@ -233,6 +252,7 @@ def create_archive_request(doc):
 	ip_arch.archive_requester = frappe.session.user
 	ip_arch.flags.ignore_mandatory = True
 	ip_arch.save(ignore_permissions=True)
+	return ip_arch
 
 
 def send_archive_notification(doc):
