@@ -69,7 +69,8 @@ permission_query_conditions = {
 	"Checklist Task":"mycfo.checklist.doctype.checklist_task.checklist_task.get_permission_query_conditions",
 	"Answer Sheet":"mycfo.trainings.doctype.answer_sheet.answer_sheet.get_permission_query_conditions",
 	"Assessment":"mycfo.trainings.doctype.assessment.assessment.get_permission_query_conditions",
-	"Training":"mycfo.trainings.doctype.training.training.get_permission_query_conditions"
+	"Training":"mycfo.trainings.doctype.training.training.get_permission_query_conditions",
+	"KPI":"mycfo.mycfo.doctype.project_commercial.project_commercial.get_permission_query_conditions_for_kpi",
 }
 #
 # has_permission = {
