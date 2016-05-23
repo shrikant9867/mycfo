@@ -25,7 +25,6 @@ def get_kpi_resouce_assigned_list(doctype, txt, searchfield, start, page_len, fi
 								join `tabEmployee` emp
 								on  emp.name  = opd.user_name 
 								where opd.role in ("EL","EM","TM")
-								and opd.email_id != %(user)s  
 								and opc.customer = %(customer)s
 								and (emp.name like %(txt)s
 								or emp.employee_name like %(txt)s)
