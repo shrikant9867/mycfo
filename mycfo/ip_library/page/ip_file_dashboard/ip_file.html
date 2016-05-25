@@ -25,7 +25,11 @@ download-validity = "{{ file_data[i].download_validity_end_date }}" id="{{ i }}"
       <div class="panel-body row">
       <div class="col-xs-3">
       	<a class="thumbnail ip-file-thumbnail">
-      		<img src="/assets/mycfo/images/default.jpg"  alt="Default Image">
+    		{% if(file_data[i].file_viewer_path) { %}
+    			<img src="/assets/mycfo/images/view_document.jpg"  title="IP File Preview Available" viewer-path="{{ file_data[i].file_viewer_path }}" class="ip-file-view">	
+    		{% } else { %}
+    			<img src="/assets/mycfo/images/default.jpg"  title="IP File Preview Not Available" viewer-path="{{ file_data[i].file_viewer_path }}" class="ip-file-view">	
+    		{% } %}
     	</a>
       </div>
       <div class="col-xs-9">	
@@ -49,7 +53,12 @@ download-validity = "{{ file_data[i].download_validity_end_date }}" id="{{ i }}"
 		     		<div class="row ip-row">
 		     			<div class="col-xs-6"><label class="ip-label">Customer</label></div>
 		     			<div class="col-xs-6">{{ file_data[i].customer }}</div>
-		     		</div>	
+		     		</div>
+		     		<div class="row ip-row">
+		     			{% var href= "#Form/User/" + file_data[i].owner %}
+		     			<div class="col-xs-6"><label class="ip-label">Author ID</label></div>
+		     			<div class="col-xs-6"><a href="{{ href }}">{{ file_data[i].owner }}</a></div>
+		     		</div>		
 		     	</div>
 		     	<div class="col-xs-6">
 		     		<div class="row ip-row">
