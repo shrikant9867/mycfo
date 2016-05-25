@@ -255,3 +255,19 @@ def get_permission_query_conditions_for_om(user):
 			WHERE name in (SELECT parent from `tabOperation And Project Details` WHERE email_id ='{0}')""".format(user),as_list=1)
 		name_list = "', '".join([customer[0] for customer in customer_list])
 		return """(`tabOperational Matrix`.name in ('{name_list}'))""".format(name_list=name_list)
+
+
+def get_permission_query_conditions_for_kpi(user):
+	if not user: user = frappe.session.user
+	"""
+		If the user type is mycfo user then show him only the project that he is linked with.
+	"""
+	#pass
+	if "Mycfo User" in frappe.get_roles(user) and not user == "Administrator":
+		customer_list  = frappe.db.sql("""SELECT DISTINCT(customer) 
+			from `tabOperation And Project Commercial`,`tabOperation And Project Details`,`tabEmployee` 
+			WHERE  `tabOperation And Project Commercial`.name in (SELECT parent from `tabOperation And Project Details` WHERE user_id ='{0}')""".format(user),as_list=1,debug=1)
+		name_list = "', '".join([customer[0] for customer in customer_list])
+		
+		return """(`tabKPI`.customer in ('{name_list}'))""".format(name_list=name_list)
+
