@@ -8,6 +8,8 @@ from frappe.model.document import Document
 import shutil
 import subprocess
 from frappe.utils import today, getdate
+import subprocess
+import shlex
 
 class IPApprover(Document):		
 
@@ -83,6 +85,7 @@ class IPApprover(Document):
 			request_type = {"New":"Published", "Edit":"Republished"}
 			self.init_for_add_comment(request_type.get(self.request_type))
 			shutil.move(frappe.get_site_path("public", self.file_path), frappe.get_site_path("public", "files", "mycfo", "published_file", self.file_type, self.file_name + extension))
+			self.create_compatible_odf_fromat()
 			self.prepare_for_published_notification()
 			frappe.msgprint("Document {0} {1} successfully.".format(self.file_name, request_type.get(self.request_type)))	
 		else:
@@ -124,7 +127,6 @@ class IPApprover(Document):
 
 	def init_update_ip_file(self, extension):
 		file_path = '/'.join(["files", "mycfo", "published_file", self.file_type, self.file_name + extension])
-		new_path = ""
 		request_type = {"New":"Published", "Edit":"Republished"}
 		file_status = request_type.get(self.request_type)
 		ip_file_cond = self.get_updated_ip_file_cond(file_path, file_status)
@@ -159,7 +161,6 @@ class IPApprover(Document):
 			"customer":self.customer,
 			"file_approver":self.approver or "",
 			"employee_name":self.employee_name
-
 		}
 		cond = ""
 		cond_list  = [ "{0} = '{1}' ".format(key, value)  for key, value in file_dict.items()]
@@ -186,7 +187,29 @@ class IPApprover(Document):
 		args = {"status":self.central_delivery_status, "comments":self.central_delivery_comments, "file_name":self.file_name}
 		self.send_notification(subject, email, template, args)	
 
+	def create_compatible_odf_fromat(self):
+		mapper = self.get_extension_mapper()
+		if self.file_extension != "zip" and self.file_extension:
+			try:
+				extension = mapper.get(self.file_extension, "pdf")
+				viewer_path = frappe.get_site_path('/'.join(["public", "files", "mycfo", "published_file", self.file_type, self.file_name + "_viewer." + extension]))
+				file_path = '/'.join(["files", "mycfo", "published_file", self.file_type, self.file_name + "." + self.file_extension])
+				file_path = frappe.get_site_path("public", file_path)
+				args = ['unoconv', '-f', str(extension) , '-T', '9', '-o', str(viewer_path), str(file_path)]
+				subprocess.check_call(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+				file_viewer_path = "assets/mycfo/ViewerJS/index.html#../../../../"  + '/'.join(["files", "mycfo", "published_file", self.file_type, self.file_name + "_viewer." + extension])
+				self.update_ip_file(" file_viewer_path = '%s' "%file_viewer_path)
+			except Exception, e:
+				print "CalledProcessError", e
+				frappe.throw(e)
 
+	def get_extension_mapper(self):
+		return {"gif":"pdf", "jpg":"pdf", "jpeg":"pdf", "png":"pdf", "svg":"pdf",
+					"doc":"pdf", "docx":"pdf", "xls":"ods", "xlsx":"ods", "xlsm":"ods",
+					"ppt":"pdf", "pptx":"pdf", "pdf":"pdf", "txt":"pdf", "csv":"ods"}
+
+				
+			
 
 
 

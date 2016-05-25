@@ -231,6 +231,7 @@ IpFileDashboard = Class.extend({
 		me.init_for_feedback_submission();
 		me.init_for_download_request();
 		me.init_for_pagination(r.message[1]);
+		me.init_for_file_viewing();
 	},
 	render_ratings:function(){
 		$(".rateYo").rateYo({
@@ -249,6 +250,25 @@ IpFileDashboard = Class.extend({
 	  		});
 		})
 		
+	},
+	init_for_file_viewing:function(){
+		var me = this;
+		$(".ip-file-view").click(function(){
+			var viewer_path = $(this).attr("viewer-path");
+			var file_name = $(this).closest(".panel").attr("file-name");
+			console.log("in ip file view_____", $(this).attr("viewer-path"), $(this))
+			viewer_path ? me.render_document_viewer(viewer_path, file_name) : frappe.msgprint("IP File {0} Preview is not available.".replace("{0}", file_name))
+		})
+	},
+	render_document_viewer:function(viewer_path, file_name){
+		this.dialog = new frappe.ui.Dialog({
+				title: "{0} Preview".replace("{0}", file_name),
+				fields: [{"fieldtype": "HTML", "fieldname": "viewer_html"}]						
+				})
+		this.dialog.show();
+		$(this.dialog.body).closest(".modal-dialog").css({"width":"900px", "height":"600px"})
+		console.log($(this.dialog))
+		$(this.dialog.body).find("[data-fieldname=viewer_html]").html('<iframe src ="{0}" width="840" height="530" allowfullscreen webkitallowfullscreen>'.replace("{0}", viewer_path))
 	},
 	empty_dashboard_and_footer:function(){
 		$(".ip-file-dashboard").html("");
