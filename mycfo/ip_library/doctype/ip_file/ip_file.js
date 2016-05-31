@@ -16,12 +16,12 @@ frappe.ui.form.on("IP File", {
 			cur_frm.set_df_property("file_approver", "hidden", 1)
 		}
 		else{
-			var fields = ["document_type", "file_approver", "file_name", "customer", "validity_end_date", "security_level"]
+			var fields = ["document_type", "file_approver", "file_name", "customer"]
 			$.each(fields, function(index, value){
 				cur_frm.set_df_property(value, "read_only", 1)
 			})
 		}
-			
+		make_fields_mandatory_for_cd_role();	
 		if (inList(["Published", "Republished", "Rejected by CD (Archive)", "Rejected by CD (Edit)", "Validity Upgraded", "Rejected by CD (Validity)"], frm.doc.file_status)){
 			init_for_archive_file(frm)
 			init_for_validity_upgrade(frm)
@@ -241,10 +241,9 @@ prepare_for_edit_file = function(frm, cdt, cdn){
 make_fields_mandatory_for_cd_role = function(){
 	if(in_list(user_roles, "Central Delivery")){
 		var fields = ["security_level", "validity_end_date"];
-		$.each(fields, function(index, value){
-			cur_frm.set_df_property(value, "reqd", 1)
-		})
+		toggle_fields_for_cd_role(fields, 1, 0);
 	}
+
 }
 
 init_for_post_customer_selection_process = function(hidden_value, reqd_value){
@@ -259,4 +258,11 @@ toggle_approver_fields = function(){
 	cur_frm.doc.employee_name = "";
 	init_for_post_customer_selection_process(1, 0)
 	cur_frm.refresh_fields(["file_approver", "employee_name"])
+}
+
+toggle_fields_for_cd_role = function(fields, reqd_value, read_only_value){
+	$.each(fields, function(index, value){
+		cur_frm.set_df_property(value, "reqd", reqd_value)
+		cur_frm.set_df_property(value, "read_only", read_only_value)
+	})
 }

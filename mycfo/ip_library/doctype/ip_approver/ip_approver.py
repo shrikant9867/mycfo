@@ -10,6 +10,7 @@ import subprocess
 from frappe.utils import today, getdate
 import subprocess
 import shlex
+import os
 
 class IPApprover(Document):		
 
@@ -195,17 +196,27 @@ class IPApprover(Document):
 				viewer_path = frappe.get_site_path('/'.join(["public", "files", "mycfo", "published_file", self.file_type, self.file_name + "_viewer." + extension]))
 				file_path = '/'.join(["files", "mycfo", "published_file", self.file_type, self.file_name + "." + self.file_extension])
 				file_path = frappe.get_site_path("public", file_path)
+				if extension != "html":	
+					print "in if loop", extension
+					file_viewer_path = "assets/mycfo/ViewerJS/index.html#../../../../"  + '/'.join(["files", "mycfo", "published_file", self.file_type, self.file_name + "_viewer." + extension])
+				else:
+					print "in else ", extension
+					viewer_path = frappe.get_site_path('/'.join(["public", "files", "mycfo", "published_file", self.file_type, self.file_name, self.file_name + "_viewer." + extension]))
+					file_viewer_path = '/'.join(["files", "mycfo", "published_file", self.file_type, self.file_name, self.file_name + "_viewer." + extension])
+					dir_path = frappe.get_site_path("public", "files", "mycfo", "published_file", self.file_type, self.file_name)
+					if os.path.isdir(dir_path):
+						print "in remove directory_________"
+						shutil.rmtree(dir_path, ignore_errors=True)
 				args = ['unoconv', '-f', str(extension) , '-T', '9', '-o', str(viewer_path), str(file_path)]
-				subprocess.check_call(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-				file_viewer_path = "assets/mycfo/ViewerJS/index.html#../../../../"  + '/'.join(["files", "mycfo", "published_file", self.file_type, self.file_name + "_viewer." + extension])
-				self.update_ip_file(" file_viewer_path = '%s' "%file_viewer_path)
+				subprocess.check_call(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)	
+				self.update_ip_file(" file_viewer_path = '%s' "%file_viewer_path)		
 			except Exception, e:
 				print "CalledProcessError", e
 				frappe.throw(e)
 
 	def get_extension_mapper(self):
 		return {"gif":"pdf", "jpg":"pdf", "jpeg":"pdf", "png":"pdf", "svg":"pdf",
-					"doc":"pdf", "docx":"pdf", "xls":"ods", "xlsx":"ods", "xlsm":"ods",
+					"doc":"pdf", "docx":"pdf", "xls":"html", "xlsx":"html", "xlsm":"html",
 					"ppt":"pdf", "pptx":"pdf", "pdf":"pdf", "txt":"pdf", "csv":"ods"}
 
 				
