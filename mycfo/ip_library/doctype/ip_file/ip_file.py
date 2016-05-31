@@ -5,7 +5,7 @@
 from __future__ import unicode_literals
 import frappe
 from frappe.model.document import Document
-from frappe.utils import cint , getdate
+from frappe.utils import cint, getdate, today, getdate
 import base64
 import json
 import os
@@ -38,8 +38,7 @@ class IPFile(Document):
 	
 	def validate_for_file_data(self):
 		if not self.file_data and cint(self.get("__islocal")):
-			frappe.throw("Please upload the IP document for publishing.")
-				
+			frappe.throw("Please upload the IP document for publishing.")		
 
 	def store_document(self):
 		self.create_directory()

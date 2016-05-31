@@ -352,7 +352,6 @@ IpFileDashboard = Class.extend({
 		customer = me.dialog.fields_dict.customer.input.value
 		employee_id = me.dialog.fields_dict.employee_id.input.value	
 		my_dict = {"ip_file_name":ip_file_name, "customer":customer, "approver":employee_id}
-		console.log(my_dict)
 		if (me.el_flag){
 			if(customer){
 				me.make_download_request(file_name, request_button, my_dict)
