@@ -320,5 +320,5 @@ def send_mail_to_mycfo_users(email_ids, title_name):
 	owner = frappe.db.get_value("User", owner, [" concat(first_name, ' ', last_name) "])
 	assignee = frappe.db.get_value("User", frappe.session.user, ["concat(first_name, ' ', ifnull(last_name,'') )"])
 	args = {"assignee" :assignee, "subject":title, "category":category, "host_url":get_url(), "owner":owner}
-	frappe.sendmail(recipients=email_ids, sender=None, subject="New Discussion Topic Posted",
+	frappe.sendmail(recipients=email_ids, sender=None, subject="Discussion Topic Assigned to You",
 		message=frappe.get_template(template).render(args), cc=get_central_delivery())	
