@@ -14,7 +14,7 @@ class DiscussionTopic(Document):
 	def after_insert(self):
 		email_ids = get_mycfo_users()
 		template = "/templates/discussion_forum_templates/topic_creation_notification.html"
-		owner = frappe.db.get_value("User", self.owner, [" concat(first_name, ' ', last_name) "])
+		owner = frappe.db.get_value("User", self.owner, ["concat(first_name, ' ', ifnull(last_name,'') )"])
 		args = {"owner" :owner, "subject":self.title, "category":self.blog_category, "host_url":get_url()}
 		frappe.sendmail(recipients=email_ids, sender=None, subject="New Discussion Topic Posted",
 		message=frappe.get_template(template).render(args))	
