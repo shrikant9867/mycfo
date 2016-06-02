@@ -10,6 +10,9 @@ from frappe.website.utils import find_first_image
 from markdown2 import markdown
 import datetime
 import math
+from mycfo.mycfo_utils import get_central_delivery
+from frappe.utils import get_url
+
 STANDARD_USERS = ("Guest", "Administrator")
 
 
@@ -266,6 +269,7 @@ def assign_topic(args=None):
 		from frappe.desk.form.assign_to import notify_assignment
 		notify_assignment(d.assigned_by, d.owner, d.reference_type, d.reference_name, action='ASSIGN', description=args.get("description"), notify=1)
 
+	send_mail_to_mycfo_users(emp_list, args["name"])
 	return
 
 # def user_query(doctype, txt, searchfield, start, page_len, filters):
@@ -310,3 +314,11 @@ def get_categories():
 
 
 
+def send_mail_to_mycfo_users(email_ids, title_name):
+	title, category, owner = frappe.db.get_value("Discussion Topic", title_name, ["title", "blog_category", "owner"])
+	template = "/templates/discussion_forum_templates/topic_assign_notification.html"
+	owner = frappe.db.get_value("User", owner, [" concat(first_name, ' ', last_name) "])
+	assignee = frappe.db.get_value("User", frappe.session.user, [" concat(first_name, ' ', last_name) "])
+	args = {"assignee" :assignee, "subject":title, "category":category, "host_url":get_url(), "owner":owner}
+	frappe.sendmail(recipients=email_ids, sender=None, subject="New Discussion Topic Posted",
+		message=frappe.get_template(template).render(args), cc=get_central_delivery())	
