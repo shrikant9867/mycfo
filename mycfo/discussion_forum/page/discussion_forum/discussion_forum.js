@@ -568,7 +568,10 @@ df.discussion_forum = Class.extend({
 				employee_list.push(this.assign_topic_data[i].employee);	
 			}
 			var assign_emp = employee_list
+			me.dialog.hide();
 			return frappe.call({
+				freeze:true,
+				freeze_message:"Please wait .........................",
 				method:'mycfo.discussion_forum.page.discussion_forum.discussion_forum.assign_topic',
 				args: $.extend(args, {
 					topic_name:topic_name,
@@ -579,7 +582,7 @@ df.discussion_forum = Class.extend({
 				callback: function(r,rt) {
 					if(!r.exc) {
 						me.make_topic(topic_name)
-						me.dialog.hide()
+					
 					}
 				},
 				btn: this
