@@ -319,3 +319,21 @@ def validate_user_is_el(customer):
 								and opd.user_name = '%s'  
 								and opc.customer = '%s' """%(employee, customer), as_list=1)
 	return {"is_el":1} if len(response) else {"is_el":0}
+
+
+@frappe.whitelist()
+def get_feedback_questionnaire():
+	qtns = frappe.get_all("IP Questionnaire", filters={"parent":"IP File Questionnaire"}, fields=["*"])
+	return qtns
+
+@frappe.whitelist()
+def create_feedback_questionnaire_form(answer_dict):
+	answer_dict = json.loads(answer_dict)
+	fdbk = frappe.get_doc({
+		"doctype": "IP File Feedback",
+		"user":frappe.session.user,
+		"user_answers":answer_dict
+	})
+	fdbk.flags.ignore_permissions = True
+	fdbk.insert()
+	return "success"
