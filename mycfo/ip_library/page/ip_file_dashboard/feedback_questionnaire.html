@@ -1,7 +1,7 @@
-<div class="panel panel-primary question-panel" qtn-id="{{ question_dict.name }}" qtn-type="{{ question_dict.question_type }}">
-  <div class="panel-heading">Question {{ qtn_index }} of {{ qtn_count }}.</div>
-	<div class="panel-body row question">	
-		<p><strong>Q.{{ qtn_index }} {{ question_dict.question_name }} </strong></p>
+{% for(var i=0, l=questions.length; i < l; i++) { %}
+{% var question_dict = questions[i] %}
+	<div class="row question"  qtn-id="{{ question_dict.name }}" qtn-type="{{ question_dict.question_type }}">	
+		<p><strong>Q.{{ i + 1 }} {{ question_dict.question_name }} </strong></p>
 		{% var option_list = ["option_a", "option_b", "option_c", "option_d", "option_e"] %}
 		{% var mapper = { "option_a":"A", "option_b":"B", "option_c":"C", "option_d":"D", "option_e":"E" } %}
 		{% if( question_dict.question_type == "Objective" ) { %}
@@ -22,5 +22,6 @@
 		{% } else { %}
 			 <div class="subj-ans-div"><textarea class="form-control subj-ans" >{{ question_dict.user_subjective_answer }}</textarea></div>
 		{% } %}	
-	</div>	
-</div>
+	</div>
+	<hr>
+{% } %}	

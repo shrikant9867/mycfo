@@ -106,7 +106,6 @@ IpFileDashboard = Class.extend({
 					method: "get_global_search_suggestions",
 					args:{"filters":request.term},
 					callback:function(r){
-						console.log(r.message)
 						response(r.message)
 					}
 				})
@@ -229,6 +228,7 @@ IpFileDashboard = Class.extend({
 		me.render_ratings();
 		me.render_avg_ratings(r.message[0]);
 		me.init_for_feedback_submission();
+		// me.init_for_feedback_questionnaire();
 		me.init_for_download_request();
 		me.init_for_pagination(r.message[1]);
 		me.init_for_file_viewing();
@@ -256,7 +256,6 @@ IpFileDashboard = Class.extend({
 		$(".ip-file-view").click(function(){
 			var viewer_path = $(this).attr("viewer-path");
 			var file_name = $(this).closest(".panel").attr("file-name");
-			console.log("in ip file view_____", $(this).attr("viewer-path"), $(this))
 			viewer_path ? me.render_document_viewer(viewer_path, file_name) : frappe.msgprint("IP File {0} Preview is not available.".replace("{0}", file_name))
 		})
 	},
@@ -267,7 +266,6 @@ IpFileDashboard = Class.extend({
 				})
 		this.dialog.show();
 		$(this.dialog.body).closest(".modal-dialog").css({"width":"900px", "height":"600px"})
-		console.log($(this.dialog))
 		$(this.dialog.body).find("[data-fieldname=viewer_html]").html('<iframe src ="{0}" width="840" height="530" allowfullscreen webkitallowfullscreen>'.replace("{0}", viewer_path))
 	},
 	empty_dashboard_and_footer:function(){
@@ -491,5 +489,78 @@ IpFileDashboard = Class.extend({
 
 		})
 
+	},
+	init_for_feedback_questionnaire:function(){
+		var me = this;
+		$(".write-feedback").click(function(){
+			frappe.call({
+				freeze: true,
+				freeze_message:"Please wait ..............",
+				module:"mycfo.ip_library",
+				page: "ip_file_dashboard",
+				method: "get_feedback_questionnaire",
+				callback:function(r){
+					if(r.message){
+						me.render_feedback_questionnaire(r.message);
+					}else{
+						frappe.msgprint("Sorry for inconvinence,Feedback Questionnaire has not set by Central Delivery. Try Later.")
+					}
+				}
+			})
+		})
+	},
+	render_feedback_questionnaire:function(questions){
+		var me = this;
+		this.dialog = new frappe.ui.Dialog({
+					title: "Submit Feedback",
+					fields: [
+							{"fieldtype": "HTML", "fieldname": "feedback_html"}
+						],
+					primary_action_label: "Submit",
+					primary_action: function(doc) {
+							me.submit_feedback_questionnaire();
+							me.dialog.hide();
+						}
+					})
+		this.dialog.questions = questions;
+		this.dialog.show();
+		this.render_questions();
+	},
+	render_questions:function(){
+		$(this.dialog.body).find("div[data-fieldname=feedback_html]").html(frappe.render_template("feedback_questionnaire", {"questions":this.dialog.questions}));
+	},
+	submit_feedback_questionnaire:function(){
+		var me = this;
+		me.get_feedback_answers();
+		frappe.call({
+			freeze: true,
+			freeze_message:"Please wait ..............",
+			module:"mycfo.ip_library",
+			page: "ip_file_dashboard",
+			method: "create_feedback_questionnaire_form",
+			args:{"answer_dict":me.dialog.questions},
+			callback:function(r){
+				if(r.message == "success"){
+					frappe.msgprint("Feedback Questionnaire submitted successfully.")
+				}
+			}
+
+		})
+	},
+	get_feedback_answers:function(){
+		var me = this;
+		$.each(me.dialog.questions, function(index, value){
+			var $question = $(me.dialog.body).find("div[qtn-id='{0}']".replace("{0}", value.name));
+			if(value.question_type == "Objective" ){
+				answer = $question.find("input[name='radio']:checked").attr("option-nm");
+				answer = answer ? answer : ""
+				me.dialog.questions[index].objective_answer = answer;
+			}
+			else{
+				answer = $question.find(".subj-ans").val();
+				me.dialog.questions[index].subjective_answer = answer;
+			}
+		})
 	}
+
 })
