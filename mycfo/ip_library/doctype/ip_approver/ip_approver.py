@@ -199,7 +199,7 @@ class IPApprover(Document):
 				viewer_path = frappe.get_site_path('/'.join(["public", "files", "mycfo", "published_file", self.file_type, self.file_name + "_viewer." + extension]))
 				file_path = '/'.join(["files", "mycfo", "published_file", self.file_type, self.file_name + "." + self.file_extension])
 				if self.file_extension  == "pdf":
-					file_viewer_path = file_path
+					file_viewer_path = "assets/mycfo/ViewerJS/index.html#../../../../"  + file_path
 				else:
 					file_path = frappe.get_site_path("public", file_path)	
 					if extension != "html":
