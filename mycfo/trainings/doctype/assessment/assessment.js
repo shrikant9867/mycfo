@@ -19,13 +19,14 @@ frappe.ui.form.on("Assessment Question Sheet", "question_type", function(frm, cd
 	if (child_row.question_type == "Objective"){
 		child_row.total_marks = 1;
 		read_only_fields = ["question_name", "subjective_answer"]
-		refresh_field("table_5")
+		
 	}else{
 		read_only_fields = ["option_a", "option_b", "option_c", "option_d", "option_e", 
 							"objective_answer", "question_name"]
 	}
 
 	make_read_only(read_only_fields, child_row)
+	refresh_field("table_5");
 })
 
 
@@ -66,9 +67,7 @@ flush = function(row,fields){
 
 
 make_read_only = function(fields, row){
-	console.log("in make make_read_only")
 	$.each(fields, function(index, field) {
-		console.log(["in fields", field])
 	  	row[field] = "";
 	  	refresh_field(field)
   })
