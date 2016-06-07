@@ -8,6 +8,7 @@
         <th>Assessment Status</th>
         <th>Total Score (%)</th>
         <th>Download</th>
+        <th>Review</th>
         <th>Feedback</th>
         <th>Start Test</th>
         <th>Result</th>
@@ -15,16 +16,23 @@
     </thead>
     <tbody>
      {% for(var i=0, l=my_training.length; i < l; i++) { %}
-      <tr tr-nm= "{{ my_training[i].training_name }}" tr-url="{{ my_training[i].training_path }}" download-flag="{{ my_training[i].download_flag }}" ans-sheet-status= "{{ my_training[i].answer_sheet_status }}" tr-ans-sheet="{{ my_training[i].ans_sheet }}">
+      <tr tr-nm= "{{ my_training[i].training_name }}" tr-url="{{ my_training[i].training_path }}" download-flag="{{ my_training[i].download_flag }}" ans-sheet-status= "{{ my_training[i].answer_sheet_status }}" tr-ans-sheet="{{ my_training[i].ans_sheet }}" tr-feedback-form="{{ my_training[i].feedback_form }}">
         <td class="value">{{ my_training[i].training_name }}</td>
         <td class="value">{{ my_training[i].sub_date }}</td>
         <td class="value">{{ my_training[i].assessment_status }}</td>
         <td class="value">{{ my_training[i].percentage_score }}</td>
         <td><button type="button" class="btn btn-success tr-download" tr-url="{{ my_training[i].training_path }}"><i class="icon-download"></i></button></td>
-        {% if(my_training[i].download_flag ) { %}
-            <td><button type="button" class="btn btn-success tr-feedback">Share Review</button> </td>
+        {% if(inList(["Open", "Closed"], my_training[i].answer_sheet_status )) { %}
+            <td><button type="button" class="btn btn-success tr-feedback">Review</button> </td>
         {% } else { %}
-            <td  data-toggle="tooltip" data-placement="top"  title="Allowed after training download !!!!" class="td-review"><button type="button" class="btn btn-success tr-feedback"  disabled>Share Review</button> </td>
+            <td  data-toggle="tooltip" data-placement="top"  title="Review allowed after Test Completion !!!!" class="td-review"><button type="button" class="btn btn-success tr-feedback"  disabled>Review</button> </td>
+        {% } %}
+
+        {% if(!my_training[i].feedback_form && inList(["Open", "Closed"], my_training[i].answer_sheet_status )) { %}
+            <td><button type="button" class="btn btn-success tr-share-feedback">Feedback</button> </td>
+        {% } else { %}
+            {% var title = my_training[i].feedback_form ? "Feedback Already Submitted !!!!":"Feedback allowed after Test Completion !!!!" %}
+            <td  data-toggle="tooltip" data-placement="top"  title="{{ title }}" class="td-share-feedback"><button type="button" class="btn btn-success tr-share-feedback"  disabled>Feedback</button> </td>
         {% } %}
 
          {% if(my_training[i].download_flag && inList(["New", "Pending"], my_training[i].answer_sheet_status )  ) { %}    
