@@ -27,6 +27,11 @@ def get_data():
 					"type": "doctype",
 					"name": "IP Archiver",
 					"description": _("Archive IP File from here.")
+				},
+				{
+					"type": "doctype",
+					"name": "IP File Feedback",
+					"description": _("Check IP File Feedback of users.")
 				}
 				
 			]
@@ -49,6 +54,11 @@ def get_data():
 					"type": "doctype",
 					"name": "Skill Matrix 120",
 					"description": _("Skill Matrix 120"),
+				},
+				{
+					"type": "doctype",
+					"name": "IP File Questionnaire",
+					"description": _("Set IP File Feedback Questionnaire.")
 				}
 			]
 		},

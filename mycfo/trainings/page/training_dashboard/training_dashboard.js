@@ -61,7 +61,6 @@ TrainingDashboard = Class.extend({
 					method: "get_global_search_suggestions",
 					args:{"filters":request.term},
 					callback:function(r){
-						console.log(r.message)
 						response(r.message)
 					}
 				})
@@ -88,7 +87,6 @@ TrainingDashboard = Class.extend({
 			method: "get_published_trainings",
 			args:{"search_filters": me.search_filters },
 			callback:function(r){
-				console.log(r.message)
 				me.run_post_search_operation(r.message)
 			
 			}
@@ -193,7 +191,6 @@ TrainingDashboard = Class.extend({
 	},
 	make_training_subscription_request:function(){
 		var me = this;
-		console.log("training subscribe")
 		$(".subscribe").click(function(){
 			var subscribe_button = this;
 			$panel = $(this).closest(".training-panel")
@@ -224,7 +221,6 @@ TrainingDashboard = Class.extend({
 			page: "training_dashboard",
 			method: "validate_if_current_user_is_author",
 			callback:function(r){
-				console.log(r.message)
 				if (r.message)
 					me.render_assign_training();
 			}
@@ -232,10 +228,8 @@ TrainingDashboard = Class.extend({
 	},
 	render_assign_training:function(){
 		var me = this;
-		console.log("assign now")
 		$(this.page.page_form).append("<button class='btn btn-default btn-xs input-sm btn-sm'  style='width:150px;' id='assign_training' >Assign Training</button>")		
 		$(this.wrapper).find("#assign_training").click(function(){
-			console.log("in on click")
 			me.render_dialog_for_assign_training()
 		})
 	},
@@ -280,7 +274,6 @@ TrainingDashboard = Class.extend({
 	init_for_tr_change:function() {
 		var me = this;
 		this.dialog.fields_dict.tr_nm.$input.on("change", function(){
-			console.log("in tr change")
 			me.dialog.fields_dict.employee.input.value = ""
 		})
 	},
@@ -302,7 +295,6 @@ TrainingDashboard = Class.extend({
 		var me = this;
 		this.assign_training_data = [];
 		this.dialog.fields_dict.add_training.$input.click(function(){
-			console.log("in add")
 			if (me.dialog.fields_dict.tr_nm.input.value && me.dialog.fields_dict.employee.input.value){
 				if (me.check_for_duplicate_training()){
 					me.render_table_head();
@@ -387,7 +379,6 @@ MyTrainings = Class.extend({
 	},
 	init_for_my_trainings_trigger:function(){
 		var me = this;
-		console.log(this.filters)
 		this.filters.my_training.$input.on("click", function(){
 			me.empty_dashboard_and_footer();
 			me.get_my_trainings_data();
@@ -410,13 +401,13 @@ MyTrainings = Class.extend({
 		})	
 	},
 	render_my_trainings_page:function(tr_data){
-		console.log(tr_data)
 		$('[data-toggle="tooltip"]').tooltip(); 
 		$(this.body).html(frappe.render_template("my_training", {"my_training":tr_data}));
 		this.init_for_training_download();
 		this.init_for_feedback_sharing();
 		this.init_for_start_test();
-		this.check_answer_sheet();	
+		this.check_answer_sheet();
+		this.init_for_share_feedback();	
 	},
 	empty_dashboard_and_footer:function(){
 		$(".training-dashboard").html("");
@@ -440,10 +431,10 @@ MyTrainings = Class.extend({
 			method: "create_training_download_log",
 			args:{"training_name":tr_name, "ans_sheet":ans_sheet },
 			callback:function(r){
-				$(button_this).closest("tr").find(".tr-feedback").attr("disabled", false)
+				// $(button_this).closest("tr").find(".tr-feedback").attr("disabled", false)
 				$(button_this).closest("tr").find(".tr-start-assessment").attr("disabled", false)
 				$(button_this).closest("tr").find(".td-start-test").attr("title", "")
-				$(button_this).closest("tr").find(".td-review").attr("title", "")
+				// $(button_this).closest("tr").find(".td-review").attr("title", "")
 			}
 		})
 	},
@@ -462,10 +453,10 @@ MyTrainings = Class.extend({
 	render_share_feedback_popup:function(training_name){
 		var me = this;
 		this.dialog = new frappe.ui.Dialog({
-			title:__("Share Feedback"),
+			title:__("Share Review"),
 			fields: [
 				{fieldtype: "HTML", fieldname: "share_feedback_html"},
-				{fieldtype: "Small Text", fieldname: "feedback_text_area", label: __("Your Feedback"), options: ""},
+				{fieldtype: "Small Text", fieldname: "feedback_text_area", label: __("Write Review"), options: ""},
 			],
 			primary_action_label: __("Submit"),
 			primary_action: function() {
@@ -482,8 +473,6 @@ MyTrainings = Class.extend({
 			}
 
 		});
-		console.log($(this.dialog.fields_dict.share_feedback_html.$wrapper))
-		console.log($(this.dialog.fields_dict))
 		$(this.dialog.fields_dict.share_feedback_html.$wrapper).append("<div class='row'><div class='col-xs-3'><label class='control-label'>Your Rating</label></div>\
 			<div class='col-xs-9 rateYo'></div></div>")		
 		this.render_ratings();		
@@ -512,7 +501,6 @@ MyTrainings = Class.extend({
 	init_for_start_test:function(){
 		var me = this;
 		$(this.body).find(".tr-start-assessment").click(function(){
-			console.log("in start asssessment")
 			var ans_sheet = $(this).closest("tr").attr("tr-ans-sheet")
 			me.check_if_answer_sheet_completed(ans_sheet);
 		})
@@ -528,7 +516,6 @@ MyTrainings = Class.extend({
 				method: "check_answer_sheet_status",
 				args:{"ans_sheet":ans_sheet },
 				callback:function(r){
-					console.log(["in check ans_sheet", r.message])
 					if(inList(["Pending", "New"], r.message) ){
 						frappe.route_options = {"ans_sheet": ans_sheet}
 						frappe.set_route("training-test")	
@@ -537,10 +524,85 @@ MyTrainings = Class.extend({
 					}			
 				}
 			})
+	},
+	init_for_share_feedback:function(){
+		var me = this;
+		$(".tr-share-feedback").click(function(){
+			var training = $(this).closest("tr").attr("tr-nm");
+			var ans_sheet = $(this).closest("tr").attr("tr-ans-sheet");
+			var $button = $(this);
+			frappe.call({
+				freeze: true,
+				freeze_message:"Please wait ..............",
+				module:"mycfo.trainings",
+				page: "training_dashboard",
+				method: "get_feedback_questionnaire",
+				callback:function(r){
+					if(r.message){
+						me.render_feedback_questionnaire(r.message, ans_sheet, training, $button);
+					}else{
+						frappe.msgprint("Sorry for inconvinence,Feedback Questionnaire has not set by Central Delivery. Try Later.")
+					}
+				}
+			})
+		})
+	},
+	render_feedback_questionnaire:function(questions, ans_sheet, training, $button){
+		var me = this;
+		this.dialog = new frappe.ui.Dialog({
+					title: "Share Feedback",
+					fields: [
+							{"fieldtype": "HTML", "fieldname": "feedback_html"}
+						],
+					primary_action_label: "Submit",
+					primary_action: function(doc) {
+							me.submit_feedback_questionnaire();
+							me.dialog.hide();
+							$button.attr("disabled", true);
+						}
+					})
+		this.dialog.questions = questions;
+		this.dialog.ans_sheet = ans_sheet;
+		this.dialog.training = training;
+		this.dialog.show();
+		this.render_questions();
+	},
+	render_questions:function(){
+		$(this.dialog.body).find("div[data-fieldname=feedback_html]").html(frappe.render_template("feedback_questionnaire", {"questions":this.dialog.questions}));
+	},
+	submit_feedback_questionnaire:function(){
+		var me = this;
+		me.get_feedback_answers();
+		frappe.call({
+			freeze: true,
+			freeze_message:"Please wait ..............",
+			module:"mycfo.trainings",
+			page: "training_dashboard",
+			method: "create_feedback_questionnaire_form",
+			args:{"answer_dict":me.dialog.questions, "ans_sheet":me.dialog.ans_sheet, "training":me.dialog.training},
+			callback:function(r){
+				if(r.message == "success"){
+					frappe.msgprint("Feedback Questionnaire submitted successfully.")
+				}
+			}
+
+		})
+	},
+	get_feedback_answers:function(){
+		var me = this;
+		$.each(me.dialog.questions, function(index, value){
+			var $question = $(me.dialog.body).find("div[qtn-id='{0}']".replace("{0}", value.name));
+			if(value.question_type == "Objective" ){
+				answer = $question.find("input[name='radio']:checked").attr("option-nm");
+				answer = answer ? answer : ""
+				me.dialog.questions[index].objective_answer = answer;
+			}
+			else{
+				answer = $question.find(".subj-ans").val();
+				me.dialog.questions[index].subjective_answer = answer;
+			}
+		})
 	}
-
-
-
 })
 
 
