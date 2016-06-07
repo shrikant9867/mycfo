@@ -300,6 +300,23 @@ def get_comments_reviews(response):
 												where  file_name = %s""",(response.get("file_name")),as_dict=1)	 
 	response["download_flag"] = frappe.db.get_value("IP Download Log", {"file_name":response.get("file_name"), "user_id":frappe.session.user}, "name")
 	response["panel_class"] = "panel panel-primary ip-file-panel" if response.get("published_flag") else "panel panel-archive ip-file-panel"
+	get_feed_back_questionnaire_form(response)
+
+
+def get_feed_back_questionnaire_form(response):
+	cond_dict = {"user":frappe.session.user, "ip_file":response.get("file_name")}
+	if "Central Delivery" not in frappe.get_roles():
+		feedback = """ select  ipd.name
+						from `tabIP Download Approval` ipd
+						where ipd.file_name = '{0}'
+						and ipd.ip_file_requester = '{1}'
+						and ipd.approval_status in ('Download Allowed', 'Expired')
+						order by ipd.creation desc limit 1	""".format(response.get("file_name"), frappe.session.user)
+		fdbk_response = frappe.db.sql(feedback, as_dict=1)
+		if fdbk_response:
+			response["download_feedback_form"] = fdbk_response[0].get("name", "")
+			cond_dict.update({"ip_download_request":fdbk_response[0].get("name", "")}) 
+	response["feedback_form"] = frappe.db.get_value("IP File Feedback", cond_dict, "name")
 
 
 def get_customer_list(doctype, txt, searchfield, start, page_len, filters):
@@ -323,16 +340,18 @@ def validate_user_is_el(customer):
 
 @frappe.whitelist()
 def get_feedback_questionnaire():
-	qtns = frappe.get_all("IP Questionnaire", filters={"parent":"IP File Questionnaire"}, fields=["*"])
+	qtns = frappe.get_all("IP Questionnaire", filters={"parent":"IP File Questionnaire", "status":1}, fields=["*"])
 	return qtns
 
 @frappe.whitelist()
-def create_feedback_questionnaire_form(answer_dict):
+def create_feedback_questionnaire_form(answer_dict, download_request, ip_file):
 	answer_dict = json.loads(answer_dict)
 	fdbk = frappe.get_doc({
 		"doctype": "IP File Feedback",
 		"user":frappe.session.user,
-		"user_answers":answer_dict
+		"user_answers":answer_dict,
+		"ip_file":ip_file,
+		"ip_download_request":download_request or ""
 	})
 	fdbk.flags.ignore_permissions = True
 	fdbk.insert()

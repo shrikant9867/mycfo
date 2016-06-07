@@ -6,6 +6,7 @@
 		"public/js/slick/controls/slick.columnpicker.js",
 		"public/js/slick/controls/slick.pager.js",
 		"public/js/slick/plugins/slick.checkboxselectcolumn.js",
-		"public/js/slick/plugins/slick.autotooltips.js"
+		"public/js/slick/plugins/slick.autotooltips.js",
+		"public/js/templates/feedback_questionnaire.html"
 	]
 }
