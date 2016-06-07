@@ -230,8 +230,30 @@ def get_meta_data_of_response(response_data):
 		response["assessment_status"] = mapper.get(response.get("answer_sheet_status")) if response.get("answer_sheet_status") else ""
 		response["tooltip_title"] = "{0} test Completed".format(response.get("training_name")) if response.get("answer_sheet_status") in ["Open", "Closed"] else " Test allowed after training download !!!!"
 		response["sub_date"] = formatdate(response.get("creation"))
+		response["feedback_form"] = frappe.db.get_value("Training Feedback", {"user":frappe.session.user, "answer_sheet":response.get("ans_sheet"), "training":response.get("training_name")}, "name")
 
 
 @frappe.whitelist()
 def check_answer_sheet_status(ans_sheet):
 	return frappe.db.get_value("Answer Sheet", {"name":ans_sheet}, 'answer_sheet_status')
+
+
+
+@frappe.whitelist()
+def get_feedback_questionnaire():
+	qtns = frappe.get_all("IP Questionnaire", filters={"parent":"Training Questionnaire", "status":1}, fields=["*"])
+	return qtns
+
+@frappe.whitelist()
+def create_feedback_questionnaire_form(answer_dict, ans_sheet, training):
+	answer_dict = json.loads(answer_dict)
+	fdbk = frappe.get_doc({
+		"doctype": "Training Feedback",
+		"user":frappe.session.user,
+		"user_answers":answer_dict,
+		"training":training,
+		"answer_sheet":ans_sheet
+	})
+	fdbk.flags.ignore_permissions = True
+	fdbk.insert()
+	return "success"

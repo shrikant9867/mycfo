@@ -1,6 +1,6 @@
 {% for(var i=0, l=file_data.length; i < l; i++) { %}
 <div class="{{ file_data[i].panel_class }}" file-name = "{{ file_data[i].file_name }}" ip-file-name= "{{ file_data[i].name }}" file-url="{{ file_data[i].file_path }}"
-download-validity = "{{ file_data[i].download_validity_end_date }}" id="{{ i }}" download-form= "{{ file_data[i].download_form }}">
+download-validity = "{{ file_data[i].download_validity_end_date }}" id="{{ i }}" download-form= "{{ file_data[i].download_form }}" download-feedback-form="{{ file_data[i].download_feedback_form }}" feedback-form="{{ file_data[i].feedback_form }}">
       <div class="panel-heading panel-heading-custom2">{{ file_data[i].file_name }}
 		{% if (file_data[i].security_level == "0-Level" || file_data[i].approval_status == "Download Allowed"  || inList(user_roles, "Central Delivery") ) { %}
 			
@@ -38,7 +38,7 @@ download-validity = "{{ file_data[i].download_validity_end_date }}" id="{{ i }}"
 		    <li><a data-toggle="tab" href="#approval-menu{{ i }}">Approval</a></li>
 		    <li><a data-toggle="tab" href="#reviews-menu{{ i }}">Reviews & Downloads</a></li>
 		    {% if(file_data[i].download_flag) { %}
-		    <li><a data-toggle="tab" href="#feedback-menu{{ i }}" class="feedback-li">Write Feedback</a></li>
+		    <li><a data-toggle="tab" href="#feedback-menu{{ i }}" class="feedback-li">Share Feedback</a></li>
 		  	{% } %}
 		  </ul>
 
@@ -124,7 +124,9 @@ download-validity = "{{ file_data[i].download_validity_end_date }}" id="{{ i }}"
 		     	</div>
 		     	<div class="row">
 		     		<button type="button" class="btn btn-primary submit-review">Submit Review</button>
-		     		<!-- <button type="button" class="btn btn-primary write-feedback">Write Feedback</button> -->
+		     		{% if(! file_data[i].feedback_form) { %}
+		     		<button type="button" class="btn btn-primary write-feedback">Share Feedback</button>
+		     		{% } %}
 		     	</div>
 		     </div>
 		    {% } %} 
