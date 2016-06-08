@@ -390,6 +390,14 @@ cur_frm.cscript.kpi_business_details_on_form_rendered = function(doc, cdt, cdn){
 		console.log("in else")
 		toggle_read_only_property_of_fields(0,"kpi_business_details")
 	}	
+
+	if (row.doc.client_status == "Accept"){
+		console.log("in if2")
+		toggle_read_only_property_of_fields_ap(1,"kpi_business_details")
+	}else{
+		console.log("in else2")
+		toggle_read_only_property_of_fields_ap(0,"kpi_business_details")
+	}	
 }
 cur_frm.cscript.kpi_people_details_on_form_rendered = function(doc, cdt, cdn){	
 	var row = cur_frm.cur_grid.get_open_form(); 
@@ -400,6 +408,14 @@ cur_frm.cscript.kpi_people_details_on_form_rendered = function(doc, cdt, cdn){
 		console.log("in else")
 		toggle_read_only_property_of_fields(0,"kpi_people_details")
 	}	
+
+	if (row.doc.client_status == "Accept"){
+		console.log("in if2")
+		toggle_read_only_property_of_fields_ap(1,"kpi_people_details")
+	}else{
+		console.log("in else2")
+		toggle_read_only_property_of_fields_ap(0,"kpi_people_details")
+	}
 }
 cur_frm.cscript.kpi_finance_details_on_form_rendered = function(doc, cdt, cdn){	
 	var row = cur_frm.cur_grid.get_open_form(); 
@@ -410,6 +426,14 @@ cur_frm.cscript.kpi_finance_details_on_form_rendered = function(doc, cdt, cdn){
 		console.log("in else")
 		toggle_read_only_property_of_fields(0,"kpi_finance_details")
 	}	
+
+	if (row.doc.client_status == "Accept"){
+		console.log("in if2")
+		toggle_read_only_property_of_fields_ap(1,"kpi_finance_details")
+	}else{
+		console.log("in else2")
+		toggle_read_only_property_of_fields_ap(0,"kpi_finance_details")
+	}
 }
 cur_frm.cscript.kpi_process_details_on_form_rendered = function(doc, cdt, cdn){	
 	var row = cur_frm.cur_grid.get_open_form(); 
@@ -420,9 +444,24 @@ cur_frm.cscript.kpi_process_details_on_form_rendered = function(doc, cdt, cdn){
 		console.log("in else")
 		toggle_read_only_property_of_fields(0,"kpi_process_details")
 	}	
+
+	if (row.doc.client_status == "Accept"){
+		console.log("in if2")
+		toggle_read_only_property_of_fields_ap(1,"kpi_process_details")
+	}else{
+		console.log("in else2")
+		toggle_read_only_property_of_fields_ap(0,"kpi_process_details")
+	}
 }
 toggle_read_only_property_of_fields = function(property,table_name){
 	var field_index = [0,1,2,3,4];	
+	$.each(field_index, function(i, value){
+		cur_frm.get_field(table_name).grid.docfields[value].read_only = property;
+	})
+	refresh_field(table_name)	
+}
+toggle_read_only_property_of_fields_ap = function(property,table_name){
+	var field_index = [15];	
 	$.each(field_index, function(i, value){
 		cur_frm.get_field(table_name).grid.docfields[value].read_only = property;
 	})
