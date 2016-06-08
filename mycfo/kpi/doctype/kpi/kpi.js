@@ -24,7 +24,7 @@ cur_frm.fields_dict["kpi_process_details"].grid.get_field("resouce_assigned").ge
    	}
 }
 
-
+cur_frm.add_fetch("resouce_assigned", "employee_name", "employee_name");
 cur_frm.add_fetch("skill_matrix_120", "skill_matrix_18", "skill_matrix_18");
 
 
@@ -422,9 +422,77 @@ cur_frm.cscript.kpi_process_details_on_form_rendered = function(doc, cdt, cdn){
 	}	
 }
 toggle_read_only_property_of_fields = function(property,table_name){
-	var field_index = [0,1,2,3];	
+	var field_index = [0,1,2,3,4];	
 	$.each(field_index, function(i, value){
 		cur_frm.get_field(table_name).grid.docfields[value].read_only = property;
 	})
 	refresh_field(table_name)	
 }
+
+
+//calculate table wise weightage
+frappe.ui.form.on("KPI", "validate", function(frm,cdt,cdn) {
+    var business_w_total=0;
+    if(frm.doc.kpi_business_details){
+		for(i=0;i<frm.doc.kpi_business_details.length;i++){
+			business_w_total +=frm.doc.kpi_business_details[i].weightage
+		 }
+		 frm.set_value("business_total_weightage",business_w_total)
+	}
+
+	var people_w_total=0;
+    if(frm.doc.kpi_people_details){
+		for(i=0;i<frm.doc.kpi_people_details.length;i++){
+			people_w_total +=frm.doc.kpi_people_details[i].weightage
+		 }
+		 frm.set_value("people_total_weightage",people_w_total)
+	}
+
+	var finance_w_total=0;
+    if(frm.doc.kpi_finance_details){
+		for(i=0;i<frm.doc.kpi_finance_details.length;i++){
+			finance_w_total +=frm.doc.kpi_finance_details[i].weightage
+		 }
+		 frm.set_value("finance_total_weightage",finance_w_total)
+	}
+
+	var process_w_total=0;
+    if(frm.doc.kpi_process_details){
+		for(i=0;i<frm.doc.kpi_process_details.length;i++){
+			process_w_total +=frm.doc.kpi_process_details[i].weightage
+		 }
+		 frm.set_value("process_total_weightage",process_w_total)
+	}
+});
+
+
+frappe.ui.form.on("KPI", "accept_all_client_kpi_acceptance", function(frm,cdt,cdn) {
+	for(i=0;i<frm.doc.kpi_business_details.length;i++){
+		frm.doc.kpi_business_details[i].client_kpi_acceptance = "Accept";
+	 };
+	 for(i=0;i<frm.doc.kpi_finance_details.length;i++){
+		frm.doc.kpi_finance_details[i].client_kpi_acceptance = "Accept";
+	 };
+	 for(i=0;i<frm.doc.kpi_people_details.length;i++){
+		frm.doc.kpi_people_details[i].client_kpi_acceptance = "Accept";
+	 };
+	 for(i=0;i<frm.doc.kpi_process_details.length;i++){
+		frm.doc.kpi_process_details[i].client_kpi_acceptance = "Accept";
+	 };
+	msgprint("Accepted all Client KPI Acceptance")
+});
+frappe.ui.form.on("KPI", "accept_all_client_final_acceptance", function(frm,cdt,cdn) {
+	for(i=0;i<frm.doc.kpi_business_details.length;i++){
+		frm.doc.kpi_business_details[i].client_status = "Accept";
+	 };
+	 for(i=0;i<frm.doc.kpi_finance_details.length;i++){
+		frm.doc.kpi_finance_details[i].client_status = "Accept";
+	 };
+	 for(i=0;i<frm.doc.kpi_people_details.length;i++){
+		frm.doc.kpi_people_details[i].client_status = "Accept";
+	 };
+	 for(i=0;i<frm.doc.kpi_process_details.length;i++){
+		frm.doc.kpi_process_details[i].client_status = "Accept";
+	 };
+	msgprint("Accepted all Client Final Acceptance")
+});
