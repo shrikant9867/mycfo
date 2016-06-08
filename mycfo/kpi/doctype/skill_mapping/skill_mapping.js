@@ -89,6 +89,7 @@ frappe.ui.form.on("Skill Mapping", {
         enableCellNavigation: true,
         enableColumnReorder: false,
         explicitInitialization: true,
+        editOnDoubleClick: true,
         editable: true,
       };
      
@@ -208,8 +209,6 @@ make_grid:function(data1,columns,options){
 
           };
         }
-
-
           var groupItemMetadataProvider = new Slick.Data.GroupItemMetadataProvider();
           dataView = new Slick.Data.DataView({
             groupItemMetadataProvider: groupItemMetadataProvider,
@@ -233,6 +232,28 @@ make_grid:function(data1,columns,options){
 
               //call to create grid report
             grid = new Slick.Grid("#myGrid", dataView, columns, options);
+
+grid.onClick.subscribe (function (e, args)
+{
+    if ($(e.target).is(':checkbox') && options['editable'])
+    {
+        var column = args.grid.getColumns()[args.cell];
+
+        if (column['editable'] == false || column['autoEdit'] == false)
+            return;
+
+        data[args.row][column.field] = !data[args.row][column.field];
+    }  
+});
+
+function CheckboxFormatter (row, cell, value, columnDef, dataContext)
+{
+    if (value)
+        return '<input type="checkbox" name="" value="'+ value +'" checked />';
+    else
+        return '<input type="checkbox" name="" value="' + value + '" />';
+}
+
 
             //filter start working
             grid.registerPlugin(groupItemMetadataProvider);
@@ -370,6 +391,7 @@ make_grid:function(data1,columns,options){
 
 
 init_for_checkbox_trigger = function(grid, dataview){
+
   var criteria_list = ["none_field", "beginner", "imtermediatory", "expert"]
   $(cur_frm.body).find("#myGrid").on("change", $("[data-name=checkbox]"), function(event){
 
@@ -389,7 +411,16 @@ init_for_checkbox_trigger = function(grid, dataview){
       data[current_row_data.id] = current_row_data
       grid.updateRow(active_cell.row)
 
+
+
   })
+
+    if (value){
+        return '<input type="checkbox" name="" value="'+ value +'" checked />';
+    }
+    else{
+        return '<input type="checkbox" name="" value="' + value + '" />';
+    }
 }
 
 
