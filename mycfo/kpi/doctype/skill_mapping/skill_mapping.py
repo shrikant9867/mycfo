@@ -32,7 +32,7 @@ class SkillMapping(Document):
 @frappe.whitelist()
 def get_sample_data():
 	return {
-	"get_sample_data": frappe.db.sql("""select skill_matrix_18,sub_skill from `tabSkill Matrix 120` order by skill_matrix_18 asc, sub_skill asc""", as_list=1)
+	"get_sample_data": frappe.db.sql("""select skill_matrix_18,sub_skill,1 from `tabSkill Matrix 120` order by skill_matrix_18 asc, sub_skill asc""", as_list=1)
 	}
 
 @frappe.whitelist()
