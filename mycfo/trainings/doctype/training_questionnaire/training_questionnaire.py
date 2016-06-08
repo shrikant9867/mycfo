@@ -6,7 +6,7 @@ from __future__ import unicode_literals
 import frappe
 from frappe.model.document import Document
 
-class IPFileQuestionnaire(Document):
+class TrainingQuestionnaire(Document):
 	
 	def validate(self):
 		self.validate_for_questions()
@@ -23,4 +23,5 @@ class IPFileQuestionnaire(Document):
 				if not row.option_a or not row.option_b:
 					frappe.throw("Option A and option B are mandatory for objective questions for row no {0}".format(row.idx))
 				if len(set(options)) != len(options):
-					frappe.throw("Duplicate answer not allowed for row no {0}".format(row.idx))
+					frappe.throw("Duplicate answer not allowed for row no {0}".format(row.idx)) 	
+

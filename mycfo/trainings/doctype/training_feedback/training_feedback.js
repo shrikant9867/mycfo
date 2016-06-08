@@ -1,5 +1,5 @@
 
-frappe.ui.form.on("IP File Feedback", "refresh", function(frm, cdt, cdn){	
+frappe.ui.form.on("Training Feedback", "refresh", function(frm, cdt, cdn){	
 	if(!frm.doc.__islocal){
 		setTimeout(function(){ make_fields_read_only(); }, 2000);
 		
