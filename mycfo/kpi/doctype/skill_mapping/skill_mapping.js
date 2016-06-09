@@ -3,39 +3,52 @@ cur_frm.add_fetch('employee', 'employee_name', 'employee_name');
 cur_frm.add_fetch('sub_industry', 'industry', 'industry');
 cur_frm.add_fetch("employee", "user_id", "user_id");
 
+
+frappe.ui.form.on("Skill Mapping","refresh", function(frm) { 
+  if(cur_frm.doc.previous_employer_details){
+      var company_name_list = [];
+      for(i=0;i<cur_frm.doc.previous_employer_details.length;i++){
+              company_name_list.push(cur_frm.doc.previous_employer_details[i].company_name)
+      }
+      var df = frappe.meta.get_docfield("Previous Employer Project Details","company_name", cur_frm.doc.name);
+      df.options = company_name_list;
+  }
+});
+
+
 //calculate year of year_of_experience in all three tables
-frappe.ui.form.on("Previouse Employer Details", "from", function(frm,cdt,cdn) {
-  var d = locals[cdt][cdn];
-  var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
-  frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
-});
-frappe.ui.form.on("Previouse Employer Details", "to", function(frm,cdt,cdn) {
-  var d = locals[cdt][cdn];
-  var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
-  frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
-});
+// frappe.ui.form.on("Previouse Employer Details", "from", function(frm,cdt,cdn) {
+//   var d = locals[cdt][cdn];
+//   var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
+//   frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
+// });
+// frappe.ui.form.on("Previouse Employer Details", "to", function(frm,cdt,cdn) {
+//   var d = locals[cdt][cdn];
+//   var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
+//   frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
+// });
 
-frappe.ui.form.on("Previous Employer Project Details", "from", function(frm,cdt,cdn) {
-  var d = locals[cdt][cdn];
-  var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
-  frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
-});
-frappe.ui.form.on("Previous Employer Project Details", "to", function(frm,cdt,cdn) {
-  var d = locals[cdt][cdn];
-  var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
-  frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
-});
+// frappe.ui.form.on("Previous Employer Project Details", "from", function(frm,cdt,cdn) {
+//   var d = locals[cdt][cdn];
+//   var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
+//   frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
+// });
+// frappe.ui.form.on("Previous Employer Project Details", "to", function(frm,cdt,cdn) {
+//   var d = locals[cdt][cdn];
+//   var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
+//   frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
+// });
 
-frappe.ui.form.on("MyCFO Projects Experience", "from", function(frm,cdt,cdn) {
-  var d = locals[cdt][cdn];
-  var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
-  frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
-});
-frappe.ui.form.on("MyCFO Projects Experience", "to", function(frm,cdt,cdn) {
-  var d = locals[cdt][cdn];
-  var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
-  frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
-});
+// frappe.ui.form.on("MyCFO Projects Experience", "from", function(frm,cdt,cdn) {
+//   var d = locals[cdt][cdn];
+//   var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
+//   frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
+// });
+// frappe.ui.form.on("MyCFO Projects Experience", "to", function(frm,cdt,cdn) {
+//   var d = locals[cdt][cdn];
+//   var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
+//   frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
+// });
 
 frappe.ui.form.on("Skill Mapping", "validate", function(frm) {
       if(frm.doc.previous_employer_details){
@@ -245,15 +258,6 @@ grid.onClick.subscribe (function (e, args)
         data[args.row][column.field] = !data[args.row][column.field];
     }  
 });
-
-function CheckboxFormatter (row, cell, value, columnDef, dataContext)
-{
-    if (value)
-        return '<input type="checkbox" name="" value="'+ value +'" checked />';
-    else
-        return '<input type="checkbox" name="" value="' + value + '" />';
-}
-
 
             //filter start working
             grid.registerPlugin(groupItemMetadataProvider);

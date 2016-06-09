@@ -144,13 +144,33 @@ OnlineTest = Class.extend({
 	},
 	init_for_end_test:function(){
 		var me = this;
-		$(this.body).find(".end-test").click(function(){
-			frappe.confirm(__("Are you sure you want to end test?"), function() {  
-				var answer_data = me.store_user_answer(1); // This 1 does not have any meaning. It is required because store answer is common method.
-				me.end_online_test(answer_data)
+		$(this.body).find(".end-test").click(function(){		
+			var dialog = new frappe.ui.Dialog({
+				title: __("Confirm End Test"),
+				fields: [ {fieldtype: "Button", fieldname: "attach_file", label:"Upload File" }],
+				primary_action_label: "End Test",
+				primary_action: function(doc) {
+					var answer_data = me.store_user_answer(1); // This 1 does not have any meaning. It is required because store answer is common method.
+					me.end_online_test(answer_data)
+					dialog.hide();
+				}
+			});
+			dialog.show();
+			$(dialog.body).find("button[data-fieldname=attach_file]").css({"margin-top":"10px"})
+			$(dialog.body).find("button[data-fieldname=attach_file]").click(function(){
+				me.init_for_file_upload();
 			})
-			
+			$(dialog.body).prepend("<p>Are you sure you want to end test?</p>");
 		})
+	},
+	init_for_file_upload:function(){
+		var file_args = {from_form: 1, doctype: "Answer Sheet", docname: this.ans_sheet};
+		var file_dialog = frappe.ui.get_upload_dialog({
+							args: file_args,
+							callback: function(attachment, r) {
+							}
+		});
+		file_dialog.show();
 	},
 	end_online_test:function(answer_data){
 		var me = this;
@@ -162,8 +182,8 @@ OnlineTest = Class.extend({
 			method: "end_test",
 			args:{"request_data": answer_data},
 			callback:function(r){
-				frappe.msgprint(r.message)
 				$(me.body).html("")
+				frappe.msgprint(r.message)
 			}
 		})
 
