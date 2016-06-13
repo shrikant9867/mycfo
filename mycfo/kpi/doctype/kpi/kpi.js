@@ -259,13 +259,14 @@ frappe.ui.form.on("KPI", "validate", function(frm,cdt,cdn) {
 			}
 		 }
 	}
-	if(k_accpt_status){
-		frm.doc.kpi_status="Accepted";
+	if(frm.doc.kpi_status!="Reviewed"){
+		if(k_accpt_status){
+			frm.doc.kpi_status="Accepted";
+		}
+		else{
+			frm.doc.kpi_status="Open";
+		}
 	}
-	else{
-		frm.doc.kpi_status="Open";
-	}
-
 });
 
 
