@@ -1,5 +1,149 @@
 [
  {
+  "category_name": "Budget 2016", 
+  "docstatus": 0, 
+  "doctype": "Discussion Category", 
+  "modified": "2016-03-03 12:06:44.438812", 
+  "name": "Budget 2016", 
+  "title": "Changes in Service Tax"
+ }, 
+ {
+  "category_name": "Legal", 
+  "docstatus": 0, 
+  "doctype": "Discussion Category", 
+  "modified": "2016-03-14 14:44:15.687267", 
+  "name": "Legal", 
+  "title": "Legal"
+ }, 
+ {
+  "category_name": "Mentorship", 
+  "docstatus": 0, 
+  "doctype": "Discussion Category", 
+  "modified": "2016-03-14 14:44:23.341506", 
+  "name": "Mentorship", 
+  "title": "Mentorship"
+ }, 
+ {
+  "category_name": "Governance", 
+  "docstatus": 0, 
+  "doctype": "Discussion Category", 
+  "modified": "2016-03-14 14:44:33.499529", 
+  "name": "Governance", 
+  "title": "Governance"
+ }, 
+ {
+  "category_name": "Management", 
+  "docstatus": 0, 
+  "doctype": "Discussion Category", 
+  "modified": "2016-03-14 14:44:42.157441", 
+  "name": "Management", 
+  "title": "Management"
+ }, 
+ {
+  "category_name": "Business Model", 
+  "docstatus": 0, 
+  "doctype": "Discussion Category", 
+  "modified": "2016-03-14 14:44:49.139965", 
+  "name": "Business Model", 
+  "title": "Business Model"
+ }, 
+ {
+  "category_name": "Commercial", 
+  "docstatus": 0, 
+  "doctype": "Discussion Category", 
+  "modified": "2016-03-14 14:44:57.582308", 
+  "name": "Commercial", 
+  "title": "Commercial"
+ }, 
+ {
+  "category_name": "Tax Structuring", 
+  "docstatus": 0, 
+  "doctype": "Discussion Category", 
+  "modified": "2016-03-14 14:45:04.643729", 
+  "name": "Tax Structuring", 
+  "title": "Tax Structuring"
+ }, 
+ {
+  "category_name": "Accounting and Compliance", 
+  "docstatus": 0, 
+  "doctype": "Discussion Category", 
+  "modified": "2016-03-14 14:45:11.244505", 
+  "name": "Accounting and Compliance", 
+  "title": "Accounting and Compliance"
+ }, 
+ {
+  "category_name": "Cost Reductions", 
+  "docstatus": 0, 
+  "doctype": "Discussion Category", 
+  "modified": "2016-03-14 14:45:30.676296", 
+  "name": "Cost Reductions", 
+  "title": "Cost Reductions"
+ }, 
+ {
+  "category_name": "HR and Payroll", 
+  "docstatus": 0, 
+  "doctype": "Discussion Category", 
+  "modified": "2016-03-14 14:45:37.211687", 
+  "name": "HR and Payroll", 
+  "title": "HR and Payroll"
+ }, 
+ {
+  "category_name": "Financing", 
+  "docstatus": 0, 
+  "doctype": "Discussion Category", 
+  "modified": "2016-03-14 14:45:42.683815", 
+  "name": "Financing", 
+  "title": "Financing"
+ }, 
+ {
+  "category_name": "Risk Management", 
+  "docstatus": 0, 
+  "doctype": "Discussion Category", 
+  "modified": "2016-03-14 14:45:49.282975", 
+  "name": "Risk Management", 
+  "title": "Risk Management"
+ }, 
+ {
+  "category_name": "Controls", 
+  "docstatus": 0, 
+  "doctype": "Discussion Category", 
+  "modified": "2016-03-14 14:46:02.955115", 
+  "name": "Controls", 
+  "title": "Controls"
+ }, 
+ {
+  "category_name": "Systems and processes", 
+  "docstatus": 0, 
+  "doctype": "Discussion Category", 
+  "modified": "2016-03-14 14:46:07.526586", 
+  "name": "Systems and processes", 
+  "title": "Systems and processes"
+ }, 
+ {
+  "category_name": "MIS and Business Intelligence", 
+  "docstatus": 0, 
+  "doctype": "Discussion Category", 
+  "modified": "2016-03-14 14:46:15.187687", 
+  "name": "MIS and Business Intelligence", 
+  "title": "MIS and Business Intelligence"
+ }, 
+ {
+  "category_name": "One-off", 
+  "docstatus": 0, 
+  "doctype": "Discussion Category", 
+  "modified": "2016-03-14 14:46:23.090510", 
+  "name": "One-off", 
+  "title": "One-off"
+ }, 
+ {
+  "category_name": "Valuations", 
+  "docstatus": 0, 
+  "doctype": "Discussion Category", 
+  "modified": "2016-03-14 14:46:31.013316", 
+  "name": "Valuations", 
+  "title": "Valuations"
+ }, 
+ {
   "category_name": "Enhancement", 
   "docstatus": 0, 
   "doctype": "Discussion Category", 
