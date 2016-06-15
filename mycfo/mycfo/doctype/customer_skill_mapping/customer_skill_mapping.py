@@ -23,11 +23,12 @@ class CustomerSkillMapping(Document):
 		self.save()
 
 	def before_insert(self):
-		skill_data = get_sample_data()
-		for data in skill_data.get("get_sample_data"):
-			smd = self.append('skill_mapping_details',{})
-			smd.skill = data[0]
-			smd.sub_skill = data[1]
+		if not len(self.skill_mapping_details):
+			skill_data = get_sample_data()
+			for data in skill_data.get("get_sample_data"):
+				smd = self.append('skill_mapping_details',{})
+				smd.skill = data[0]
+				smd.sub_skill = data[1]
 
 
 @frappe.whitelist()
