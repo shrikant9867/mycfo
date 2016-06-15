@@ -118,20 +118,6 @@ def get_data():
 					"is_query_report": True,
 					"doctype": "Login Log",
 					"description": _("Login details report.")
-				},
-				{
-					"type": "report",
-					"name": "Skill Mapping Report",
-					"is_query_report": True,
-					"doctype": "Skill Mapping",
-					"description": _("Skill mapping report comprises total, sum & average of skill")
-				},
-				{
-					"type": "report",
-					"name": "Employee Skill Mapping",
-					"is_query_report": True,
-					"doctype": "Skill Mapping",
-					"description": _("Employee skill maaping details")
 				}
 			]
 		}
