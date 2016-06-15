@@ -4,7 +4,7 @@
  "docstatus": 0, 
  "doctype": "Page", 
  "idx": 0, 
- "modified": "2016-02-19 13:40:39.913227", 
+ "modified": "2016-06-15 12:57:49.968786",
  "modified_by": "Administrator", 
  "module": "mycfo", 
  "name": "project-commercial-report", 
@@ -12,7 +12,7 @@
  "page_name": "project-commercial-reports", 
  "roles": [
   {
-   "role": "All"
+   "role": "Mycfo User"
   }
  ], 
  "script": null, 
