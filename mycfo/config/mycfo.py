@@ -110,13 +110,28 @@ def get_data():
 					"name": "project-commercial-report",
 					"icon": "icon-sitemap",
 					"label": _("Graphical Reports"),
-					"description": _("Graphical Report for Project Commercial"),
+					"description": _("Graphical Report for Project Commercial")
 				},
 				{
 					"type": "report",
 					"name": "Login Report",
 					"is_query_report": True,
-					"doctype": "Login Log"
+					"doctype": "Login Log",
+					"description": _("Login details report.")
+				},
+				{
+					"type": "report",
+					"name": "Skill Mapping Report",
+					"is_query_report": True,
+					"doctype": "Skill Mapping",
+					"description": _("Skill mapping report comprises total, sum & average of skill")
+				},
+				{
+					"type": "report",
+					"name": "Employee Skill Mapping",
+					"is_query_report": True,
+					"doctype": "Skill Mapping",
+					"description": _("Employee skill maaping details")
 				}
 			]
 		}
