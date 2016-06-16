@@ -14,7 +14,7 @@ def execute(filters=None):
 
 def get_data(filters):
 	if 1==1:
-		result = frappe.db.sql("""select emp,ind,skill,sub_skill,
+		result = frappe.db.sql("""select emp,skill,sub_skill,
 			none_field,beginner,imtermediatory,expert,emp_status
 			  from (select 
 			CASE WHEN skill !='' then (select employee_name from `tabSkill Mapping` where name=`tabSkill Mapping Details`.parent)\
@@ -39,9 +39,9 @@ def get_data(filters):
 		final_result_left = []
 
 		for i in result:
-			if i[8] == "Active":
+			if i[7] == "Active":
 				final_result_active.append(i)
-			if i[8] == "Left":
+			if i[7] == "Left":
 				final_result_left.append(i)
 
 		if filters.get("status") == "Active":
@@ -57,7 +57,7 @@ def get_total_item():
 	return "11"
 
 def  get_colums():
-	columns = ["Employee::120"]+["Industry::0"]+["Skill Matrix 18::165"]+ ["Skill Matrix 120::265"] +["None::130"]\
+	columns = ["Employee::120"]+["Skill Matrix 18::165"]+ ["Skill Matrix 120::265"] +["None::130"]\
 		+["Beginner::130"]+ ["Intermediatory::130"] +["Expert::130"] + ["Employee Status::130"] 
 	return columns
 
