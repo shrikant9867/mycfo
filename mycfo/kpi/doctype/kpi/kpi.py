@@ -33,3 +33,13 @@ def get_kpi_resouce_assigned_list(doctype, txt, searchfield, start, page_len, fi
 			'txt': "%%%s%%" % txt,
 			'customer':filters.get("customer"),
 			"user":frappe.session.user}, as_list=1)
+
+@frappe.whitelist()
+def get_el_list(customer):
+	customer_list = frappe.db.sql("""SELECT DISTINCT(customer) 
+	from `tabOperation And Project Commercial`,`tabOperation And Project Details`,`tabEmployee` 
+	WHERE  `tabOperation And Project Commercial`.name in 
+	(SELECT parent from `tabOperation And Project Details` WHERE user_id = '{0}' and role ="EL")
+	and customer ='{1}'""".format(frappe.session.user,customer),as_list=1)
+
+	return len(customer_list)
