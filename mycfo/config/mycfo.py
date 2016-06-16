@@ -118,6 +118,21 @@ def get_data():
 					"is_query_report": True,
 					"doctype": "Login Log",
 					"description": _("Login details report.")
+				},
+				{
+					"type": "report",
+					"name": "Customer Skill Mapping Report",
+					"is_query_report": True,
+					"doctype": "Customer Skill Mapping",
+					"description": _("Customer Skill mapping report comprises total, sum & average of skill")
+				},
+				{
+					"type": "report",
+					"name": "Customer Skill Mapping",
+					"label": "Customer Skill Mapping Analysis",
+					"is_query_report": True,
+					"doctype": "Customer Skill Mapping",
+					"description": _("Customer skill maaping detailed analysis")
 				}
 			]
 		}
