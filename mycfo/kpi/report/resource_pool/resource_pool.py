@@ -14,29 +14,24 @@ def execute(filters=None):
 
 def get_data(filters):
 	if 1==1:
-		print filters.get("status")
-		print "in active"
-		result = frappe.db.sql("""select * from (select 
+		result = frappe.db.sql("""select emp,ind,skill,sub_skill,
+			none_field,beginner,imtermediatory,expert,emp_status
+			  from (select 
 			CASE WHEN skill !='' then (select employee_name from `tabSkill Mapping` where name=`tabSkill Mapping Details`.parent)\
 			    else null\
 			END AS emp,\
 			CASE WHEN skill !='' then (select industry from `tabSkill Mapping` where name=`tabSkill Mapping Details`.parent)\
 			    else null\
 			END AS ind,\
-			skill as "Skill Matrix 18::140",
-			sub_skill as "Skill Matrix 120::150",
-			none_field as "None::130",
-			beginner as "Beginner::130",
-			imtermediatory as "Intermediatory::130",
-			expert as "Expert::130",
+			skill,sub_skill,none_field,beginner,imtermediatory,expert,
 			CASE WHEN skill !='' then (select employee from `tabSkill Mapping` where name=`tabSkill Mapping Details`.parent)\
 			    else null\
-			END AS emp_s,\
+			END AS emp_s,
 			CASE WHEN skill !='' then (select status from `tabEmployee` where name=emp_s)\
 			    else null\
-			END AS emp_status
-		from `tabSkill Mapping Details` where skill is not null
-		order by sub_skill) as innerTable""",as_list=1,debug=1)
+			END AS emp_status\
+
+		from `tabSkill Mapping Details` where skill is not null) as innerTable order by emp,skill,sub_skill""",as_list=1,debug=1)
 	
 		# result.append([])
 		# result.append(["Total Item",str(total_item[0][0])])
@@ -44,17 +39,15 @@ def get_data(filters):
 		final_result_left = []
 
 		for i in result:
-			if i[9] == "Active":
+			if i[8] == "Active":
 				final_result_active.append(i)
-			if i[9] == "Left":
+			if i[8] == "Left":
 				final_result_left.append(i)
-				print i[8]
 
 		if filters.get("status") == "Active":
 			return final_result_active
 		elif filters.get("status") == "Left":
 			return final_result_left
-		print "final result"
 		# return final_result
 	else:
 		final_result = []
@@ -64,8 +57,8 @@ def get_total_item():
 	return "11"
 
 def  get_colums():
-	columns = ["Employee::120"]+["Industry::150"]+["Skill Matrix 18::165"]+ ["Skill Matrix 120::265"] +["None::130"]\
-		+["Beginner::130"]+ ["Intermediatory::130"] +["Expert::130"] + ["Employee ID::130"] + ["Employee Status::130"] 
+	columns = ["Employee::120"]+["Industry::0"]+["Skill Matrix 18::165"]+ ["Skill Matrix 120::265"] +["None::130"]\
+		+["Beginner::130"]+ ["Intermediatory::130"] +["Expert::130"] + ["Employee Status::130"] 
 	return columns
 
 

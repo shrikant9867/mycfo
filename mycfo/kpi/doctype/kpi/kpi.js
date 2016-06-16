@@ -536,3 +536,20 @@ frappe.ui.form.on("KPI", "accept_all_client_final_acceptance", function(frm,cdt,
 	 };
 	msgprint("Accepted all Client Final Acceptance")
 });
+
+
+frappe.ui.form.on('KPI', 'onload', function(frm, cdt, cdn){
+	frappe.call({
+		method: "mycfo.kpi.doctype.kpi.kpi.get_el_list",
+		args: {customer: frm.doc.customer},
+		callback: function(r) {
+			console.log(r.message==1);
+			if(r.message){
+				cur_frm.set_df_property("kpi_status","read_only",0);
+			}
+			else{
+				cur_frm.set_df_property("kpi_status","read_only",1);
+			}
+		}
+	});
+})
