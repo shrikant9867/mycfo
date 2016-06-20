@@ -49,184 +49,184 @@ cur_frm.cscript.end_date = function(doc,cdt,cdn){
 }
 
 //algorithm implimentation for weightage calculation
-frappe.ui.form.on("KPI", "validate", function(frm,cdt,cdn) {
-    var total=0;
+// frappe.ui.form.on("KPI", "validate", function(frm,cdt,cdn) {
+//     var total=0;
 
-	 //2nd
-    if(frm.doc.kpi_people_details){
-	 	for(i=0;i<frm.doc.kpi_people_details.length;i++){
-			var a;
-			var b;
-			var c;
-			var d;
-			if(frm.doc.kpi_people_details[i].priority=="High"){
-				a =5;
-			}
-			if(frm.doc.kpi_people_details[i].priority=="Medium"){
-				a =3;
-			}
-			if(frm.doc.kpi_people_details[i].priority=="Low"){
-				a =1;
-			}
+// 	 //2nd
+//     if(frm.doc.kpi_people_details){
+// 	 	for(i=0;i<frm.doc.kpi_people_details.length;i++){
+// 			var a;
+// 			var b;
+// 			var c;
+// 			var d;
+// 			if(frm.doc.kpi_people_details[i].priority=="High"){
+// 				a =5;
+// 			}
+// 			if(frm.doc.kpi_people_details[i].priority=="Medium"){
+// 				a =3;
+// 			}
+// 			if(frm.doc.kpi_people_details[i].priority=="Low"){
+// 				a =1;
+// 			}
 
-			if(frm.doc.kpi_people_details[i].criticality=="High"){
-				b =5;
-			}
-			if(frm.doc.kpi_people_details[i].criticality=="Medium"){
-				b =3;
-			}
-			if(frm.doc.kpi_people_details[i].criticality=="Low"){
-				b =1;
-			}
-			c=a+b;
-	        d=flt(c);
-	   		total=total+d;
-			frm.doc.kpi_people_details[i].sum = d;
-	 	}
-	}
+// 			if(frm.doc.kpi_people_details[i].criticality=="High"){
+// 				b =5;
+// 			}
+// 			if(frm.doc.kpi_people_details[i].criticality=="Medium"){
+// 				b =3;
+// 			}
+// 			if(frm.doc.kpi_people_details[i].criticality=="Low"){
+// 				b =1;
+// 			}
+// 			c=a+b;
+// 	        d=flt(c);
+// 	   		total=total+d;
+// 			frm.doc.kpi_people_details[i].sum = d;
+// 	 	}
+// 	}
 
-    if(frm.doc.kpi_finance_details){
-	 	for(i=0;i<frm.doc.kpi_finance_details.length;i++){
-			var a;
-			var b;
-			var c;
-			var d;
-			if(frm.doc.kpi_finance_details[i].priority=="High"){
-				a =5;
-			}
-			if(frm.doc.kpi_finance_details[i].priority=="Medium"){
-				a =3;
-			}
-			if(frm.doc.kpi_finance_details[i].priority=="Low"){
-				a =1;
-			}
+//     if(frm.doc.kpi_finance_details){
+// 	 	for(i=0;i<frm.doc.kpi_finance_details.length;i++){
+// 			var a;
+// 			var b;
+// 			var c;
+// 			var d;
+// 			if(frm.doc.kpi_finance_details[i].priority=="High"){
+// 				a =5;
+// 			}
+// 			if(frm.doc.kpi_finance_details[i].priority=="Medium"){
+// 				a =3;
+// 			}
+// 			if(frm.doc.kpi_finance_details[i].priority=="Low"){
+// 				a =1;
+// 			}
 
-			if(frm.doc.kpi_finance_details[i].criticality=="High"){
-				b =5;
-			}
-			if(frm.doc.kpi_finance_details[i].criticality=="Medium"){
-				b =3;
-			}
-			if(frm.doc.kpi_finance_details[i].criticality=="Low"){
-				b =1;
-			}
-			c=a+b;
-	        d=flt(c)
-	   		total=total+d;
-			frm.doc.kpi_finance_details[i].sum = d;
-		}
-	}
+// 			if(frm.doc.kpi_finance_details[i].criticality=="High"){
+// 				b =5;
+// 			}
+// 			if(frm.doc.kpi_finance_details[i].criticality=="Medium"){
+// 				b =3;
+// 			}
+// 			if(frm.doc.kpi_finance_details[i].criticality=="Low"){
+// 				b =1;
+// 			}
+// 			c=a+b;
+// 	        d=flt(c)
+// 	   		total=total+d;
+// 			frm.doc.kpi_finance_details[i].sum = d;
+// 		}
+// 	}
 
 	
-    if(frm.doc.kpi_process_details){
-		for(i=0;i<frm.doc.kpi_process_details.length;i++){
-			var a;
-			var b;
-			var c;
-			var d;
-			if(frm.doc.kpi_process_details[i].priority=="High"){
-				a =5;
-			}
-			if(frm.doc.kpi_process_details[i].priority=="Medium"){
-				a =3;
-			}
-			if(frm.doc.kpi_process_details[i].priority=="Low"){
-				a =1;
-			}
+//     if(frm.doc.kpi_process_details){
+// 		for(i=0;i<frm.doc.kpi_process_details.length;i++){
+// 			var a;
+// 			var b;
+// 			var c;
+// 			var d;
+// 			if(frm.doc.kpi_process_details[i].priority=="High"){
+// 				a =5;
+// 			}
+// 			if(frm.doc.kpi_process_details[i].priority=="Medium"){
+// 				a =3;
+// 			}
+// 			if(frm.doc.kpi_process_details[i].priority=="Low"){
+// 				a =1;
+// 			}
 
-			if(frm.doc.kpi_process_details[i].criticality=="High"){
-				b =5;
-			}
-			if(frm.doc.kpi_process_details[i].criticality=="Medium"){
-				b =3;
-			}
-			if(frm.doc.kpi_process_details[i].criticality=="Low"){
-				b =1;
-			}
-			c=a+b;
-	        d=flt(c)
-	   		total=total+d;
-			frm.doc.kpi_process_details[i].sum = d;
-		}
-	}
-    if(frm.doc.kpi_business_details){
-		for(i=0;i<frm.doc.kpi_business_details.length;i++){
-			var a=0;
-			var b=0;
-			var c=0;	
-			var d=0;
-			if(frm.doc.kpi_business_details[i].priority==""){
-				a =0;
-			}
-			if(frm.doc.kpi_business_details[i].priority=="High"){
-				a =5;
-			}
-			if(frm.doc.kpi_business_details[i].priority=="Medium"){
-				a =3;
-			}
-			if(frm.doc.kpi_business_details[i].priority=="Low"){
-				a =1;
-			}
+// 			if(frm.doc.kpi_process_details[i].criticality=="High"){
+// 				b =5;
+// 			}
+// 			if(frm.doc.kpi_process_details[i].criticality=="Medium"){
+// 				b =3;
+// 			}
+// 			if(frm.doc.kpi_process_details[i].criticality=="Low"){
+// 				b =1;
+// 			}
+// 			c=a+b;
+// 	        d=flt(c)
+// 	   		total=total+d;
+// 			frm.doc.kpi_process_details[i].sum = d;
+// 		}
+// 	}
+//     if(frm.doc.kpi_business_details){
+// 		for(i=0;i<frm.doc.kpi_business_details.length;i++){
+// 			var a=0;
+// 			var b=0;
+// 			var c=0;	
+// 			var d=0;
+// 			if(frm.doc.kpi_business_details[i].priority==""){
+// 				a =0;
+// 			}
+// 			if(frm.doc.kpi_business_details[i].priority=="High"){
+// 				a =5;
+// 			}
+// 			if(frm.doc.kpi_business_details[i].priority=="Medium"){
+// 				a =3;
+// 			}
+// 			if(frm.doc.kpi_business_details[i].priority=="Low"){
+// 				a =1;
+// 			}
 
-			if(frm.doc.kpi_business_details[i].criticality==""){
-				b =0
-			}
-			if(frm.doc.kpi_business_details[i].criticality=="High"){
-				b =5;
-			}
-			if(frm.doc.kpi_business_details[i].criticality=="Medium"){
-				b =3;
-			}
-			if(frm.doc.kpi_business_details[i].criticality=="Low"){
-				b =1;
-			}
-			c=a+b;
-	        d=flt(c)
-	   		total=total+d;
-			frm.doc.kpi_business_details[i].sum = d;
-		 }
-	}
-
-
-    if(frm.doc.kpi_people_details){
-		for(i=0;i<frm.doc.kpi_people_details.length;i++){
-			frm.doc.kpi_people_details[i].weightage = flt(frm.doc.kpi_people_details[i].sum/total*100);
-		 }
-    }
-    if(frm.doc.kpi_finance_details){
-		for(i=0;i<frm.doc.kpi_finance_details.length;i++){
-			frm.doc.kpi_finance_details[i].weightage = flt(frm.doc.kpi_finance_details[i].sum/total*100);
-		 }
-    }
-    if(frm.doc.kpi_process_details){
-		for(i=0;i<frm.doc.kpi_process_details.length;i++){
-			frm.doc.kpi_process_details[i].weightage = flt(frm.doc.kpi_process_details[i].sum/total*100);
-		 }
-    }
-    if(frm.doc.kpi_business_details){
-		for(i=0;i<frm.doc.kpi_business_details.length;i++){
-			frm.doc.kpi_business_details[i].weightage = flt(frm.doc.kpi_business_details[i].sum/total*100);
-		 }
-    }
+// 			if(frm.doc.kpi_business_details[i].criticality==""){
+// 				b =0
+// 			}
+// 			if(frm.doc.kpi_business_details[i].criticality=="High"){
+// 				b =5;
+// 			}
+// 			if(frm.doc.kpi_business_details[i].criticality=="Medium"){
+// 				b =3;
+// 			}
+// 			if(frm.doc.kpi_business_details[i].criticality=="Low"){
+// 				b =1;
+// 			}
+// 			c=a+b;
+// 	        d=flt(c)
+// 	   		total=total+d;
+// 			frm.doc.kpi_business_details[i].sum = d;
+// 		 }
+// 	}
 
 
-    //accept all child client status on Accepting KPI Status.
-  //   if(frm.doc.kpi_status=="Accepted"){
-		// for(i=0;i<frm.doc.kpi_business_details.length;i++){
-		// 	frm.doc.kpi_business_details[i].client_status = "Accept";
-		//  };
-		//  for(i=0;i<frm.doc.kpi_finance_details.length;i++){
-		// 	frm.doc.kpi_finance_details[i].client_status = "Accept";
-		//  };
-		//  for(i=0;i<frm.doc.kpi_people_details.length;i++){
-		// 	frm.doc.kpi_people_details[i].client_status = "Accept";
-		//  };
-		//  for(i=0;i<frm.doc.kpi_process_details.length;i++){
-		// 	frm.doc.kpi_process_details[i].client_status = "Accept";
-		//  };
-  //   }
+//     if(frm.doc.kpi_people_details){
+// 		for(i=0;i<frm.doc.kpi_people_details.length;i++){
+// 			frm.doc.kpi_people_details[i].weightage = flt(frm.doc.kpi_people_details[i].sum/total*100);
+// 		 }
+//     }
+//     if(frm.doc.kpi_finance_details){
+// 		for(i=0;i<frm.doc.kpi_finance_details.length;i++){
+// 			frm.doc.kpi_finance_details[i].weightage = flt(frm.doc.kpi_finance_details[i].sum/total*100);
+// 		 }
+//     }
+//     if(frm.doc.kpi_process_details){
+// 		for(i=0;i<frm.doc.kpi_process_details.length;i++){
+// 			frm.doc.kpi_process_details[i].weightage = flt(frm.doc.kpi_process_details[i].sum/total*100);
+// 		 }
+//     }
+//     if(frm.doc.kpi_business_details){
+// 		for(i=0;i<frm.doc.kpi_business_details.length;i++){
+// 			frm.doc.kpi_business_details[i].weightage = flt(frm.doc.kpi_business_details[i].sum/total*100);
+// 		 }
+//     }
 
-});
+
+//     //accept all child client status on Accepting KPI Status.
+//   //   if(frm.doc.kpi_status=="Accepted"){
+// 		// for(i=0;i<frm.doc.kpi_business_details.length;i++){
+// 		// 	frm.doc.kpi_business_details[i].client_status = "Accept";
+// 		//  };
+// 		//  for(i=0;i<frm.doc.kpi_finance_details.length;i++){
+// 		// 	frm.doc.kpi_finance_details[i].client_status = "Accept";
+// 		//  };
+// 		//  for(i=0;i<frm.doc.kpi_people_details.length;i++){
+// 		// 	frm.doc.kpi_people_details[i].client_status = "Accept";
+// 		//  };
+// 		//  for(i=0;i<frm.doc.kpi_process_details.length;i++){
+// 		// 	frm.doc.kpi_process_details[i].client_status = "Accept";
+// 		//  };
+//   //   }
+
+// });
 
 // on save event, if customer accept all % complition, then kpi status will be closed
 frappe.ui.form.on("KPI", "validate", function(frm,cdt,cdn) {
