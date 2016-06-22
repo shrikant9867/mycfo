@@ -7,6 +7,14 @@ import frappe
 from frappe.model.document import Document
 
 class KPI(Document):
+	
+	def validate(self):
+		if not self.get("__islocal"):
+			total_weightage = sum([self.business_total_weightage, self.finance_total_weightage, self.people_total_weightage, self.process_total_weightage])
+			if total_weightage != 100:
+				frappe.throw("Total of Business weightage, Finance weightage, People weightage & Process weightage must be equal to 100. Currently, Total weightage equals to {0}.".format(total_weightage))
+
+
 	def on_submit(self):
 		css_doc = frappe.new_doc("Customer Satisfaction Survey")
 		css_doc.customer = self.customer

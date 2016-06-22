@@ -324,21 +324,28 @@ frappe.ui.form.on("KPI", "validate", function(frm,cdt,cdn) {
 // 		}
 //     }	
 // });
-frappe.ui.form.on("KPI", "onload", function(frm,cdt,cdn) {
-	if(frm.doc.kpi_status=="Accepted"){
-		cur_frm.set_df_property("kpi_status", "read_only", 1);
-	}
-	else{
-		cur_frm.set_df_property("kpi_status", "read_only", 0);
-	}
-});
+// frappe.ui.form.on("KPI", "onload", function(frm,cdt,cdn) {
+// 	if(frm.doc.kpi_status=="Accepted"){
+// 		cur_frm.set_df_property("kpi_status", "read_only", 1);
+// 	}
+// 	else{
+// 		cur_frm.set_df_property("kpi_status", "read_only", 0);
+// 	}
+// });
 frappe.ui.form.on("KPI", "refresh", function(frm,cdt,cdn) {
 	if(frm.doc.kpi_status=="Accepted"){
 		cur_frm.set_df_property("kpi_status", "read_only", 1);
 	}
 	else{
-		cur_frm.set_df_property("kpi_status", "read_only", 0);
+		toggle_kpi_status_field(frm);
 	}
+	
+	if(!frm.doc.__islocal){
+		cur_frm.set_df_property("customer", "read_only", 1);
+		set_default_properties_for_customer_role();
+		set_weightage_value_in_html_field();
+	}
+	
 });
 frappe.ui.form.on("KPI", "before_submit", function(frm,cdt,cdn) {
 	var k_status = true;
@@ -385,36 +392,28 @@ frappe.ui.form.on("KPI", "before_submit", function(frm,cdt,cdn) {
 cur_frm.cscript.kpi_business_details_on_form_rendered = function(doc, cdt, cdn){	
 	var row = cur_frm.cur_grid.get_open_form(); 
 	if (row.doc.client_kpi_acceptance == "Accept"){
-		console.log("in if")
 		toggle_read_only_property_of_fields(1,"kpi_business_details")
 	}else{
-		console.log("in else")
 		toggle_read_only_property_of_fields(0,"kpi_business_details")
 	}	
 
 	if (row.doc.client_status == "Accept"){
-		console.log("in if2")
 		toggle_read_only_property_of_fields_ap(1,"kpi_business_details")
 	}else{
-		console.log("in else2")
 		toggle_read_only_property_of_fields_ap(0,"kpi_business_details")
 	}	
 }
 cur_frm.cscript.kpi_people_details_on_form_rendered = function(doc, cdt, cdn){	
 	var row = cur_frm.cur_grid.get_open_form(); 
 	if (row.doc.client_kpi_acceptance == "Accept"){
-		console.log("in if")
 		toggle_read_only_property_of_fields(1,"kpi_people_details")
 	}else{
-		console.log("in else")
 		toggle_read_only_property_of_fields(0,"kpi_people_details")
 	}	
 
 	if (row.doc.client_status == "Accept"){
-		console.log("in if2")
 		toggle_read_only_property_of_fields_ap(1,"kpi_people_details")
 	}else{
-		console.log("in else2")
 		toggle_read_only_property_of_fields_ap(0,"kpi_people_details")
 	}
 }
@@ -521,6 +520,7 @@ frappe.ui.form.on("KPI", "accept_all_client_kpi_acceptance", function(frm,cdt,cd
 	 };
 	msgprint("Accepted all Client KPI Acceptance")
 });
+
 frappe.ui.form.on("KPI", "accept_all_client_final_acceptance", function(frm,cdt,cdn) {
 	for(i=0;i<frm.doc.kpi_business_details.length;i++){
 		frm.doc.kpi_business_details[i].client_status = "Accept";
@@ -538,18 +538,43 @@ frappe.ui.form.on("KPI", "accept_all_client_final_acceptance", function(frm,cdt,
 });
 
 
-frappe.ui.form.on('KPI', 'onload', function(frm, cdt, cdn){
-	frappe.call({
-		method: "mycfo.kpi.doctype.kpi.kpi.get_el_list",
-		args: {customer: frm.doc.customer},
-		callback: function(r) {
-			console.log(r.message==1);
-			if(r.message){
-				cur_frm.set_df_property("kpi_status","read_only",0);
+set_default_properties_for_customer_role = function(){
+	if(inList(user_roles, "Customer") && frappe.user.name != "Administrator"){
+		var mapper = {"kpi_business_details":"read_only", "kpi_finance_details":"read_only", 
+						"kpi_people_details":"read_only", "kpi_process_details":"read_only", 
+						"accept_all_client_kpi_acceptance":"hidden", "accept_all_client_final_acceptance":"hidden"}
+		$.each(mapper, function(field_name, property_name){
+			cur_frm.set_df_property(field_name, property_name, true);	
+		})
+	}		
+}
+
+set_weightage_value_in_html_field = function(){	
+	var mapper = {"business_weightage":["Business Total Weightage", cur_frm.doc.business_total_weightage],
+					"people_weightage":["People Total Weightage", cur_frm.doc.people_total_weightage],
+					"finance_weightage":["Finance Total Weightage", cur_frm.doc.finance_total_weightage],
+					"process_weightage":["Process Total Weightage", cur_frm.doc.process_total_weightage]}
+	$.each(mapper, function(field_name, array){
+		cur_frm.set_value(field_name, "<p class='weightage'><label class='control-label'>" + array[0]+ "</label><strong class='weightage-strong'>{0}</strong></p>".replace("{0}", array[1]))
+	})
+	
+}
+
+toggle_kpi_status_field = function(frm){
+	if(frm.doc.customer && !inList(user_roles, "Central Delivery") ){
+		frappe.call({
+			async:false,
+			freeze:true,	
+			method:"mycfo.ip_library.page.ip_file_dashboard.ip_file_dashboard.validate_user_is_el",
+			args:{"customer":frm.doc.customer},
+			callback:function(r){
+				if (r.message.is_el){
+					cur_frm.set_df_property("kpi_status","read_only",0);
+				}else{
+					cur_frm.set_df_property("kpi_status","read_only",1);
+				}
+
 			}
-			else{
-				cur_frm.set_df_property("kpi_status","read_only",1);
-			}
-		}
-	});
-})
+		});	
+	}
+}
