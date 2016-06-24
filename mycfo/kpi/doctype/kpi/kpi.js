@@ -344,6 +344,7 @@ frappe.ui.form.on("KPI", "refresh", function(frm,cdt,cdn) {
 		cur_frm.set_df_property("customer", "read_only", 1);
 		set_default_properties_for_customer_role();
 		set_weightage_value_in_html_field();
+		show_kpi_acceptance_to_customer();
 	}
 	
 });
@@ -541,8 +542,7 @@ frappe.ui.form.on("KPI", "accept_all_client_final_acceptance", function(frm,cdt,
 set_default_properties_for_customer_role = function(){
 	if(inList(user_roles, "Customer") && frappe.user.name != "Administrator"){
 		var mapper = {"kpi_business_details":"read_only", "kpi_finance_details":"read_only", 
-						"kpi_people_details":"read_only", "kpi_process_details":"read_only", 
-						"accept_all_client_kpi_acceptance":"hidden", "accept_all_client_final_acceptance":"hidden"}
+						"kpi_people_details":"read_only", "kpi_process_details":"read_only"}
 		$.each(mapper, function(field_name, property_name){
 			cur_frm.set_df_property(field_name, property_name, true);	
 		})
@@ -577,4 +577,13 @@ toggle_kpi_status_field = function(frm){
 			}
 		});	
 	}
+}
+
+show_kpi_acceptance_to_customer = function(){
+	if(inList(user_roles, "Customer")){
+		var mapper = {"accept_all_client_kpi_acceptance":"hidden", "accept_all_client_final_acceptance":"hidden"}
+		$.each(mapper, function(field_name, property_name){
+			cur_frm.set_df_property(field_name, property_name, false);	
+		})
+	}	
 }
