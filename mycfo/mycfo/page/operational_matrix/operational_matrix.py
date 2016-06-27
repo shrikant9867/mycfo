@@ -30,7 +30,7 @@ def get_operational_matrix_data(customer=None):
 		return {"final_data": final_data}
 
 @frappe.whitelist()
-def get_operational_matrix_details(customer=None,operational_matrix=None,target_doc=None,ignore_permissions=False):
+def get_operational_matrix_details(customer=None,operational_matrix=None,target_doc=None,ignore_permissions=True):
 	if not frappe.db.get_value("Operation And Project Commercial",{'operational_id':operational_matrix,'customer':customer},'name'):
 		doclist = get_mapped_doc("Operational Matrix", operational_matrix, {
 				"Operational Matrix": {
