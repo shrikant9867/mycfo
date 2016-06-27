@@ -133,6 +133,14 @@ def get_data():
 					"is_query_report": True,
 					"doctype": "Customer Skill Mapping",
 					"description": _("Customer skill maaping detailed analysis")
+				},
+				{
+					"type": "report",
+					"name": "Customer Operational Matrix",
+					"label": "Customer Operational Matrix",
+					"is_query_report": True,
+					"doctype": "Operation And Project Commercial",
+					"description": _("Customer Operational Matrix Details")
 				}
 			]
 		}
