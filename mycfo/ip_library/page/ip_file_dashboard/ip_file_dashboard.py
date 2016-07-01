@@ -16,6 +16,8 @@ def get_global_search_suggestions(filters):
 						union select name from `tabSkill Matrix 18` where name like '%{0}%'
 						union select name from `tabSkill Matrix 120` where name like '%{0}%'
 						union select name from `tabDocument Type` where name like '%{0}%'
+						union select name from `tabCustomer` where name like '%{0}%'
+						union select name from `tabIndustry` where name like '%{0}%'
 		""".format(filters)
 	suggestions = frappe.db.sql(query, as_list=1)
 	security_levels = [ [level] for level in ["0-Level", "1-Level", "2-Level"] if re.search(filters, level, re.IGNORECASE)]	
@@ -33,7 +35,7 @@ def get_published_ip_file(search_filters):
 	my_query = """ select * from `tabIP File` ipf
 						where ( ipf.published_flag = 1 or ipf.file_status = 'Archived' )
 						and ( ipf.skill_matrix_18 like '%{0}%' or ipf.file_name like '%{0}%' 
-						or ipf.security_level like '%{0}%' 
+						or ipf.security_level like '%{0}%' or ipf.customer like '%{0}%' or ipf.industry like '%{0}%'
 						or ipf.skill_matrix_120 like '%{0}%' or ipf.document_type like '%{0}%' )  order by ipf.uploaded_date desc """.format(search_filters.get("filters"))
 	
 	total_records = get_total_records(my_query)
