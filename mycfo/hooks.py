@@ -54,7 +54,7 @@ on_session_creation = "mycfo.mycfo_utils.make_login_log"
 on_logout = "mycfo.mycfo_utils.update_login_log"
 
 
-fixtures = ['Custom Field', 'Property Setter', "Role","Discussion Category"]
+fixtures = ['Custom Field', 'Property Setter', "Role","Discussion Category", "Print Format"]
 # Permissions
 # -----------
 # Permissions evaluated in scripted ways
