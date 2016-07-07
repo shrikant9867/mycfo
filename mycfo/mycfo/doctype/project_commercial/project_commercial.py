@@ -279,6 +279,7 @@ def get_permission_query_conditions_for_kpi(user):
 		customer_list = frappe.db.sql(""" select defvalue from `tabDefaultValue` 
 											where parenttype='User Permission' and defkey = 'Customer' 
 											and parent = '{0}' """.format(user), as_list=1)		
-		return """(`tabKPI`.customer in ('{name_list}')  and `tabKPI`.kpi_status = 'Reviewed' )""".format(name_list=name_list)
+		customer_list = "', '".join([customer[0] for customer in customer_list])
+		return """(`tabKPI`.customer in ('{name_list}')  and `tabKPI`.kpi_status = 'Reviewed'  )""".format(name_list=customer_list)
 
 
