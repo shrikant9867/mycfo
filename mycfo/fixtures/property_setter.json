@@ -1,6 +1,32 @@
 [
  {
   "default_value": null, 
+  "doc_type": "Customer", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocField", 
+  "field_name": "customer_group", 
+  "modified": "2016-06-03 16:01:53.549800", 
+  "name": "Customer-customer_group-in_list_view", 
+  "property": "in_list_view", 
+  "property_type": "Check", 
+  "value": "0"
+ }, 
+ {
+  "default_value": null, 
+  "doc_type": "Operation And Project Details", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocField", 
+  "field_name": "email_id", 
+  "modified": "2016-06-27 13:21:03.974016", 
+  "name": "Operation And Project Details-email_id-width", 
+  "property": "width", 
+  "property_type": null, 
+  "value": "417"
+ }, 
+ {
+  "default_value": null, 
   "doc_type": "Issue", 
   "docstatus": 0, 
   "doctype": "Property Setter", 
