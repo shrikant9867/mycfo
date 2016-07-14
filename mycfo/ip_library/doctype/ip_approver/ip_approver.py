@@ -155,7 +155,7 @@ class IPApprover(Document):
 			"skill_matrix_18":frappe.db.escape(self.skill_matrix_18),
 			"industry":frappe.db.escape(self.industry),
 			"source":frappe.db.escape(self.source),
-			"description":frappe.db.escape(self.file_description),
+			"description":frappe.db.escape(self.file_description) if self.file_description else "",
 			"validity_end_date":self.validity_end_date,
 			"security_level":self.level_of_approval,
 			"file_path":file_path,
