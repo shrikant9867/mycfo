@@ -383,7 +383,7 @@ frappe.ui.form.on("KPI", "before_submit", function(frm,cdt,cdn) {
 		 if(!k_status){
 		 	frappe.throw("Customer should accept all Actual Completion (%) befor KPI Submision");
 		 }
-		 if(frm.doc.kpi_status=="Open" || frm.doc.kpi_status==""){
+		 if(frm.doc.kpi_status=="Open" || frm.doc.kpi_status=="Reviewed" || frm.doc.kpi_status==""){
 		 	frappe.throw("KPI Status should be Closed/Accepted befor KPI Submision");
 		 }
 	
