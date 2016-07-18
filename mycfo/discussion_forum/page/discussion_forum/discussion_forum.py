@@ -122,7 +122,8 @@ def get_comments(topic_name,page_no=0,is_sorted='false', limit=3):
 			"ratings":ratings.get("ratings",0),
 			"user_rating":ratings.get("user_rating"),
 			"no_of_users":ratings.get("number_of_users"),
-			"get_attachments": get_attachments("Comment",comment['name']) 
+			"get_attachments": get_attachments("Comment",comment['name']) ,
+			"comment": comment['comment'].replace("\n","<br>")
 		})
 		print frappe.request.url
 	return comment_list,total_pages,page_no,paginate,is_sorted
@@ -199,6 +200,7 @@ def get_rating_details(comment):
 
 @frappe.whitelist(allow_guest=True)
 def add_comment(comment,topic_name):
+	print comment,"comment"
 	import datetime
 	frappe.get_doc({
 		"doctype":"Comment",
