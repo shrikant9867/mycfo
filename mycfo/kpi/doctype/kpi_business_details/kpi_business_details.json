@@ -24,14 +24,14 @@
    "permlevel": 1, 
    "precision": "", 
    "print_hide": 0, 
-   "print_width": "9900px", 
+   "print_width": "", 
    "read_only": 0, 
    "report_hide": 0, 
    "reqd": 1, 
    "search_index": 0, 
    "set_only_once": 0, 
    "unique": 0, 
-   "width": "9900px"
+   "width": ""
   }, 
   {
    "allow_on_submit": 0, 
@@ -445,7 +445,7 @@
  "issingle": 0, 
  "istable": 1, 
  "max_attachments": 0, 
- "modified": "2016-07-18 13:12:30.577693", 
+ "modified": "2016-07-18 13:20:08.739130", 
  "modified_by": "Administrator", 
  "module": "kpi", 
  "name": "KPI Business Details", 
