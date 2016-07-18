@@ -44,6 +44,13 @@ def get_data():
 					"name": "Discussion Forum Report",
 					"is_query_report": True,
 					"doctype": "Discussion Topic"
+				},
+				{
+					"type": "page",
+					"name": "discussion-forum-rep",
+					"icon": "icon-sitemap",
+					"label": _("Graphical Reports"),
+					"description": _("Graphical Report for Discussion Forum"),
 				}
 			]
 		}

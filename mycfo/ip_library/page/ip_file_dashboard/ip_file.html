@@ -1,8 +1,8 @@
 {% for(var i=0, l=file_data.length; i < l; i++) { %}
 <div class="{{ file_data[i].panel_class }}" file-name = "{{ file_data[i].file_name }}" ip-file-name= "{{ file_data[i].name }}" file-url="{{ file_data[i].file_path }}"
-download-validity = "{{ file_data[i].download_validity_end_date }}" id="{{ i }}" download-form= "{{ file_data[i].download_form }}">
+download-validity = "{{ file_data[i].download_validity_end_date }}" id="{{ i }}" download-form= "{{ file_data[i].download_form }}" download-feedback-form="{{ file_data[i].download_feedback_form }}" feedback-form="{{ file_data[i].feedback_form }}">
       <div class="panel-heading panel-heading-custom2">{{ file_data[i].file_name }}
-		{% if (file_data[i].security_level == "0-Level" || file_data[i].approval_status == "Download Allowed"  ) { %}
+		{% if (file_data[i].security_level == "0-Level" || file_data[i].approval_status == "Download Allowed"  || inList(user_roles, "Central Delivery") ) { %}
 			
 			{% if (file_data[i].download_validity_end_date) { %}
 				
@@ -25,7 +25,11 @@ download-validity = "{{ file_data[i].download_validity_end_date }}" id="{{ i }}"
       <div class="panel-body row">
       <div class="col-xs-3">
       	<a class="thumbnail ip-file-thumbnail">
-      		<img src="/assets/mycfo/images/default.jpg"  alt="Default Image">
+    		{% if(file_data[i].file_viewer_path) { %}
+    			<img src="/assets/mycfo/images/view_document.jpg"  title="IP File Preview Available" viewer-path="{{ file_data[i].file_viewer_path }}" class="ip-file-view">	
+    		{% } else { %}
+    			<img src="/assets/mycfo/images/default.jpg"  title="IP File Preview Not Available" viewer-path="{{ file_data[i].file_viewer_path }}" class="ip-file-view">	
+    		{% } %}
     	</a>
       </div>
       <div class="col-xs-9">	
@@ -34,7 +38,7 @@ download-validity = "{{ file_data[i].download_validity_end_date }}" id="{{ i }}"
 		    <li><a data-toggle="tab" href="#approval-menu{{ i }}">Approval</a></li>
 		    <li><a data-toggle="tab" href="#reviews-menu{{ i }}">Reviews & Downloads</a></li>
 		    {% if(file_data[i].download_flag) { %}
-		    <li><a data-toggle="tab" href="#feedback-menu{{ i }}" class="feedback-li">Write Feedback</a></li>
+		    <li><a data-toggle="tab" href="#feedback-menu{{ i }}" class="feedback-li">Share Feedback</a></li>
 		  	{% } %}
 		  </ul>
 
@@ -49,7 +53,12 @@ download-validity = "{{ file_data[i].download_validity_end_date }}" id="{{ i }}"
 		     		<div class="row ip-row">
 		     			<div class="col-xs-6"><label class="ip-label">Customer</label></div>
 		     			<div class="col-xs-6">{{ file_data[i].customer }}</div>
-		     		</div>	
+		     		</div>
+		     		<div class="row ip-row">
+		     			{% var href= "#Form/User/" + file_data[i].owner %}
+		     			<div class="col-xs-6"><label class="ip-label">Author ID</label></div>
+		     			<div class="col-xs-6"><a href="{{ href }}">{{ file_data[i].owner }}</a></div>
+		     		</div>		
 		     	</div>
 		     	<div class="col-xs-6">
 		     		<div class="row ip-row">
@@ -109,12 +118,15 @@ download-validity = "{{ file_data[i].download_validity_end_date }}" id="{{ i }}"
 		     		<div class="col-xs-8 rateYo"></div>
 		     	</div>
 		     	<div class="row">
-		     		<div class="col-xs-4"><label class="ip-label">Your Feedback</label></div>
+		     		<div class="col-xs-4"><label class="ip-label">Your Review</label></div>
 		     		<div class="col-xs-8">
 		     		<textarea type="text" class="input-with-feedback form-control ip-text-area"></textarea></div>
 		     	</div>
 		     	<div class="row">
-		     		<button type="button" class="btn btn-primary submit-review">Submit</button>
+		     		<button type="button" class="btn btn-primary submit-review">Submit Review</button>
+		     		{% if(! file_data[i].feedback_form) { %}
+		     		<button type="button" class="btn btn-primary write-feedback">Share Feedback</button>
+		     		{% } %}
 		     	</div>
 		     </div>
 		    {% } %} 

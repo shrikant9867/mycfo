@@ -1,0 +1,18 @@
+{
+ "add_total_row": 0, 
+ "apply_user_permissions": 1, 
+ "creation": "2016-06-16 11:04:54.383328", 
+ "disabled": 0, 
+ "docstatus": 0, 
+ "doctype": "Report", 
+ "idx": 0, 
+ "is_standard": "Yes", 
+ "modified": "2016-06-16 11:04:54.383328", 
+ "modified_by": "Administrator", 
+ "module": "mycfo", 
+ "name": "Customer Skill Mapping", 
+ "owner": "Administrator", 
+ "ref_doctype": "Customer Skill Mapping", 
+ "report_name": "Customer Skill Mapping", 
+ "report_type": "Script Report"
+}

@@ -83,9 +83,6 @@ cur_frm.cscript.contact = function(doc,cdt,cdn){
 	}
 }
 
-cur_frm.fields_dict['customer'].get_query = function(doc) {
-	return{	query: "mycfo.mycfo.doctype.ffww.ffww.get_active_customers" }
-}
 
 // Trigger on ADD Row of child table to link newly added contact details aginst same contact and current FFWW record..................
 cur_frm.cscript.more_contact_details_add = function(doc,cdt,cdn){
@@ -142,3 +139,11 @@ cur_frm.cscript.country_name = function(doc,cdt,cdn){
 		}
 	}
 }
+
+cur_frm.fields_dict['contact'].get_query = function(doc) {
+	return{	query:"mycfo.mycfo.doctype.ffww.ffww.get_contact_list" }
+}
+
+// cur_frm.fields_dict['customer'].get_query = function(doc) {
+// 	return{	query:"mycfo.mycfo.doctype.ffww.ffww.get_active_customers" }
+// }

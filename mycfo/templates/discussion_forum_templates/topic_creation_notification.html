@@ -1,0 +1,11 @@
+<h3>{{_("Discussion Forum Notification")}}</h3>
+<p>{{_("Dear User")}},</p>
+<p>{{_("New Discussion topic has been posted by user {0}.Please refer the following topic details.").format(owner) }}</p>
+<h4>Discussion Topic Details:</h4>
+<p><strong>Topic Subject:</strong>{{ subject }}</p>
+<p><strong>Topic Author:</strong>{{ owner }}</p>	
+<p><strong>Topic Category:</strong>{{ category }}</p>
+<p><a href={{ host_url }}>Visit Discussion Topic</a></p>
+<br>
+<p>{{_("Thank you")}}.<br></p>
+<p>Team MyCFO</p>

@@ -16,6 +16,8 @@ def get_global_search_suggestions(filters):
 						union select name from `tabSkill Matrix 18` where name like '%{0}%'
 						union select name from `tabSkill Matrix 120` where name like '%{0}%'
 						union select name from `tabDocument Type` where name like '%{0}%'
+						union select name from `tabCustomer` where name like '%{0}%'
+						union select name from `tabIndustry` where name like '%{0}%'
 		""".format(filters)
 	suggestions = frappe.db.sql(query, as_list=1)
 	security_levels = [ [level] for level in ["0-Level", "1-Level", "2-Level"] if re.search(filters, level, re.IGNORECASE)]	
@@ -33,7 +35,7 @@ def get_published_ip_file(search_filters):
 	my_query = """ select * from `tabIP File` ipf
 						where ( ipf.published_flag = 1 or ipf.file_status = 'Archived' )
 						and ( ipf.skill_matrix_18 like '%{0}%' or ipf.file_name like '%{0}%' 
-						or ipf.security_level like '%{0}%' 
+						or ipf.security_level like '%{0}%' or ipf.customer like '%{0}%' or ipf.industry like '%{0}%'
 						or ipf.skill_matrix_120 like '%{0}%' or ipf.document_type like '%{0}%' )  order by ipf.uploaded_date desc """.format(search_filters.get("filters"))
 	
 	total_records = get_total_records(my_query)
@@ -142,8 +144,8 @@ def create_ip_download_request(ip_file_name, customer, approver):
 		ipa.skill_matrix_18 = file_data.get("skill_matrix_18")
 		ipa.skill_matrix_120 = file_data.get("skill_matrix_120")
 		ipa.file_path = file_data.get("file_path")
-		ipa.approver = approver
-		ipa.employee_name = frappe.db.get_value("Employee", {"name":approver}, 'employee_name')
+		ipa.approver = approver or ""
+		ipa.employee_name = frappe.db.get_value("Employee", {"name":approver}, 'employee_name') if approver else ""
 		ipa.ip_file_requester = frappe.session.user
 		ipa.level_of_approval = file_data.get("security_level")
 		ipa.approval_status = "Pending" 
@@ -166,9 +168,9 @@ def check_for_existing_download_approval_form(file_data):
 
 def prepare_for_todo_creation(file_data, emp_id):
 	users = []
-	user_id = frappe.db.get_value("Employee", emp_id, 'user_id')
-	users.append(user_id)
-	if file_data.get("security_level") ==  "2-Level":
+	user_id = frappe.db.get_value("Employee", emp_id, 'user_id') if emp_id else ""
+	users.append(user_id) if user_id else ""
+	if file_data.get("security_level") ==  "2-Level" or not user_id:
 		central_delivery = get_central_delivery()
 		users.extend(central_delivery)
 	make_todo(users, file_data)	
@@ -300,8 +302,59 @@ def get_comments_reviews(response):
 												where  file_name = %s""",(response.get("file_name")),as_dict=1)	 
 	response["download_flag"] = frappe.db.get_value("IP Download Log", {"file_name":response.get("file_name"), "user_id":frappe.session.user}, "name")
 	response["panel_class"] = "panel panel-primary ip-file-panel" if response.get("published_flag") else "panel panel-archive ip-file-panel"
+	get_feed_back_questionnaire_form(response)
+
+
+def get_feed_back_questionnaire_form(response):
+	cond_dict = {"user":frappe.session.user, "ip_file":response.get("file_name")}
+	if "Central Delivery" not in frappe.get_roles():
+		feedback = """ select  ipd.name
+						from `tabIP Download Approval` ipd
+						where ipd.file_name = '{0}'
+						and ipd.ip_file_requester = '{1}'
+						and ipd.approval_status in ('Download Allowed', 'Expired')
+						order by ipd.creation desc limit 1	""".format(response.get("file_name"), frappe.session.user)
+		fdbk_response = frappe.db.sql(feedback, as_dict=1)
+		if fdbk_response:
+			response["download_feedback_form"] = fdbk_response[0].get("name", "")
+			cond_dict.update({"ip_download_request":fdbk_response[0].get("name", "")}) 
+	response["feedback_form"] = frappe.db.get_value("IP File Feedback", cond_dict, "name")
 
 
 def get_customer_list(doctype, txt, searchfield, start, page_len, filters):
 	return frappe.db.sql(""" select name from `tabCustomer` 
 								where name like %(txt)s limit 10 """, {"txt":"%%%s%%" % txt }, as_list=1)
+
+@frappe.whitelist()
+def validate_user_is_el(customer):
+	employee = frappe.db.get_value("Employee", {"user_id":frappe.session.user}, "name")
+	response = frappe.db.sql(""" select  distinct(opd.user_name), emp.employee_name 
+								from `tabOperation And Project Details` opd
+								join `tabOperation And Project Commercial` opc
+								on opd.parent = opc.name
+								join `tabEmployee` emp
+								on  emp.name  = opd.user_name 
+								where opd.role in ("EL")
+								and opd.user_name = '%s'  
+								and opc.customer = '%s' """%(employee, customer), as_list=1)
+	return {"is_el":1} if len(response) else {"is_el":0}
+
+
+@frappe.whitelist()
+def get_feedback_questionnaire():
+	qtns = frappe.get_all("IP Questionnaire", filters={"parent":"IP File Questionnaire", "status":1}, fields=["*"])
+	return qtns
+
+@frappe.whitelist()
+def create_feedback_questionnaire_form(answer_dict, download_request, ip_file):
+	answer_dict = json.loads(answer_dict)
+	fdbk = frappe.get_doc({
+		"doctype": "IP File Feedback",
+		"user":frappe.session.user,
+		"user_answers":answer_dict,
+		"ip_file":ip_file,
+		"ip_download_request":download_request or ""
+	})
+	fdbk.flags.ignore_permissions = True
+	fdbk.insert()
+	return "success"

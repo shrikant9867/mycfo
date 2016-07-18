@@ -1,0 +1,1 @@
+{% include 'mycfo/questionnaire_common.js' %}

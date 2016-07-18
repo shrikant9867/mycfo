@@ -6,9 +6,19 @@ from __future__ import unicode_literals
 import frappe
 from datetime import datetime, timedelta
 from frappe.model.document import Document
+from mycfo.mycfo_utils import get_mycfo_users
+from frappe.utils import get_url
 
 class DiscussionTopic(Document):
-	pass
+	
+	def after_insert(self):
+		email_ids = get_mycfo_users()
+		template = "/templates/discussion_forum_templates/topic_creation_notification.html"
+		owner = frappe.db.get_value("User", self.owner, ["concat(first_name, ' ', ifnull(last_name,'') )"])
+		args = {"owner" :owner, "subject":self.title, "category":self.blog_category, "host_url":get_url()}
+		frappe.sendmail(recipients=email_ids, sender=None, subject="New Discussion Topic Posted",
+		message=frappe.get_template(template).render(args))	
+
 
 def mail_topic_list():
 	template = "/templates/discussion_topics.html"	

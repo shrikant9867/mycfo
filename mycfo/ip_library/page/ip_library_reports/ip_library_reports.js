@@ -14,13 +14,20 @@ frappe.pages['ip-library-reports'].on_page_load = function(wrapper) {
 			"upload-trends": "Upload Trends",
 			"download-trends": "Download Trends",
 			"user-upload-trend": "User Wise Upload Trends",
-			"user-download-trend": "User Wise Upload Trends"
+			"user-download-trend": "User Wise Upload Trends",
+			"ip-file-distribution": "IP File Distribution"
 		},
 		stacked_chart: ["Database Count Industry & Document Type", "Industry Wise Pending Files For Approval"],
 		line_chart: ["Upload Trends", "Download Trends", "User Wise Upload Trends", "User Wise Upload Trends"],
-		default_rpt: "industry-document-type",
+		pie_chart: ["IP File Distribution"],
+		default_rpt: "ip-file-distribution",
 		sidebar_items: {
 			data: [
+				{
+					"icon": "icon-star",
+					"id": "ip-file-distribution",
+					"label": "IP File Distribution"
+				},
 				{
 					"icon": "icon-star",
 					"id": "industry-document-type",
@@ -49,7 +56,7 @@ frappe.pages['ip-library-reports'].on_page_load = function(wrapper) {
 				{
 					"icon": "icon-star",
 					"id": "user-download-trend",
-					"label": "User Wise Upload Trends"
+					"label": "User Wise Download Trends"
 				}
 			]
 		}

@@ -14,7 +14,7 @@ class FFWW(Document):
 		self.validate_designation()
 		self.validate_ffww()
 		self.validate_duplication_emailid()
-		self.validate_dupicate_designation()
+		# self.validate_dupicate_designation()
 		self.set_fww_name()
 		if self.contact:
 			self.update_contact_status()
@@ -124,10 +124,12 @@ def make_contact(contact=None):
 		return contact_details
 
 def get_active_customers(doctype, txt, searchfield, start, page_len, filters):
-	from frappe.desk.reportview import get_match_cond
-	txt = "%{}%".format(txt)
-	return frappe.db.sql("""select distinct customer
-		from `tabProject Commercial`
-		where docstatus < 2
-		and customer is not null
-			and project_status='Active'""")
+	return frappe.db.sql("""select name, customer_name
+							from `tabCustomer` where customer_name like %(txt)s 
+							or name like %(txt)s""",{"txt":"%%%s%%" % txt}, as_list=1)
+
+def get_contact_list(doctype, txt, searchfield, start, page_len, filters):
+	return frappe.db.sql(""" select name, email, mobile
+								from `tabContact` 
+								where name like %(txt)s or email like %(txt)s 
+								or mobile like %(txt)s """,{"txt": "%%%s%%" % txt}, as_list=1)

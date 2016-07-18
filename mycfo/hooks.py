@@ -15,7 +15,7 @@ app_version = "0.0.1"
 
 # include js, css files in header of desk.html
 app_include_css = ["/assets/mycfo/css/jquery.rateyo.min.css", "/assets/mycfo/css/mycfo.css"]
-app_include_js = ["/assets/mycfo/js/jquery.rateyo.min.js","/assets/mycfo/js/jquery.twbsPagination.min.js"]
+app_include_js = ["/assets/mycfo/js/jquery.rateyo.min.js","/assets/mycfo/js/jquery.twbsPagination.min.js", "assets/js/mycfo_report.min.js"]
 
 # include js, css files in header of web template
 # web_include_css = "/assets/mycfo/css/mycfo.css"
@@ -54,7 +54,7 @@ on_session_creation = "mycfo.mycfo_utils.make_login_log"
 on_logout = "mycfo.mycfo_utils.update_login_log"
 
 
-fixtures = ['Custom Field', 'Property Setter', "Role","Discussion Category"]
+fixtures = ['Custom Field', 'Property Setter', "Role","Discussion Category", "Print Format"]
 # Permissions
 # -----------
 # Permissions evaluated in scripted ways
@@ -69,7 +69,8 @@ permission_query_conditions = {
 	"Checklist Task":"mycfo.checklist.doctype.checklist_task.checklist_task.get_permission_query_conditions",
 	"Answer Sheet":"mycfo.trainings.doctype.answer_sheet.answer_sheet.get_permission_query_conditions",
 	"Assessment":"mycfo.trainings.doctype.assessment.assessment.get_permission_query_conditions",
-	"Training":"mycfo.trainings.doctype.training.training.get_permission_query_conditions"
+	"Training":"mycfo.trainings.doctype.training.training.get_permission_query_conditions",
+	"KPI":"mycfo.mycfo.doctype.project_commercial.project_commercial.get_permission_query_conditions_for_kpi",
 }
 #
 # has_permission = {

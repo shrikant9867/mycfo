@@ -1,5 +1,21 @@
 [
  {
+  "category_name": "Enhancement", 
+  "docstatus": 0, 
+  "doctype": "Discussion Category", 
+  "modified": "2016-05-03 18:35:58.548635", 
+  "name": "Enhancement", 
+  "title": "Enhancement"
+ }, 
+ {
+  "category_name": "Installer", 
+  "docstatus": 0, 
+  "doctype": "Discussion Category", 
+  "modified": "2016-05-03 18:36:13.934080", 
+  "name": "Installer", 
+  "title": "Installer"
+ }, 
+ {
   "category_name": "Project Wise", 
   "docstatus": 0, 
   "doctype": "Discussion Category", 

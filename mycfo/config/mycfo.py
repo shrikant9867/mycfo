@@ -39,6 +39,11 @@ def get_data():
 				},
 				{
 					"type": "doctype",
+					"name": "Customer Skill Mapping",
+					"description": _("Customer Skill Mapping Details"),
+				},
+				{
+					"type": "doctype",
 					"name": "KPI",
 					"description": _("KPI Details"),
 				},	
@@ -105,13 +110,37 @@ def get_data():
 					"name": "project-commercial-report",
 					"icon": "icon-sitemap",
 					"label": _("Graphical Reports"),
-					"description": _("Graphical Report for Request and IP Library"),
+					"description": _("Graphical Report for Project Commercial")
 				},
 				{
 					"type": "report",
 					"name": "Login Report",
 					"is_query_report": True,
-					"doctype": "Login Log"
+					"doctype": "Login Log",
+					"description": _("Login details report.")
+				},
+				{
+					"type": "report",
+					"name": "Customer Skill Mapping Report",
+					"is_query_report": True,
+					"doctype": "Customer Skill Mapping",
+					"description": _("Customer Skill mapping report comprises total, sum & average of skill")
+				},
+				{
+					"type": "report",
+					"name": "Customer Skill Mapping",
+					"label": "Customer Skill Mapping Analysis",
+					"is_query_report": True,
+					"doctype": "Customer Skill Mapping",
+					"description": _("Customer skill maaping detailed analysis")
+				},
+				{
+					"type": "report",
+					"name": "Customer Operational Matrix",
+					"label": "Customer Operational Matrix",
+					"is_query_report": True,
+					"doctype": "Operation And Project Commercial",
+					"description": _("Customer Operational Matrix Details")
 				}
 			]
 		}

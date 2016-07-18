@@ -19,6 +19,33 @@ def get_data():
 					"description": _("Resource Pool"),
 					"doctype": "Skill Mapping",
 				},
+				{
+					"type": "page",
+					"name": "kpi-report",
+					"icon": "icon-sitemap",
+					"label": _("KPI Graphical Reports"),
+					"description": _("Graphical Report for KPI"),
+				}
 			]
 		},
+		{
+			"label": _("Skill Mapping Reports"),
+			"icon": "icon-star",
+			"items": [
+				{
+					"type": "report",
+					"name": "Skill Mapping Report",
+					"is_query_report": True,
+					"doctype": "Skill Mapping",
+					"description": _("Skill mapping report comprises total, sum & average of skill")
+				},
+				{
+					"type": "report",
+					"name": "Employee Skill Mapping",
+					"is_query_report": True,
+					"doctype": "Skill Mapping",
+					"description": _("Employee skill maaping details")
+				}
+			]
+		}
 	]

@@ -8,11 +8,14 @@ from frappe.model.document import Document
 import shutil
 import subprocess
 from frappe.utils import today, getdate
+import subprocess
+import shlex
+import os
 
 class IPApprover(Document):		
 
 	def validate(self):
-		if self.request_type != "Upgrade Validity":
+		if self.request_type != "Upgrade Validity" and self.approver:		# This (self.approver) condition  is to check whether the request is by EL or not.
 			self.check_if_file_rejected()
 			self.set_current_status_of_approval()
 			self.update_ip_file_status()
@@ -82,9 +85,13 @@ class IPApprover(Document):
 			self.init_update_ip_file(extension)
 			request_type = {"New":"Published", "Edit":"Republished"}
 			self.init_for_add_comment(request_type.get(self.request_type))
-			shutil.move(frappe.get_site_path("public", self.file_path), frappe.get_site_path("public", "files", "mycfo", "published_file", self.file_type, self.file_name + extension))
+			edited_file_path = frappe.get_site_path("public", self.file_path)
+			shutil.copy(edited_file_path, frappe.get_site_path("public", "files", "mycfo", "published_file", self.file_type, self.file_name + extension))
+			self.create_compatible_odf_fromat()
 			self.prepare_for_published_notification()
-			frappe.msgprint("Document {0} {1} successfully.".format(self.file_name, request_type.get(self.request_type)))	
+			frappe.msgprint("Document {0} {1} successfully.".format(self.file_name, request_type.get(self.request_type)))
+			if os.path.isfile(edited_file_path):
+				os.remove(edited_file_path)
 		else:
 			self.current_status = "Rejected by CD"
 			request_type = {"New":["Rejected by CD", 0], "Edit":["Rejected by CD (Edit)", 1]}
@@ -97,23 +104,22 @@ class IPApprover(Document):
 	def check_for_validity_upgrade(self):
 		if self.central_delivery_status == "Approved":
 			self.current_status = "Published"
-			cond  = " file_status = 'Validity Upgraded', validity_end_date= '{0}' ".format(self.validity_end_date)
-			self.update_ip_file(cond)
+			cond  = " file_status = 'Validity Upgraded', validity_end_date= '{0}', request_type = 'Upgrade Validity'  ".format(self.validity_end_date)
 			self.init_for_add_comment("Validity Upgraded")
-			self.init_for_validity_notification()
 		else:
 			self.current_status = "Rejected by CD"
-			cond  = " file_status = 'Rejected by CD (Validity)' "
-			self.update_ip_file(cond)
+			cond  = " file_status = 'Rejected by CD (Validity)', request_type = 'Upgrade Validity' "
 			self.init_for_add_comment("Rejected by CD (Validity)")
-			self.init_for_validity_notification()
+		self.update_ip_file(cond)
+		self.init_for_validity_notification()
 					
 	
 	
 	def prepare_for_published_notification(self):
-		args, email = self.get_requester_data()
-		self.send_notification("IP Document {0} Published".format(self.file_name), email, 
-									"templates/ip_library_templates/cd_upload_notification.html",args)
+		if "Central Delivery" not in frappe.get_roles(self.ip_file_requester):			# condition to check if requester is central delivery or not
+			args, email = self.get_requester_data()
+			self.send_notification("IP Document {0} Published".format(self.file_name), email, 
+										"templates/ip_library_templates/cd_upload_notification.html",args)
 
 	
 
@@ -125,7 +131,6 @@ class IPApprover(Document):
 
 	def init_update_ip_file(self, extension):
 		file_path = '/'.join(["files", "mycfo", "published_file", self.file_type, self.file_name + extension])
-		new_path = ""
 		request_type = {"New":"Published", "Edit":"Republished"}
 		file_status = request_type.get(self.request_type)
 		ip_file_cond = self.get_updated_ip_file_cond(file_path, file_status)
@@ -146,21 +151,20 @@ class IPApprover(Document):
 		file_dict = {
 			"approver_link":"",
 			"new_file_path":"",
-			"skill_matrix_120":self.skill_matrix_120,
-			"skill_matrix_18":self.skill_matrix_18,
-			"industry":self.industry,
-			"source":self.source,
-			"description":self.file_description,
+			"skill_matrix_120":frappe.db.escape(self.skill_matrix_120),
+			"skill_matrix_18":frappe.db.escape(self.skill_matrix_18),
+			"industry":frappe.db.escape(self.industry),
+			"source":frappe.db.escape(self.source),
+			"description":frappe.db.escape(self.file_description) if self.file_description else "",
 			"validity_end_date":self.validity_end_date,
 			"security_level":self.level_of_approval,
 			"file_path":file_path,
 			"file_status":file_status,
 			"uploaded_date":today(),
 			"published_flag":1,
-			"customer":self.customer,
-			"file_approver":self.approver,
+			"customer":frappe.db.escape(self.customer),
+			"file_approver":self.approver or "",
 			"employee_name":self.employee_name
-
 		}
 		cond = ""
 		cond_list  = [ "{0} = '{1}' ".format(key, value)  for key, value in file_dict.items()]
@@ -185,10 +189,40 @@ class IPApprover(Document):
 		email_recipients = frappe.db.get_values("User", {"name":["in", [self.ip_file_requester, file_owner] ]}, ["email"], as_dict=1)
 		email = list(set([ recipient.get("email") for recipient in email_recipients if recipient.get("email") ] ))
 		args = {"status":self.central_delivery_status, "comments":self.central_delivery_comments, "file_name":self.file_name}
-		self.send_notification(subject, email, template, args)
+		self.send_notification(subject, email, template, args)	
 
+	def create_compatible_odf_fromat(self):
+		mapper = self.get_extension_mapper()
+		if self.file_extension != "zip" and self.file_extension:
+			try:
+				extension = mapper.get(self.file_extension, "pdf")
+				viewer_path = frappe.get_site_path('/'.join(["public", "files", "mycfo", "published_file", self.file_type, self.file_name + "_viewer." + extension]))
+				file_path = '/'.join(["files", "mycfo", "published_file", self.file_type, self.file_name + "." + self.file_extension])
+				if self.file_extension  == "pdf":
+					file_viewer_path = "assets/mycfo/ViewerJS/index.html#../../../../"  + file_path
+				else:
+					file_path = frappe.get_site_path("public", file_path)	
+					if extension != "html":
+						file_viewer_path = "assets/mycfo/ViewerJS/index.html#../../../../"  + '/'.join(["files", "mycfo", "published_file", self.file_type, self.file_name + "_viewer." + extension])
+					else:
+						viewer_path = frappe.get_site_path('/'.join(["public", "files", "mycfo", "published_file", self.file_type, self.file_name, self.file_name + "_viewer." + extension]))
+						file_viewer_path = '/'.join(["files", "mycfo", "published_file", self.file_type, self.file_name, self.file_name + "_viewer." + extension])
+						dir_path = frappe.get_site_path("public", "files", "mycfo", "published_file", self.file_type, self.file_name)
+						if os.path.isdir(dir_path):
+							shutil.rmtree(dir_path, ignore_errors=True)
+					args = ['unoconv', '-f', str(extension) , '-T', '9', '-o', str(viewer_path), str(file_path)]
+					subprocess.check_call(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)	
+				self.update_ip_file(" file_viewer_path = '%s' "%file_viewer_path)	
+			except Exception, e:
+				frappe.throw(e)
 
+	def get_extension_mapper(self):
+		return {"gif":"pdf", "jpg":"pdf", "jpeg":"pdf", "png":"pdf", "svg":"pdf",
+					"doc":"pdf", "docx":"pdf", "xls":"html", "xlsx":"html", "xlsm":"html",
+					"ppt":"pdf", "pptx":"pdf", "pdf":"pdf", "txt":"pdf", "csv":"ods"}
 
+				
+			
 
 
 

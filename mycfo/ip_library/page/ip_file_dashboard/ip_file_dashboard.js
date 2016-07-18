@@ -106,7 +106,6 @@ IpFileDashboard = Class.extend({
 					method: "get_global_search_suggestions",
 					args:{"filters":request.term},
 					callback:function(r){
-						console.log(r.message)
 						response(r.message)
 					}
 				})
@@ -229,8 +228,10 @@ IpFileDashboard = Class.extend({
 		me.render_ratings();
 		me.render_avg_ratings(r.message[0]);
 		me.init_for_feedback_submission();
+		me.init_for_feedback_questionnaire();
 		me.init_for_download_request();
 		me.init_for_pagination(r.message[1]);
+		me.init_for_file_viewing();
 	},
 	render_ratings:function(){
 		$(".rateYo").rateYo({
@@ -249,6 +250,23 @@ IpFileDashboard = Class.extend({
 	  		});
 		})
 		
+	},
+	init_for_file_viewing:function(){
+		var me = this;
+		$(".ip-file-view").click(function(){
+			var viewer_path = $(this).attr("viewer-path");
+			var file_name = $(this).closest(".panel").attr("file-name");
+			viewer_path ? me.render_document_viewer(viewer_path, file_name) : frappe.msgprint("IP File {0} Preview is not available.".replace("{0}", file_name))
+		})
+	},
+	render_document_viewer:function(viewer_path, file_name){
+		this.dialog = new frappe.ui.Dialog({
+				title: "{0} Preview".replace("{0}", file_name),
+				fields: [{"fieldtype": "HTML", "fieldname": "viewer_html"}]						
+				})
+		this.dialog.show();
+		$(this.dialog.body).closest(".modal-dialog").css({"width":"900px", "height":"600px"})
+		$(this.dialog.body).find("[data-fieldname=viewer_html]").html('<iframe src ="{0}" width="840" height="530" allowfullscreen webkitallowfullscreen>'.replace("{0}", viewer_path))
 	},
 	empty_dashboard_and_footer:function(){
 		$(".ip-file-dashboard").html("");
@@ -307,12 +325,11 @@ IpFileDashboard = Class.extend({
 			ip_file_name = $(this).closest(".panel").attr("ip-file-name")
 			file_name = $(this).closest(".panel").attr("file-name")
 			me.init_for_projects_el_pop_up(ip_file_name, file_name, this);
-			// me.make_download_request(ip_file_name, file_name, this);
 		})
 	},
 	init_for_projects_el_pop_up:function(ip_file_name, file_name, request_button){
 		var me = this;
-		// console.log(this)
+		this.el_flag = 0; 
 		this.dialog = new frappe.ui.Dialog({
 						title: "Make Download Request",
 						fields: [
@@ -321,26 +338,41 @@ IpFileDashboard = Class.extend({
 							],
 						primary_action_label: "Make Request",
 						primary_action: function(doc) {
-								customer = me.dialog.fields_dict.customer.input.value
-								employee_id = me.dialog.fields_dict.employee_id.input.value	
-								if (customer && employee_id){
-									my_dict = {"ip_file_name":ip_file_name, "customer":customer, "approver":employee_id}
-									me.make_download_request(file_name, request_button, my_dict)
-									me.dialog.hide();
-								}else{
-									frappe.msgprint("Mandatory Fields Employee and Customer")
-								}
+								me.init_for_primary_action(ip_file_name, file_name, request_button);
 							}							
 						})
 		this.dialog.show();
+		me.toggle_employee_field("none");
 		this.init_for_customer_employee_get_query()
+	},
+	init_for_primary_action:function(ip_file_name, file_name, request_button){
+		var me = this;
+		customer = me.dialog.fields_dict.customer.input.value
+		employee_id = me.dialog.fields_dict.employee_id.input.value	
+		my_dict = {"ip_file_name":ip_file_name, "customer":customer, "approver":employee_id}
+		if (me.el_flag){
+			if(customer){
+				me.make_download_request(file_name, request_button, my_dict)
+				me.dialog.hide();
+			}else{
+				frappe.msgprint("Mandatory Fields Customer")	
+			}
+			
+		}else{
+			if(customer && employee_id){
+				me.make_download_request(file_name, request_button, my_dict)
+				me.dialog.hide();
+			}else{
+				frappe.msgprint("Mandatory Fields Customer and Employee ID")	
+			}
+		}
 	},
 	init_for_customer_employee_get_query:function(){
 		var me = this;
 		this.dialog.fields_dict.customer.get_query = function(){
 			return{
 				query:"mycfo.ip_library.page.ip_file_dashboard.ip_file_dashboard.get_customer_list"
-			}
+			} 
 		}
 
 		this.dialog.fields_dict.employee_id.get_query = function(){
@@ -350,9 +382,42 @@ IpFileDashboard = Class.extend({
 			}
 		}
 
+		this.init_process_for_el();
+	},
+	init_process_for_el:function(){
+		var me = this;
 		this.dialog.fields_dict.customer.$input.change(function(){
-			me.dialog.fields_dict.employee_id.input.value = ""	
+			if($(this).val()){
+				frappe.call({
+					async:false,
+					freeze:true,	
+					method:"mycfo.ip_library.page.ip_file_dashboard.ip_file_dashboard.validate_user_is_el",
+					args:{"customer":$(this).val()},
+					callback:function(r){
+						if (r.message.is_el){
+							me.toggle_employee_field("none");
+							me.update_employee_value(1);
+						}else{
+							me.toggle_employee_field("block");
+							me.el_flag = 0;
+						}
+
+					}
+				});	
+			}else{
+				me.toggle_employee_field("none");
+				me.update_employee_value(0);
+			}
 		})
+	},
+	toggle_employee_field:function(property_value){
+		var me = this;
+		$(me.dialog.body).find("div[data-fieldname=employee_id]").css("display", property_value);
+	},
+	update_employee_value:function(el_flag){
+		var me = this;
+		me.dialog.fields_dict.employee_id.input.value = "";
+		me.el_flag = el_flag;
 	},
 	make_download_request:function(file_name, request_button, my_dict){
 		var me = this
@@ -402,8 +467,9 @@ IpFileDashboard = Class.extend({
 	},
 	make_download_entry:function(ip_file_name, panel){
 		var me = this
-		var download_form = $(panel).attr("download-form")
-		var validity = $(panel).attr("download-validity")
+		var download_form = $(panel).attr("download-form");
+		var validity = $(panel).attr("download-validity");
+		var feedback_form = $(panel).attr("feedback-form");
 		return frappe.call({
 			freeze: true,
 			freeze_message:"Please wait ..............",
@@ -414,15 +480,96 @@ IpFileDashboard = Class.extend({
 			callback:function(r){
 				if(!($(panel).find(".tab-content div.my-feedback").length)){
 					index = $(panel).attr("id")
-					$(panel).find("ul").append('<li><a data-toggle="tab" href="#feedback-menu{0}" class="feedback-li">Write Feedback</a></li>'.replace("{0}", index));
-					$(panel).find(".tab-content").append(frappe.render_template("ip_file_feedback_tab", {"index":index }));
+					$(panel).find("ul").append('<li><a data-toggle="tab" href="#feedback-menu{0}" class="feedback-li">Share Feedback</a></li>'.replace("{0}", index));
+					$(panel).find(".tab-content").append(frappe.render_template("ip_file_feedback_tab", {"index":index, "feedback_form":feedback_form }));
 					me.render_ratings();
 					me.init_for_feedback_submission();
+					me.init_for_feedback_questionnaire();
 				}
 
 			}
 
 		})
 
+	},
+	init_for_feedback_questionnaire:function(){
+		var me = this;
+		$(".write-feedback").click(function(){
+			var download_request = $(this).closest(".panel").attr("download-feedback-form");
+			var feedback_form = $(this).closest(".panel").attr("feedback-form");
+			var ip_file = $(this).closest(".panel").attr("ip-file-name");
+			var $button = $(this);
+			frappe.call({
+				freeze: true,
+				freeze_message:"Please wait ..............",
+				module:"mycfo.ip_library",
+				page: "ip_file_dashboard",
+				method: "get_feedback_questionnaire",
+				callback:function(r){
+					if(r.message){
+						me.render_feedback_questionnaire(r.message, download_request, ip_file, $button);
+					}else{
+						frappe.msgprint("Sorry for inconvinence,Feedback Questionnaire has not set by Central Delivery. Try Later.")
+					}
+				}
+			})
+		})
+	},
+	render_feedback_questionnaire:function(questions, download_request, ip_file, $button){
+		var me = this;
+		this.dialog = new frappe.ui.Dialog({
+					title: "Submit Feedback",
+					fields: [
+							{"fieldtype": "HTML", "fieldname": "feedback_html"}
+						],
+					primary_action_label: "Submit",
+					primary_action: function(doc) {
+							me.submit_feedback_questionnaire();
+							me.dialog.hide();
+							$button.css("display","none");
+						}
+					})
+		this.dialog.questions = questions;
+		this.dialog.download_request = download_request;
+		this.dialog.ip_file = ip_file;
+		this.dialog.show();
+		this.render_questions();
+	},
+	render_questions:function(){
+		$(this.dialog.body).find("div[data-fieldname=feedback_html]").html(frappe.render_template("feedback_questionnaire", {"questions":this.dialog.questions}));
+	},
+	submit_feedback_questionnaire:function(){
+		var me = this;
+		me.get_feedback_answers();
+		frappe.call({
+			freeze: true,
+			freeze_message:"Please wait ..............",
+			module:"mycfo.ip_library",
+			page: "ip_file_dashboard",
+			method: "create_feedback_questionnaire_form",
+			args:{"answer_dict":me.dialog.questions, "download_request":me.dialog.download_request, "ip_file":me.dialog.ip_file},
+			callback:function(r){
+				if(r.message == "success"){
+					frappe.msgprint("Feedback Questionnaire submitted successfully.")
+				}
+			}
+
+		})
+	},
+	get_feedback_answers:function(){
+		var me = this;
+		$.each(me.dialog.questions, function(index, value){
+			var $question = $(me.dialog.body).find("div[qtn-id='{0}']".replace("{0}", value.name));
+			if(value.question_type == "Objective" ){
+				answer = $question.find("input[name='radio']:checked").attr("option-nm");
+				answer = answer ? answer : ""
+				me.dialog.questions[index].objective_answer = answer;
+			}
+			else{
+				answer = $question.find(".subj-ans").val();
+				me.dialog.questions[index].subjective_answer = answer;
+			}
+		})
 	}
+
 })

@@ -1,0 +1,27 @@
+{% for(var i=0, l=questions.length; i < l; i++) { %}
+{% var question_dict = questions[i] %}
+	<div class="row question"  qtn-id="{{ question_dict.name }}" qtn-type="{{ question_dict.question_type }}">	
+		<p><strong>Q.{{ i + 1 }} {{ question_dict.question_name }} </strong></p>
+		{% var option_list = ["option_a", "option_b", "option_c", "option_d", "option_e"] %}
+		{% var mapper = { "option_a":"A", "option_b":"B", "option_c":"C", "option_d":"D", "option_e":"E" } %}
+		{% if( question_dict.question_type == "Objective" ) { %}
+			<form>
+			{% for(var index in option_list) { %}
+				{% if( question_dict[option_list[index]] ) { %}
+					<div class="radio">
+						{% if(question_dict.user_answer && question_dict.user_answer == mapper[option_list[index] ] )  { %}
+							<label><input type="radio" id="{{ option_list[index] }}" class="custom-radio" name="radio" option-nm="{{  mapper[option_list[index] ] }}" checked >{{ question_dict[option_list[index]] }}</label>
+						{% } else { %}
+							<label><input type="radio" id="{{ option_list[index] }}" class="custom-radio" name="radio" option-nm="{{  mapper[option_list[index] ] }}">{{ question_dict[option_list[index]] }}</label>
+						{% } %}
+							
+					</div>
+				{% } %}
+			{% } %}
+			</form>
+		{% } else { %}
+			 <div class="subj-ans-div"><textarea class="form-control subj-ans" >{{ question_dict.user_subjective_answer }}</textarea></div>
+		{% } %}	
+	</div>
+	<hr>
+{% } %}

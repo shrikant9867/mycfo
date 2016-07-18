@@ -1,82 +1,62 @@
-frappe.require("assets/mycfo/js/slick/lib/firebugx.js");
-frappe.require("assets/mycfo/js/slick/plugins/slick.cellrangedecorator.js");
-frappe.require("assets/mycfo/js/slick/plugins/slick.cellrangeselector.js");
-frappe.require("assets/mycfo/js/slick/plugins/slick.cellselectionmodel.js");
-
-
-
-frappe.require("assets/mycfo/js/slick/slick.formatters.js");
-frappe.require("assets/mycfo/js/slick/slick.editors.js");
-frappe.require("assets/mycfo/js/slick/slick.grid.js");
-frappe.require("assets/mycfo/js/slick/slick.core.js");
-
-
-
-frappe.require("assets/mycfo/js/slick/slick.groupitemmetadataprovider.js");
-frappe.require("assets/mycfo/js/slick/slick.dataview.js");
-frappe.require("assets/mycfo/js/slick/controls/slick.pager.js");
-frappe.require("assets/mycfo/js/slick/controls/slick.columnpicker.js");
-
-frappe.require("assets/frappe/js/lib/slickgrid/plugins/slick.checkboxselectcolumn.js");
-frappe.require("assets/frappe/js/lib/slickgrid/plugins/slick.rowselectionmodel.js");
-frappe.require("assets/frappe/js/lib/slickgrid/plugins/slick.autotooltips.js");
-frappe.require("assets/frappe/js/lib/slickgrid/plugins/slick.cellcopymanager.js");
-frappe.require("assets/frappe/js/lib/slickgrid/plugins/slick.cellexternalcopymanager.js");
-frappe.require("assets/frappe/js/lib/slickgrid/plugins/slick.rowselectionmodel.js");
-
 
 cur_frm.add_fetch('employee', 'employee_name', 'employee_name');
 cur_frm.add_fetch('sub_industry', 'industry', 'industry');
 cur_frm.add_fetch("employee", "user_id", "user_id");
 
+
+frappe.ui.form.on("Skill Mapping","refresh", function(frm) { 
+  if(cur_frm.doc.previous_employer_details){
+      var company_name_list = [];
+      for(i=0;i<cur_frm.doc.previous_employer_details.length;i++){
+              company_name_list.push(cur_frm.doc.previous_employer_details[i].company_name)
+      }
+      var df = frappe.meta.get_docfield("Previous Employer Project Details","company_name", cur_frm.doc.name);
+      df.options = company_name_list;
+  }
+});
+
+
 //calculate year of year_of_experience in all three tables
-frappe.ui.form.on("Previouse Employer Details", "from", function(frm,cdt,cdn) {
-  var d = locals[cdt][cdn];
-  console.log(d.from)
-  var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
-  frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
-});
-frappe.ui.form.on("Previouse Employer Details", "to", function(frm,cdt,cdn) {
-  var d = locals[cdt][cdn];
-  console.log(d.from)
-  var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
-  frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
-});
+// frappe.ui.form.on("Previouse Employer Details", "from", function(frm,cdt,cdn) {
+//   var d = locals[cdt][cdn];
+//   var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
+//   frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
+// });
+// frappe.ui.form.on("Previouse Employer Details", "to", function(frm,cdt,cdn) {
+//   var d = locals[cdt][cdn];
+//   var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
+//   frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
+// });
 
-frappe.ui.form.on("Previous Employer Project Details", "from", function(frm,cdt,cdn) {
-  var d = locals[cdt][cdn];
-  console.log(d.from)
-  var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
-  frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
-});
-frappe.ui.form.on("Previous Employer Project Details", "to", function(frm,cdt,cdn) {
-  var d = locals[cdt][cdn];
-  console.log(d.from)
-  var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
-  frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
-});
+// frappe.ui.form.on("Previous Employer Project Details", "from", function(frm,cdt,cdn) {
+//   var d = locals[cdt][cdn];
+//   var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
+//   frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
+// });
+// frappe.ui.form.on("Previous Employer Project Details", "to", function(frm,cdt,cdn) {
+//   var d = locals[cdt][cdn];
+//   var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
+//   frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
+// });
 
-frappe.ui.form.on("MyCFO Projects Experience", "from", function(frm,cdt,cdn) {
-  var d = locals[cdt][cdn];
-  console.log(d.from)
-  var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
-  frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
-});
-frappe.ui.form.on("MyCFO Projects Experience", "to", function(frm,cdt,cdn) {
-  var d = locals[cdt][cdn];
-  console.log(d.from)
-  var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
-  frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
-});
+// frappe.ui.form.on("MyCFO Projects Experience", "from", function(frm,cdt,cdn) {
+//   var d = locals[cdt][cdn];
+//   var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
+//   frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
+// });
+// frappe.ui.form.on("MyCFO Projects Experience", "to", function(frm,cdt,cdn) {
+//   var d = locals[cdt][cdn];
+//   var a = (Date.parse(d.to)-Date.parse(d.from))/(1000 * 3600 * 24*30);
+//   frappe.model.set_value(cdt, cdn, "year_of_experience", (a/12).toFixed(1));
+// });
 
 frappe.ui.form.on("Skill Mapping", "validate", function(frm) {
       if(frm.doc.previous_employer_details){
         previous_exp = [];
         for(i=0;i<frm.doc.previous_employer_details.length;i++){
-          console.log(i);
             previous_exp.push(parseFloat(frm.doc.previous_employer_details[i].year_of_experience));
          }
-         console.log(previous_exp);
+
          var sum = previous_exp.reduce((a, b) => a + b, 0); 
         cur_frm.set_value("previous_employer_experience", sum);
       }
@@ -84,10 +64,8 @@ frappe.ui.form.on("Skill Mapping", "validate", function(frm) {
       if(frm.doc.mycfo_projects_experience){
         mycfo_exp = [];
         for(i=0;i<frm.doc.mycfo_projects_experience.length;i++){
-          console.log(i);
             mycfo_exp.push(parseFloat(frm.doc.mycfo_projects_experience[i].year_of_experience));
          }
-         console.log(mycfo_exp);
          var sum2 = mycfo_exp.reduce((a, b) => a + b, 0); 
         cur_frm.set_value("mycfo_experience", sum2);
       }
@@ -96,25 +74,8 @@ frappe.ui.form.on("Skill Mapping", "validate", function(frm) {
 });
 
 
-//
-// frappe.ui.form.on("Skill Mapping", "refresh", function(frm,cdt,cdn) {
-// });
 
 
-
-frappe.ui.form.on("Skill Mapping", "onload", function(frm,doctype,name) {
-
-    // $().appendTo($(wrapper).find('.layout-main-section'));
-
-    $(cur_frm.fields_dict.mygrid.wrapper).append( "<table width='100%>\
-  <tr>\
-    <td valign='top' width='100%'>\
-      <div id='myGrid' style='width:100%;height:500px;''></div>\
-    </td>\
-  </tr>\
-</table>" );
-
-});
 
 // frappe.ui.form.on("Skill Mapping", "validate", function(frm,doctype,name) {
 //     cur_frm.events.save_record();  
@@ -141,6 +102,7 @@ frappe.ui.form.on("Skill Mapping", {
         enableCellNavigation: true,
         enableColumnReorder: false,
         explicitInitialization: true,
+        editOnDoubleClick: true,
         editable: true,
       };
      
@@ -148,10 +110,10 @@ frappe.ui.form.on("Skill Mapping", {
               columns.push(
 {id: "sel", name: "#", field: "num", cssClass: "cell-selection", width: 40, resizable: false, selectable: false, focusable: false },
         {id: "industry", name: "Skills", field: "industry", width: 330, cssClass: "cell-title", validator: requiredFieldValidator},
-        {id: "none_field", name: "None \(0\)", field: "none_field",width: 100,editor: Slick.Editors.Text, validator: requiredNoneFieldValidator},
-        {id: "beginner", name: "Beginner \(1-4\)", field: "beginner",width: 100, editor: Slick.Editors.Checkbox, validator: requiredBeginnerFieldValidator  },
-        {id: "imtermediatory", name: "Imtermediatory \(5-7\)", field: "imtermediatory",width: 140, minWidth: 60, editor: Slick.Editors.Text, validator: requiredImtermediatoryFieldValidator},
-        {id: "expert", name: "Expert \(8-10\)", field: "expert", minWidth: 60, width: 120,editor: Slick.Editors.Text, validator: requiredExpertFieldValidator}
+        {id: "none_field", name: "None", field: "none_field",width: 100,editor: Slick.Editors.Checkbox, validator: requiredNoneFieldValidator, formatter:init_checkbox_formatter},
+        {id: "beginner", name: "Beginner", field: "beginner",width: 100, editor: Slick.Editors.Checkbox, validator: requiredBeginnerFieldValidator, formatter:init_checkbox_formatter},
+        {id: "imtermediatory", name: "Imtermediatory", field: "imtermediatory",width: 140, minWidth: 60, editor: Slick.Editors.Checkbox, validator: requiredImtermediatoryFieldValidator, formatter:init_checkbox_formatter},
+        {id: "expert", name: "Expert", field: "expert", minWidth: 60, width: 120,editor: Slick.Editors.Checkbox, validator: requiredExpertFieldValidator, formatter:init_checkbox_formatter}
         // {id: "master_industry", name: "Skill 18", field: "master_industry", width: 180, cssClass: "cell-title", validator: requiredFieldValidator}
              );
 
@@ -193,6 +155,10 @@ frappe.ui.form.on("Skill Mapping", {
         } else {
           return {valid: false, msg: msgprint("Value should be 8 to 10") };
         }
+      }
+
+      function init_checkbox_formatter(row, cell, value, columnDef, dataContext){
+         return value ? '<input  type="checkbox" data-name="checkbox" row-number='+ row +' class="editor-checkbox slick-checkbox checkbox_' + row + '" checked/>': "";
       }
 
   var columnFilters = {};
@@ -256,8 +222,6 @@ make_grid:function(data1,columns,options){
 
           };
         }
-
-
           var groupItemMetadataProvider = new Slick.Data.GroupItemMetadataProvider();
           dataView = new Slick.Data.DataView({
             groupItemMetadataProvider: groupItemMetadataProvider,
@@ -281,6 +245,19 @@ make_grid:function(data1,columns,options){
 
               //call to create grid report
             grid = new Slick.Grid("#myGrid", dataView, columns, options);
+
+grid.onClick.subscribe (function (e, args)
+{
+    if ($(e.target).is(':checkbox') && options['editable'])
+    {
+        var column = args.grid.getColumns()[args.cell];
+
+        if (column['editable'] == false || column['autoEdit'] == false)
+            return;
+
+        data[args.row][column.field] = !data[args.row][column.field];
+    }  
+});
 
             //filter start working
             grid.registerPlugin(groupItemMetadataProvider);
@@ -382,18 +359,21 @@ make_grid:function(data1,columns,options){
           grid.render();
           selectedData.push((item));
         });
-
+         init_for_checkbox_trigger(grid , dataView)
     //end
         
   },
   onload: function(frm){
-    if(frm.doc.employee){
-      cur_frm.events.render();
+   
+  },
+  refresh:function(frm){
+     if(frm.doc.employee){
+       cur_frm.events.prepare_data();
     }
   },
   render: function(frm){
-        var me=this;
-        cur_frm.events.prepare_data();
+        // var me=this;
+        // cur_frm.events.prepare_data();
   },
   save_record: function(frm) {
     var me=this;
@@ -405,7 +385,6 @@ make_grid:function(data1,columns,options){
       'doc': frm.doc,
       'data': data
     }
-    console.log(args)
       get_server_fields('update_skill_mapping_details', args, '', frm.doc,'','',1, function(r){
         frm.refresh()
       })
@@ -413,3 +392,50 @@ make_grid:function(data1,columns,options){
 
 })
 
+
+
+init_for_checkbox_trigger = function(grid, dataview){
+
+  var criteria_list = ["none_field", "beginner", "imtermediatory", "expert"]
+  $(cur_frm.body).find("#myGrid").on("change", $("[data-name=checkbox]"), function(event){
+
+      this.mapper = {2:"none_field", 3:"beginner", 4:"imtermediatory", 5:"expert"}
+      var active_cell = grid.getActiveCell()
+      var data = dataview.getItems();
+      var current_row_data = grid.getDataItem(active_cell.row)
+      var master_skill = current_row_data.master_industry 
+      var sub_skill = current_row_data.industry
+      var field = this.mapper[active_cell.cell]
+      var field_value = $(event.target).prop("checked") ? 1 :0
+      var new_dict = {}
+      new_dict[field] = field_value
+      delete this.mapper[active_cell.cell]
+      get_updated_dict(this.mapper, new_dict)
+      $.extend(current_row_data, new_dict) 
+      data[current_row_data.id] = current_row_data
+      grid.updateRow(active_cell.row)
+
+
+
+  })
+
+    if (value){
+        return '<input type="checkbox" name="" value="'+ value +'" checked />';
+    }
+    else{
+        return '<input type="checkbox" name="" value="' + value + '" />';
+    }
+}
+
+
+get_data_index = function(element, master_skill, sub_skill){
+  if (element.master_industry == master_skill  && element.industry == sub_skill){
+     return element
+  }
+}
+
+get_updated_dict = function(mapper, new_dict){
+  $.each(mapper, function(key, value){
+     new_dict[value] = 0
+  })
+}
