@@ -36,6 +36,7 @@ def get_mycfo_users():
 								left join `tabUserRole` usr_role 
 								on usr_role.parent = usr.name
 								where usr.name != "Administrator"
-								and usr_role.role = "Mycfo User"  """, as_dict=1)
+								and usr_role.role = "Mycfo User"
+								and usr.enabled = 1 """, as_dict=1)
 	mycfo_users = [user.get("email") for user in mycfo_users if user.get("email")]
 	return mycfo_users
