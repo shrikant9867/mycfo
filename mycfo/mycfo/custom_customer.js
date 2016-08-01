@@ -3,7 +3,7 @@ frappe.ui.form.on("Customer", "refresh", function(frm) {
 	if(!frm.doc.__islocal) {
 			cur_frm.add_custom_button(__('Customer Skill Mapping'), 
 					cur_frm.cscript.get_skill_mapping)
-			cur_frm.cscript.init_for_el_sign_off();
+			// cur_frm.cscript.init_for_el_sign_off();
 	}
 })
 

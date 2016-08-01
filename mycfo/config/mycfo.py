@@ -141,6 +141,14 @@ def get_data():
 					"is_query_report": True,
 					"doctype": "Operation And Project Commercial",
 					"description": _("Customer Operational Matrix Details")
+				},
+				{
+					"type": "report",
+					"name": "EL Sign Off Report",
+					"label": "EL Sign Off Report",
+					"is_query_report": True,
+					"doctype": "EL Sign Off Details",
+					"description": _("EL Sign Off Details")
 				}
 			]
 		}

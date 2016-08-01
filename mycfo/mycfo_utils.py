@@ -32,11 +32,24 @@ def update_login_log():
 
 
 def get_mycfo_users():
-	mycfo_users = frappe.db.sql(""" select distinct usr.email from `tabUser` usr 
+	mycfo_user_list = []
+	cust_user = frappe.db.sql(""" select distinct usr.name from `tabUser` usr 
+								left join `tabUserRole` usr_role 
+								on usr_role.parent = usr.name
+								where usr.name != "Administrator" 
+								and usr_role.role = "Customer"
+								and usr.enabled = 1 """, as_dict=1)
+	cust_user = [user.get("name") for user in cust_user if user.get("name")]
+	cust_user = ','.join('"{0}"'.format(w) for w in cust_user)
+	
+	mycfo_users = frappe.db.sql(""" select distinct usr.name from `tabUser` usr 
 								left join `tabUserRole` usr_role 
 								on usr_role.parent = usr.name
 								where usr.name != "Administrator"
+								and usr.name not in (%s)
 								and usr_role.role = "Mycfo User"
-								and usr.enabled = 1 """, as_dict=1)
-	mycfo_users = [user.get("email") for user in mycfo_users if user.get("email")]
+								and usr.enabled = 1 """%(cust_user), as_dict=1)
+	mycfo_users = [user.get("name") for user in mycfo_users if user.get("name")]
+			
 	return mycfo_users
+

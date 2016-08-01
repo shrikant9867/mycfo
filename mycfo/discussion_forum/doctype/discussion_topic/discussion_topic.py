@@ -48,7 +48,8 @@ def send_mail(template):
  	 								having count(com.name) < 1  
  									""",as_dict=1)
 
- 	email_ids = get_mycfo_users()
+ 	email = frappe.db.sql("""select email from `tabUser`""",as_list=1)
+ 	list_email = [e[0] for e in email]
 	args = {"p_day_topic":previous_day_topic if previous_day_topic else "","unans":unanswer_topic if unanswer_topic else ""}
-	frappe.sendmail(recipients= email_ids, sender=None, subject=subject,
+	frappe.sendmail(recipients= list_email, sender=None, subject=subject,
 		message=frappe.get_template(template).render(args))	
