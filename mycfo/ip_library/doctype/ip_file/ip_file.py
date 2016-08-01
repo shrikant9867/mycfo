@@ -20,6 +20,7 @@ class IPFile(Document):
 		self.validate_for_file_data()
 		self.store_document()
 		self.create_request_for_ip_approval()
+		self.validate_duplicate_tag()
 
 	def validate_for_duplicate_file_name(self):
 		if cint(self.get("__islocal")):
@@ -84,7 +85,13 @@ class IPFile(Document):
 			self.file_status = status_dict.get(self.request_type)
 		self.file_data = ""
 
-		
+	def validate_duplicate_tag(self):
+		tags = []
+		for d in self.get("ip_file_tags"):
+			if d.ip_tags not in tags:
+				tags.append(d.ip_tags)
+			else:
+				frappe.throw("Please remove duplicate tags first..")
 	
 	def init_for_validity_upgradation(self):
 		from datetime import datetime

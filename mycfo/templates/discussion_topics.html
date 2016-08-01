@@ -13,9 +13,8 @@
 	</style>
 </head>	
 <body>
-<div style="display: inline-block;">	
 	<h4>{{_(" New Discussions Topics")}}</h4>	
-	<table class="table">
+	<table class="table" cellpadding="5">
 		<thead>
 			<tr>
 				<th width="50%">{{ _("Topic") }}</b></th>
@@ -31,11 +30,9 @@
 			{%- endfor -%}
 		</tbody>
 	</table>
-</div>
 
-<div style="display: inline-block;">
-	<h4 style="margin-left: 150px;">{{_(" Unanswered Discussions Topics")}}</h4>
-	<table class="table" style="margin-left: 150px;">
+	<h4>{{_(" Unanswered Discussions Topics")}}</h4>
+	<table class="table" cellpadding="5">
 		<thead>
 			<tr>
 				<th width="50%">{{ _("Topic") }}</b></th>
@@ -51,10 +48,11 @@
 			{%- endfor -%}
 		</tbody>
 	</table>
-</div>
 <br>
-<p>{{_("Thank you")}}.<br></p>
-<p>Team MyCFO</p>
+<div class="row">
+	<p>{{_("Thank you")}}.<br></p>
+	<p>Team MyCFO</p>
+</div>
 </body>
 </html>
 
