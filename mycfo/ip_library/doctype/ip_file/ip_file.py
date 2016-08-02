@@ -15,12 +15,12 @@ from mycfo.mycfo_utils import get_central_delivery
 class IPFile(Document):
 	
 	def validate(self):
+		self.validate_duplicate_tag()
 		self.validate_for_duplicate_file_name()
 		self.validity_for_cd_users()
 		self.validate_for_file_data()
 		self.store_document()
 		self.create_request_for_ip_approval()
-		self.validate_duplicate_tag()
 
 	def validate_for_duplicate_file_name(self):
 		if cint(self.get("__islocal")):
@@ -147,6 +147,8 @@ class IPFile(Document):
 			ip_approver_form = frappe.get_doc("IP Approver", self.approver_link)
 			ip_approver_form.central_delivery = frappe.session.user
 			ip_approver_form.central_delivery_status = "Approved"
+			ip_approver_form.level_of_approval = self.security_level
+			ip_approver_form.validity_end_date = self.validity_end_date
 			ip_approver_form.submit()
 			frappe.msgprint("Please reload the document.")
 			
