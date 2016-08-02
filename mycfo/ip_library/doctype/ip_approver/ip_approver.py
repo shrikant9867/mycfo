@@ -86,12 +86,13 @@ class IPApprover(Document):
 			request_type = {"New":"Published", "Edit":"Republished"}
 			self.init_for_add_comment(request_type.get(self.request_type))
 			edited_file_path = frappe.get_site_path("public", self.file_path)
+			self.validate_file_path_exists(edited_file_path)
 			shutil.copy(edited_file_path, frappe.get_site_path("public", "files", "mycfo", "published_file", self.file_type, self.file_name + extension))
 			self.create_compatible_odf_fromat()
 			self.prepare_for_published_notification()
 			frappe.msgprint("Document {0} {1} successfully.".format(self.file_name, request_type.get(self.request_type)))
-			if os.path.isfile(edited_file_path):
-				os.remove(edited_file_path)
+			# if os.path.isfile(edited_file_path):
+			# 	os.remove(edited_file_path)
 		else:
 			self.current_status = "Rejected by CD"
 			request_type = {"New":["Rejected by CD", 0], "Edit":["Rejected by CD (Edit)", 1]}
@@ -99,6 +100,10 @@ class IPApprover(Document):
 			self.update_ip_file(ip_file_cond)
 			self.init_for_add_comment(request_type.get(self.request_type)[0])
 			self.process_data_before_notification(self.central_delivery, self.central_delivery_comments)	
+
+	def validate_file_path_exists(self, edited_file_path):
+		if not os.path.isfile(edited_file_path):
+			frappe.throw("File path not found.IP File can not be published.")
 
 
 	def check_for_validity_upgrade(self):
