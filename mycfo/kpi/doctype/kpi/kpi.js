@@ -272,57 +272,25 @@ frappe.ui.form.on("KPI", "validate", function(frm,cdt,cdn) {
 
 frappe.ui.form.on("KPI", "customer", function(frm) {
 	if(cur_frm.doc.customer){
-		cur_frm.set_value("el_name","")
 		frappe.call({
-	        method: "frappe.client.get_list",
+	        method: "mycfo.kpi.doctype.kpi.kpi.get_el",
 	        args: {
-	            doctype: "Operation And Project Commercial",
-	            fields: ["name","operational_id"],
-	            filters: { "customer": cur_frm.doc.customer,"operational_matrix_status":"Active"},
+	        	"customer":cur_frm.doc.customer
 	        },
-	       	callback: function(res){
-	          	if (res && res.message){
-	          		console.log(res.message)
-	          		$.each(res.message, function(i, d) {
-						operation_matrix(d["operational_id"])
-					});
+	       	callback: function(r){
+	          	if (r && r.message){
+	          		console.log(r.message)
+					cur_frm.doc.el_name = r.message
+					refresh_field("el_name")
+				}
+				else{
+					cur_frm.doc.el_name = ""
+					refresh_field("el_name")
 				}
 			}
 		})
 	}
 })					
-
-
-operation_matrix = function(parent){
-	frappe.call({    
-		method: "frappe.client.get_list",
-	   	args: {
-	    	doctype: "Operation Details",
-	       	fields: ["role","user_name","email_id"],
-	       	filters: { "parent" : parent},
-		},
-		callback: function(r){
-			if(r && r.message){
-				console.log(r.message)
-				$.each(r.message, function(i, d) {
-					if(d["role"] == "EL"){
-						email_id = d["email_id"]
-						if(cur_frm.doc.el_name){
-							cur_frm.set_value("el_name",cur_frm.doc.el_name + "\n" +  d["email_id"])	
-						}
-						else{
-							cur_frm.set_value("el_name",d["email_id"])	
-						}						
-					}
-				});
-			}
-		}
-	});
-}
-
-
-
-
 //on save event, if customer accept all % complition, then kpi status will be closed
 // frappe.ui.form.on("KPI", "validate", function(frm,cdt,cdn) {
 // 	var k_status = true;

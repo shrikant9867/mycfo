@@ -71,3 +71,19 @@ def get_el_list(customer):
 	and customer ='{1}'""".format(frappe.session.user,customer),as_list=1)
 
 	return len(customer_list)
+
+
+@frappe.whitelist()
+def get_el(customer):
+	list_of_el = frappe.db.sql("""select  distinct(opd.user_name), emp.employee_name  
+									from `tabOperation And Project Details` opd 
+									join `tabOperation And Project Commercial` opc 
+									on opd.parent = opc.name join `tabEmployee` emp 
+									on  emp.name  = opd.user_name  
+									where opd.role in ("EL")   
+									and opc.customer = "{0}" 
+									and opc.operational_matrix_status = "Active" """.format(customer),as_list=1)
+	el_name = ""
+	for i in [e[1] for e in list_of_el]:	
+		el_name += i + "\n"
+	return el_name	
