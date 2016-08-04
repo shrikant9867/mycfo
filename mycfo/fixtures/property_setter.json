@@ -1483,32 +1483,6 @@
  }, 
  {
   "default_value": null, 
-  "doc_type": "KPI", 
-  "docstatus": 0, 
-  "doctype": "Property Setter", 
-  "doctype_or_field": "DocType", 
-  "field_name": null, 
-  "modified": "2016-04-25 11:39:06.560336", 
-  "name": "KPI-read_only_onload", 
-  "property": "read_only_onload", 
-  "property_type": "Check", 
-  "value": null
- }, 
- {
-  "default_value": null, 
-  "doc_type": "KPI", 
-  "docstatus": 0, 
-  "doctype": "Property Setter", 
-  "doctype_or_field": "DocField", 
-  "field_name": "kpi_status", 
-  "modified": "2016-04-25 11:39:06.688844", 
-  "name": "KPI-kpi_status-options", 
-  "property": "options", 
-  "property_type": "Text", 
-  "value": "Open\nClosed\nAccepted"
- }, 
- {
-  "default_value": null, 
   "doc_type": "Contact", 
   "docstatus": 0, 
   "doctype": "Property Setter", 
@@ -1909,5 +1883,18 @@
   "property": "_idx", 
   "property_type": "Text", 
   "value": "[\"basic_info\", \"naming_series\", \"customer_name\", \"customer_type\", \"sector\", \"industry_group\", \"industry\", \"sub_industry\", \"register_address\", \"lead_name\", \"column_break0\", \"customer_group\", \"territory\", \"customer_segment\", \"pan_number\", \"tan_number\", \"cin_number\", \"date_of_incorporation\", \"tax_id\", \"is_frozen\", \"currency_and_price_list\", \"default_currency\", \"currency\", \"currency_symbol\", \"default_price_list\", \"column_break_14\", \"default_taxes_and_charges\", \"country\", \"financial__data\", \"financial_details\", \"address_contacts\", \"address_html\", \"column_break1\", \"contact_html\", \"default_receivable_accounts\", \"accounts\", \"column_break2\", \"credit_days_based_on\", \"credit_days\", \"credit_limit\", \"more_info\", \"customer_details\", \"website\", \"sales_team_section_break\", \"default_sales_partner\", \"default_commission_rate\", \"sales_team_section\", \"sales_team\", \"communications\", \"p_details\", \"promoters_details\"]"
+ }, 
+ {
+  "default_value": null, 
+  "doc_type": "IP File", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocType", 
+  "field_name": null, 
+  "modified": "2016-07-27 16:43:03.992468", 
+  "name": "IP File-read_only_onload", 
+  "property": "read_only_onload", 
+  "property_type": "Check", 
+  "value": null
  }
 ]

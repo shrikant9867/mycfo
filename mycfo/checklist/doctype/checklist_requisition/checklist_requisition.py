@@ -38,6 +38,7 @@ class ChecklistRequisition(Document):
 					"user":task.user,
 					"actual_end_date":task.end_date,
 					"count":task.count,
+					"depends_on_task":task.depends_on_task,
 					"tat":task.tat
 					# "actual_time":task.actual_time
 				})		
@@ -80,6 +81,7 @@ class ChecklistRequisition(Document):
 				"to_be_processed_for":self.to_be_processed_for,
 				"process_description":self.process_description,
 				"checklist_name":self.checklist_name,
+				"depends_on_task":t.depends_on_task,
 				"tat":t.tat
 			})
 
@@ -136,7 +138,13 @@ class ChecklistRequisition(Document):
 		checklist_doc = frappe.get_doc("Checklist",self.checklist_name)
 		checklist_list = []
 		for task in checklist_doc.get("task"):
-			checklist_list.append({'task_name':task.task_name,'start_date':datetime.now().strftime("%Y-%m-%d"),'end_date':self.get_end_date(task.tat),'des':task.des,'assignee':task.assignee,'tat':task.tat})
+			checklist_list.append({'task_name':task.task_name,
+									'start_date':datetime.now().strftime("%Y-%m-%d"),
+									'end_date':self.get_end_date(task.tat),
+									'des':task.des,
+									'assignee':task.assignee,
+									'tat':task.tat,
+									'depends_on_task':task.depends_on_task})
 		return checklist_list
 
 	def get_end_date(self,tat):

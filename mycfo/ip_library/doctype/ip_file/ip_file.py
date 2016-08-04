@@ -15,6 +15,7 @@ from mycfo.mycfo_utils import get_central_delivery
 class IPFile(Document):
 	
 	def validate(self):
+		self.validate_duplicate_tag()
 		self.validate_for_duplicate_file_name()
 		self.validity_for_cd_users()
 		self.validate_for_file_data()
@@ -84,7 +85,13 @@ class IPFile(Document):
 			self.file_status = status_dict.get(self.request_type)
 		self.file_data = ""
 
-		
+	def validate_duplicate_tag(self):
+		tags = []
+		for d in self.get("ip_file_tags"):
+			if d.ip_tags not in tags:
+				tags.append(d.ip_tags)
+			else:
+				frappe.throw("Please remove duplicate tags first..")
 	
 	def init_for_validity_upgradation(self):
 		from datetime import datetime
@@ -140,6 +147,8 @@ class IPFile(Document):
 			ip_approver_form = frappe.get_doc("IP Approver", self.approver_link)
 			ip_approver_form.central_delivery = frappe.session.user
 			ip_approver_form.central_delivery_status = "Approved"
+			ip_approver_form.level_of_approval = self.security_level
+			ip_approver_form.validity_end_date = self.validity_end_date
 			ip_approver_form.submit()
 			frappe.msgprint("Please reload the document.")
 			
