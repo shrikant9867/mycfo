@@ -210,6 +210,7 @@ def get_approver_list(doctype, txt, searchfield, start, page_len, filters):
 								where opd.role in ("EL")
 								and opd.email_id != %(user)s  
 								and opc.customer = %(customer)s
+								and opc.operational_matrix_status = "Active"	
 								and (emp.name like %(txt)s
 								or emp.employee_name like %(txt)s)
 								limit 20
