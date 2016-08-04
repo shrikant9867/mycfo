@@ -29,6 +29,24 @@ class ChecklistTask(Document):
 
 	def onload(self):
 		"""Load project tasks for quick view"""
+		task_id_list = []
+		if self.ct_depend_task:
+			for i in self.ct_depend_task:
+				task_id_list.append(i.task)
+													
+		if self.depends_on_task:
+			depends_task = frappe.db.get_values("Checklist Task", 
+												{"title":self.depends_on_task,
+												"expected_start_date":self.expected_start_date,
+												"project":self.project}, 
+												["status","name","title"], as_dict=True)
+			if depends_task[0]['name'] not in task_id_list:
+				self.append("ct_depend_task", {
+						"task": depends_task[0]['name'],
+						"status": depends_task[0]['status'],
+						"title": depends_task[0]['title']
+				})
+
 		if not self.get("ct_reassign"):
 			for task in self.get_tasks():
 				self.append("ct_reassign", {
