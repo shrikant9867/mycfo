@@ -16,6 +16,7 @@ frappe.ui.form.on("Checklist Requisition","checklist_name",function(frm){
 				row.des = d.des;
 				row.assignee = d.assignee;
 				row.tat = d.tat;
+				row.depends_on_task = d.depends_on_task;
 				cur_frm.set_value('expected_start_date',d.start_date)
 				refresh_field("cr_task");
 				});	
@@ -24,15 +25,17 @@ frappe.ui.form.on("Checklist Requisition","checklist_name",function(frm){
 	}
 })
 
-frappe.ui.form.on("Checklist Requisition","expected_start_date",function(frm){
-	var d = moment().format('YYYY-MM-DD')
-	var current_date = new Date(d)
-	var expected_start_date = new Date(cur_frm.doc.expected_start_date)
-	if(expected_start_date < current_date){
-		msgprint(__("'Expected Start Date' Should Not Past Date "))
-		cur_frm.doc.expected_start_date = ""
-		refresh_field('expected_start_date')
-	}		
+frappe.ui.form.on("Checklist Requisition",{
+	expected_start_date:function(frm){
+		var d = moment().format('YYYY-MM-DD')
+		var current_date = new Date(d)
+		var expected_start_date = new Date(cur_frm.doc.expected_start_date)
+		if(expected_start_date < current_date){
+			msgprint(__("'Expected Start Date' Should Not Past Date "))
+			cur_frm.doc.expected_start_date = ""
+			refresh_field('expected_start_date')
+		}		
+	}	
 })
 
 frappe.ui.form.on("Requisition Task","end_date",function(frm,cdt,cdn){
