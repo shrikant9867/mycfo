@@ -33,13 +33,13 @@ def get_global_search_suggestions(filters):
 def get_published_ip_file(search_filters):
 	search_filters = json.loads(search_filters)
 	limit_query = "LIMIT 5 OFFSET {0}".format(search_filters.get("page_no") * 5 )
-	my_query = """ select * from `tabIP File` ipf, `tabIP File Tags` ipt
+	my_query = """ select * from `tabIP File` ipf left join `tabIP File Tags` ipt
+						on ipt.parent = ipf.name
 						where ( ipf.published_flag = 1 or ipf.file_status = 'Archived' )
-						and ipt.parent = ipf.name
 						and ( ipf.skill_matrix_18 like '%{0}%' or ipf.file_name like '%{0}%' 
 						or ipf.security_level like '%{0}%' or ipf.customer like '%{0}%' or ipf.industry like '%{0}%'
 						or ipf.skill_matrix_120 like '%{0}%' or ipf.document_type like '%{0}%' 
-						or ipt.ip_tags like '%{0}%')  order by ipf.uploaded_date desc """.format(search_filters.get("filters"),debug=1)
+						or ipt.ip_tags like '%{0}%') group by ipf.name order by ipf.uploaded_date desc """.format(search_filters.get("filters"),debug=1)
 	
 	total_records = get_total_records(my_query)
 	response_data = frappe.db.sql(my_query + limit_query, as_dict=True)
