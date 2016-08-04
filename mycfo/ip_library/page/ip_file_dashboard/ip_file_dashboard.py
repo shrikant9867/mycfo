@@ -336,6 +336,7 @@ def validate_user_is_el(customer):
 								on  emp.name  = opd.user_name 
 								where opd.role in ("EL")
 								and opd.user_name = '%s'  
+								and opc.operational_matrix_status = "Active"
 								and opc.customer = '%s' """%(employee, customer), as_list=1)
 	return {"is_el":1} if len(response) else {"is_el":0}
 
