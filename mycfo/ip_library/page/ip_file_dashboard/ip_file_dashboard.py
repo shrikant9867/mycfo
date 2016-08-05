@@ -56,7 +56,8 @@ def get_published_ip_file(search_filters):
 	total_records = get_total_records(my_query)
 	response_data = frappe.db.sql(my_query + limit_query, as_dict=True)
 	get_request_download_status(response_data)
-	total_pages = math.ceil(total_records[0].get("count",0) if len(total_records) else 0 /5.0)
+	total_pages = math.ceil( len(response_data) / 5.0)
+	# total_pages = math.ceil(total_records[0].get("count",0) if len(total_records) else 0 /5.0)
 	return response_data, total_pages 
 
 
