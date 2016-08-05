@@ -33,18 +33,30 @@ def get_global_search_suggestions(filters):
 def get_published_ip_file(search_filters):
 	search_filters = json.loads(search_filters)
 	limit_query = "LIMIT 5 OFFSET {0}".format(search_filters.get("page_no") * 5 )
-	my_query = """ select * from `tabIP File` ipf left join `tabIP File Tags` ipt
+	my_query = """ select
+						*
+					from 
+					(   select 	ipf.new_file_path, ipf.skill_matrix_120, ipf.file_name, ipf.file_extension, ipf.creation,
+								ipf.modified, ipf.file_status, ipf.owner, ipf.document_type, ipf.modified_by, ipf.published_flag, ipf.source,
+								ipf.security_level, ipf.docstatus, ipf.file_path, ipf.file_approver, ipf.description, ipf.skill_matrix_18,
+								ipf.validity_end_date, ipf.request_type, ipf.user, ipf.employee_name, ipf.file_viewer_path,
+								ipf.customer, ipf.name, ipf.industry, ipf.uploaded_date, ipf.approver_link
+						from `tabIP File` ipf 
+						left join `tabIP File Tags` ipt
 						on ipt.parent = ipf.name
-						where ( ipf.published_flag = 1 or ipf.file_status = 'Archived' )
-						and ( ipf.skill_matrix_18 like '%{0}%' or ipf.file_name like '%{0}%' 
-						or ipf.security_level like '%{0}%' or ipf.customer like '%{0}%' or ipf.industry like '%{0}%'
-						or ipf.skill_matrix_120 like '%{0}%' or ipf.document_type like '%{0}%' 
-						or ipt.ip_tags like '%{0}%') group by ipf.name order by ipf.uploaded_date desc """.format(search_filters.get("filters"),debug=1)
-	
+							where ( ipf.published_flag = 1 or ipf.file_status = 'Archived' )
+							and ( ipf.skill_matrix_18 like '%{0}%' or ipf.file_name like '%{0}%' 
+							or ipf.security_level like '%{0}%' or ipf.customer like '%{0}%' or ipf.industry like '%{0}%'
+							or ipf.skill_matrix_120 like '%{0}%' or ipf.document_type like '%{0}%' 
+							or ipt.ip_tags like '%{0}%')  
+					) as new_tbl
+					group by new_tbl.name  order by new_tbl.uploaded_date desc
+					""".format(search_filters.get("filters"))
+
 	total_records = get_total_records(my_query)
 	response_data = frappe.db.sql(my_query + limit_query, as_dict=True)
 	get_request_download_status(response_data)
-	total_pages = math.ceil(total_records[0].get("count",0)/5.0)
+	total_pages = math.ceil(total_records[0].get("count",0) if len(total_records) else 0 /5.0)
 	return response_data, total_pages 
 
 
