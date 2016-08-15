@@ -270,6 +270,27 @@ frappe.ui.form.on("KPI", "validate", function(frm,cdt,cdn) {
 });
 
 
+frappe.ui.form.on("KPI", "customer", function(frm) {
+	if(cur_frm.doc.customer){
+		frappe.call({
+	        method: "mycfo.kpi.doctype.kpi.kpi.get_el",
+	        args: {
+	        	"customer":cur_frm.doc.customer
+	        },
+	       	callback: function(r){
+	          	if (r && r.message){
+	          		console.log(r.message)
+					cur_frm.doc.el_name = r.message
+					refresh_field("el_name")
+				}
+				else{
+					cur_frm.doc.el_name = ""
+					refresh_field("el_name")
+				}
+			}
+		})
+	}
+})					
 //on save event, if customer accept all % complition, then kpi status will be closed
 // frappe.ui.form.on("KPI", "validate", function(frm,cdt,cdn) {
 // 	var k_status = true;
