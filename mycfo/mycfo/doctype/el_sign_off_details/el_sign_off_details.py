@@ -84,3 +84,23 @@ def send_notification_to_el_sign_off():
 							in current quarter. Please Sign Off respective customer before end of the
 							current quarter. \n\n Thank You. """%(cust)
 					frappe.sendmail(cust_dict[cust], subject="Sign Off Delay Notification",message=msg)
+
+
+@frappe.whitelist()
+def get_ps_checklist(customer):
+	if frappe.db.get_value("Post Sales Handover Checklist", customer, "name"):
+		psc = frappe.get_doc("Post Sales Handover Checklist", customer)
+	else:
+		psc = frappe.new_doc("Post Sales Handover Checklist")
+		psc.customer = customer
+	return psc.as_dict()
+
+
+@frappe.whitelist()
+def get_closure_checklist(customer):
+	if frappe.db.get_value("Closure Checklist", customer, "name"):
+		psc = frappe.get_doc("Closure Checklist", customer)
+	else:
+		psc = frappe.new_doc("Closure Checklist")
+		psc.customer = customer
+	return psc.as_dict()
