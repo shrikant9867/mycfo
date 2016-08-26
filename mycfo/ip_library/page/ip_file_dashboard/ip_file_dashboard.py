@@ -33,7 +33,10 @@ def get_global_search_suggestions(filters):
 def get_published_ip_file(search_filters):
 	search_filters = json.loads(search_filters)
 	limit_query = "LIMIT 5 OFFSET {0}".format(search_filters.get("page_no") * 5 )
-	my_query = """ select
+
+	if search_filters['filters'] :
+		ip_file_filters = ','.join('"{0}"'.format(w) for w in search_filters['filters'] )
+		my_query = """ select
 						*
 					from 
 					(   select 	ipf.new_file_path, ipf.skill_matrix_120, ipf.file_name, ipf.file_extension, ipf.creation,
@@ -45,18 +48,21 @@ def get_published_ip_file(search_filters):
 						left join `tabIP File Tags` ipt
 						on ipt.parent = ipf.name
 							where ( ipf.published_flag = 1 or ipf.file_status = 'Archived' )
-							and ( ipf.skill_matrix_18 like '%{0}%' or ipf.file_name like '%{0}%' 
-							or ipf.security_level like '%{0}%' or ipf.customer like '%{0}%' or ipf.industry like '%{0}%'
-							or ipf.skill_matrix_120 like '%{0}%' or ipf.document_type like '%{0}%' 
-							or ipt.ip_tags like '%{0}%')  
+							and ( ipf.skill_matrix_18 in ({0}) or ipf.file_name in ({0}) 
+							or ipf.security_level in ({0}) or ipf.customer in ({0}) 
+							or ipf.industry in ({0}) or ipf.skill_matrix_120 in ({0}) 
+							or ipf.document_type in ({0}) or ipt.ip_tags in ({0}) )  
 					) as new_tbl
-					group by new_tbl.name  order by new_tbl.uploaded_date desc
-					""".format(search_filters.get("filters"))
+					group by new_tbl.name order by new_tbl.uploaded_date desc
+					""".format(ip_file_filters)
+	else :
+		my_query = ip_file_search_without_filters()
 
 	total_records = get_total_records(my_query)
 	response_data = frappe.db.sql(my_query + limit_query, as_dict=True)
 	get_request_download_status(response_data)
 	total_pages = math.ceil(len(total_records)/5.0)
+	
 	return response_data, total_pages 
 
 
@@ -64,6 +70,14 @@ def get_total_records(my_query):
 	return frappe.db.sql(my_query.replace("*", "count(*) as count", 1), as_dict=1)
 
 
+def ip_file_search_without_filters():
+	return  """ select new_file_path, skill_matrix_120, file_name, file_extension, creation,
+					modified, file_status, owner, document_type, modified_by, published_flag, source,
+					security_level, docstatus, file_path, file_approver, description, skill_matrix_18,
+					validity_end_date, request_type, user, employee_name, file_viewer_path,
+					customer, name, industry, uploaded_date, approver_link from `tabIP File` 
+					order by uploaded_date desc """
+	 
 
 def get_sub_query_of_request_status(file_name):
 	return """ select  ipd.approval_status, ipd.validity_end_date , ipd.name
@@ -165,8 +179,9 @@ def create_ip_download_request(ip_file_name, customer, approver):
 		ipa.level_of_approval = file_data.get("security_level")
 		ipa.approval_status = "Pending" 
 		ipa.save(ignore_permissions=True)
-		prepare_for_todo_creation(file_data, approver)
+		prepare_for_todo_creation(file_data, approver,customer)
 		return "success"
+
 
 def check_for_existing_download_approval_form(file_data):
 	idp_list = frappe.db.get_values("IP Download Approval", {"file_name":file_data.get("file_name"), 
@@ -181,14 +196,14 @@ def check_for_existing_download_approval_form(file_data):
 
 
 
-def prepare_for_todo_creation(file_data, emp_id):
+def prepare_for_todo_creation(file_data, emp_id,customer):
 	users = []
 	user_id = frappe.db.get_value("Employee", emp_id, 'user_id') if emp_id else ""
 	users.append(user_id) if user_id else ""
 	if file_data.get("security_level") ==  "2-Level" or not user_id:
 		central_delivery = get_central_delivery()
 		users.extend(central_delivery)
-	make_todo(users, file_data)	
+	make_todo(users, file_data,customer)	
 
 
 def get_user_with_el_roles(project):
@@ -205,9 +220,9 @@ def get_user_with_el_roles(project):
 	return result
 
 
-def make_todo(users, file_data):
+def make_todo(users, file_data,customer):
 	template = "/templates/ip_library_templates/download_request_notification.html"
-	subject = "IP Document Download Request Notification"
+	subject = "IP File Download Request"
 	for usr in users:
 		todo = frappe.new_doc("ToDo")
 		todo.description = "Approve the download request of user {0} for file {1}".format(frappe.session.user, file_data.get("file_name"))
@@ -218,7 +233,7 @@ def make_todo(users, file_data):
 		todo.status = "Open"
 		todo.priority = "High"
 		todo.save(ignore_permissions=True)
-	args = {"user_name":frappe.session.user, "file_name":file_data.get("file_name")}
+	args = {"user_name":frappe.session.user, "file_name":file_data.get("file_name"),"customer":file_data.get("customer")}
 	frappe.sendmail(recipients=users, sender=None, subject=subject,
 		message=frappe.get_template(template).render(args))	
 

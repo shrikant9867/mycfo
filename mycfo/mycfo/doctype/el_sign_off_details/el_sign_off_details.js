@@ -6,6 +6,34 @@ frappe.ui.form.on("Customer", "refresh", function(frm) {
 				"customer": frm.doc.name
 			},
 			callback: function(r) {
+				if(r.message['is_el'] == 1 || in_list(user_roles, "Central Delivery")){
+					frm.add_custom_button(__("Post Sales Checklist"), function() {
+						return frappe.call({
+							method: "mycfo.mycfo.doctype.el_sign_off_details.el_sign_off_details.get_ps_checklist",
+							args: {
+								"customer": frm.doc.name,
+							},
+							callback: function(r) {
+								var doclist = frappe.model.sync(r.message);
+								frappe.set_route("Form", doclist[0].doctype, doclist[0].name);
+							}
+						});
+					});
+
+					frm.add_custom_button(__("Closure Checklist"), function() {
+						return frappe.call({
+							method: "mycfo.mycfo.doctype.el_sign_off_details.el_sign_off_details.get_closure_checklist",
+							args: {
+								"customer": frm.doc.name,
+							},
+							callback: function(r) {
+								var doclist = frappe.model.sync(r.message);
+								frappe.set_route("Form", doclist[0].doctype, doclist[0].name);
+							}
+						});
+					});
+				}
+
 				if (r.message['is_el'] == 1){
 					frm.add_custom_button(__("EL Sign Off"), function() {
 						var di = new frappe.ui.Dialog({
@@ -39,5 +67,32 @@ frappe.ui.form.on("Customer", "refresh", function(frm) {
 				}
 			}
 		});
+
+		// frm.add_custom_button(__("Post Sales Checklist"), function() {
+		// 	return frappe.call({
+		// 		method: "mycfo.mycfo.doctype.el_sign_off_details.el_sign_off_details.get_ps_checklist",
+		// 		args: {
+		// 			"customer": frm.doc.name,
+		// 		},
+		// 		callback: function(r) {
+		// 			var doclist = frappe.model.sync(r.message);
+		// 			frappe.set_route("Form", doclist[0].doctype, doclist[0].name);
+		// 		}
+		// 	});
+		// });
+
+		// frm.add_custom_button(__("Closure Checklist"), function() {
+		// 	return frappe.call({
+		// 		method: "mycfo.mycfo.doctype.el_sign_off_details.el_sign_off_details.get_closure_checklist",
+		// 		args: {
+		// 			"customer": frm.doc.name,
+		// 		},
+		// 		callback: function(r) {
+		// 			var doclist = frappe.model.sync(r.message);
+		// 			frappe.set_route("Form", doclist[0].doctype, doclist[0].name);
+		// 		}
+		// 	});
+		// });
+
 	}
 })

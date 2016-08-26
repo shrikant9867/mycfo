@@ -6,11 +6,14 @@ frappe.pages['ip-file-dashboard'].on_page_load = function(wrapper) {
 	});
 	frappe.breadcrumbs.add("IP Library");
 	$("<div class='ip-file-dashboard'</div>").appendTo(page.body);
-	new IpFileDashboard(wrapper, page);
+	wrapper.ip_file_dashboard = new frappe.IpFileDashboard(wrapper, page);
 }
 
+frappe.pages['ip-file-dashboard'].refresh = function(wrapper) {
+	wrapper.ip_file_dashboard.set_from_route();
+}
 
-IpFileDashboard = Class.extend({
+frappe.IpFileDashboard = Class.extend({
 	init:function(wrapper, page){
 		this.page = page;
 		this.wrapper = wrapper;
@@ -26,7 +29,6 @@ IpFileDashboard = Class.extend({
 		var me = this;	
 		me.init_for_filter_rendering();
 		me.init_for_search_trigger();
-		
 	},
 	init_for_latest:function(){
 		var me = this;
@@ -71,8 +73,10 @@ IpFileDashboard = Class.extend({
 	},
 	init_for_filter_rendering:function(){
 		var me = this;
-		$(this.page.page_form).append("<div class='form-group frappe-control col-xs-4 col-xs-offset-1' id='global-search-div'><input type='text'\
-			id='global_search' class ='form-control' placeholder='Search IP File'></div>")
+		$(this.page.page_form).append("<div class='form-group frappe-control col-xs-4 col-xs-offset-1' id='global-search-div'>\
+			<select type='text'	id='global_search' class ='js-example-basic-multiple js-states form-control' \
+			placeholder='Search IP File' multiple='multiple' style='width: 350px'></select></div>")
+
 		search_filters = [
 					{"name":"search", "fieldname":"search", "label":"Search", "fieldtype":"Button", "options":"" , "icon":"icon-search"},
 					{"name":"latest_uploads", "fieldname":"latest_uploads", "label":"Latest Uploads", "fieldtype":"Button", "options":"" , "icon":"icon-search"},
@@ -98,19 +102,34 @@ IpFileDashboard = Class.extend({
 		
 	},
 	init_for_global_search:function(){
-		$(this.wrapper).find("#global_search").autocomplete({
-			source:function(request, response){
-				frappe.call({
-					module:"mycfo.ip_library",
-					page: "ip_file_dashboard",
-					method: "get_global_search_suggestions",
-					args:{"filters":request.term},
-					callback:function(r){
-						response(r.message)
-					}
-				})
+		var me = this;
+		frappe.call({
+			module:"mycfo.ip_library",
+			page: "ip_file_dashboard",
+			method: "get_global_search_suggestions",
+			args:{"filters":''},
+			callback:function(r){
+				if (r.message) {
+					$("#global_search").select2({
+						placeholder: "Search IP File",
+						data : r.message
+					});
+				};
+				me.set_from_route()
 			}
-		});
+		})
+	},
+	set_from_route: function() {
+		var me = this;
+		if(frappe.route_options) {
+			if(frappe.route_options['value']!=null)
+				$("#global_search").select2().val(frappe.route_options['value']).trigger("change")
+				me.search_filters = { "filters":$("#global_search").val() }
+				me.empty_dashboard_and_footer();
+				me.get_ip_files(0, me);
+
+			// frappe.route_options = null;
+		}
 	},
 	init_for_latest_uploads:function(page_no, outer_this){
 		var me = outer_this;
@@ -172,7 +191,6 @@ IpFileDashboard = Class.extend({
 			me.search_filters = { "filters":$("#global_search").val() }
 			me.empty_dashboard_and_footer();
 			me.get_ip_files(0, me);
-		
 		});
 	},
 	get_ip_files:function(page_no, outer_this){
