@@ -1,3 +1,4 @@
+
 //set filter on Resouce Assigned
 cur_frm.fields_dict["kpi_business_details"].grid.get_field("resouce_assigned").get_query = function(doc){
    	return {
@@ -26,7 +27,7 @@ cur_frm.fields_dict["kpi_process_details"].grid.get_field("resouce_assigned").ge
 
 cur_frm.add_fetch("resouce_assigned", "employee_name", "employee_name");
 cur_frm.add_fetch("skill_matrix_120", "skill_matrix_18", "skill_matrix_18");
-
+cur_frm.add_fetch("customer", "email", "email");
 
 //Validation kpi start date
 cur_frm.cscript.start_date = function(doc,cdt,cdn){
@@ -475,7 +476,7 @@ frappe.ui.form.on("KPI", "validate", function(frm,cdt,cdn) {
     var business_w_total=0;
     if(frm.doc.kpi_business_details){
 		for(i=0;i<frm.doc.kpi_business_details.length;i++){
-			business_w_total +=frm.doc.kpi_business_details[i].weightage
+			business_w_total += cint(frm.doc.kpi_business_details[i].weightage)
 		 }
 		 frm.set_value("business_total_weightage",business_w_total)
 	}
@@ -483,7 +484,7 @@ frappe.ui.form.on("KPI", "validate", function(frm,cdt,cdn) {
 	var people_w_total=0;
     if(frm.doc.kpi_people_details){
 		for(i=0;i<frm.doc.kpi_people_details.length;i++){
-			people_w_total +=frm.doc.kpi_people_details[i].weightage
+			people_w_total += cint(frm.doc.kpi_people_details[i].weightage)
 		 }
 		 frm.set_value("people_total_weightage",people_w_total)
 	}
@@ -491,7 +492,7 @@ frappe.ui.form.on("KPI", "validate", function(frm,cdt,cdn) {
 	var finance_w_total=0;
     if(frm.doc.kpi_finance_details){
 		for(i=0;i<frm.doc.kpi_finance_details.length;i++){
-			finance_w_total +=frm.doc.kpi_finance_details[i].weightage
+			finance_w_total += cint(frm.doc.kpi_finance_details[i].weightage)
 		 }
 		 frm.set_value("finance_total_weightage",finance_w_total)
 	}
@@ -499,7 +500,7 @@ frappe.ui.form.on("KPI", "validate", function(frm,cdt,cdn) {
 	var process_w_total=0;
     if(frm.doc.kpi_process_details){
 		for(i=0;i<frm.doc.kpi_process_details.length;i++){
-			process_w_total +=frm.doc.kpi_process_details[i].weightage
+			process_w_total += cint(frm.doc.kpi_process_details[i].weightage)
 		 }
 		 frm.set_value("process_total_weightage",process_w_total)
 	}

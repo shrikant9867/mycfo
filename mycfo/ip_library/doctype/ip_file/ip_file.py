@@ -21,6 +21,7 @@ class IPFile(Document):
 		self.store_document()
 		self.create_request_for_ip_approval()
 
+
 	def validate_for_duplicate_file_name(self):
 		if cint(self.get("__islocal")):
 			if frappe.db.get_value("IP File", {"name":self.file_name}, "name"):
@@ -133,7 +134,8 @@ class IPFile(Document):
 
 
 	def on_update(self):
-		self.submit_ip_approver_form_for_central_delivery_role()	
+		self.submit_ip_approver_form_for_central_delivery_role()
+		
 		
 	def submit_ip_approver_form_for_central_delivery_role(self):
 		if "Central Delivery" in frappe.get_roles() and self.request_type in ["New", "Edit"] and self.approver_link:
@@ -180,14 +182,11 @@ class IPFile(Document):
 
 	
 	def send_mail(self, email):
-		template = "/templates/ip_library_templates/approver_notification.html"
-		subject = "IP Document Upload Notification"
-		args = {"user_name":frappe.session.user, "file_name":self.file_name}
+		template = "/templates/ip_library_templates/Ip_file_approver_notification.html"
+		subject = "IP File upload request"
+		args = {"user_name":frappe.session.user, "file_name":self.file_name,"customer":self.customer}
 		frappe.sendmail(recipients=email, sender=None, subject=subject,
 			message=frappe.get_template(template).render(args))		
-
-
-
 
 
 @frappe.whitelist()
@@ -286,3 +285,4 @@ def get_customer_list(doctype, txt, searchfield, start, page_len, filters):
 								or customer_group like %(txt)s)
 								limit 20
 	 		""", {'txt': "%%%s%%" % txt}, as_list=1)
+

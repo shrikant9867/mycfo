@@ -150,8 +150,9 @@ def create_ip_download_request(ip_file_name, customer, approver):
 		ipa.level_of_approval = file_data.get("security_level")
 		ipa.approval_status = "Pending" 
 		ipa.save(ignore_permissions=True)
-		prepare_for_todo_creation(file_data, approver)
+		prepare_for_todo_creation(file_data, approver,customer)
 		return "success"
+
 
 def check_for_existing_download_approval_form(file_data):
 	idp_list = frappe.db.get_values("IP Download Approval", {"file_name":file_data.get("file_name"), 
@@ -166,14 +167,14 @@ def check_for_existing_download_approval_form(file_data):
 
 
 
-def prepare_for_todo_creation(file_data, emp_id):
+def prepare_for_todo_creation(file_data, emp_id,customer):
 	users = []
 	user_id = frappe.db.get_value("Employee", emp_id, 'user_id') if emp_id else ""
 	users.append(user_id) if user_id else ""
 	if file_data.get("security_level") ==  "2-Level" or not user_id:
 		central_delivery = get_central_delivery()
 		users.extend(central_delivery)
-	make_todo(users, file_data)	
+	make_todo(users, file_data,customer)	
 
 
 def get_user_with_el_roles(project):
@@ -190,9 +191,9 @@ def get_user_with_el_roles(project):
 	return result
 
 
-def make_todo(users, file_data):
+def make_todo(users, file_data,customer):
 	template = "/templates/ip_library_templates/download_request_notification.html"
-	subject = "IP Document Download Request Notification"
+	subject = "IP File Download Request"
 	for usr in users:
 		todo = frappe.new_doc("ToDo")
 		todo.description = "Approve the download request of user {0} for file {1}".format(frappe.session.user, file_data.get("file_name"))
@@ -203,7 +204,7 @@ def make_todo(users, file_data):
 		todo.status = "Open"
 		todo.priority = "High"
 		todo.save(ignore_permissions=True)
-	args = {"user_name":frappe.session.user, "file_name":file_data.get("file_name")}
+	args = {"user_name":frappe.session.user, "file_name":file_data.get("file_name"),"customer":file_data.get("customer")}
 	frappe.sendmail(recipients=users, sender=None, subject=subject,
 		message=frappe.get_template(template).render(args))	
 
