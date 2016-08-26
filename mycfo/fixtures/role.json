@@ -285,5 +285,12 @@
   "modified": "2016-05-02 19:10:17.989459", 
   "name": "Checklist Manager", 
   "role_name": "Checklist Manager"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2016-08-26 15:23:56.403009", 
+  "name": "Management", 
+  "role_name": "Management"
  }
 ]
