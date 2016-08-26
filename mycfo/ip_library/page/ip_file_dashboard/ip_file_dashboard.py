@@ -18,6 +18,7 @@ def get_global_search_suggestions(filters):
 						union select name from `tabDocument Type` where name like '%{0}%'
 						union select name from `tabCustomer` where name like '%{0}%'
 						union select name from `tabIndustry` where name like '%{0}%'
+						union select name from `tabIP Tags` where name like '%{0}%'
 		""".format(filters)
 	suggestions = frappe.db.sql(query, as_list=1)
 	security_levels = [ [level] for level in ["0-Level", "1-Level", "2-Level"] if re.search(filters, level, re.IGNORECASE)]	
@@ -32,16 +33,36 @@ def get_global_search_suggestions(filters):
 def get_published_ip_file(search_filters):
 	search_filters = json.loads(search_filters)
 	limit_query = "LIMIT 5 OFFSET {0}".format(search_filters.get("page_no") * 5 )
-	my_query = """ select * from `tabIP File` ipf
-						where ( ipf.published_flag = 1 or ipf.file_status = 'Archived' )
-						and ( ipf.skill_matrix_18 like '%{0}%' or ipf.file_name like '%{0}%' 
-						or ipf.security_level like '%{0}%' or ipf.customer like '%{0}%' or ipf.industry like '%{0}%'
-						or ipf.skill_matrix_120 like '%{0}%' or ipf.document_type like '%{0}%' )  order by ipf.uploaded_date desc """.format(search_filters.get("filters"))
-	
+
+	if search_filters['filters'] :
+		ip_file_filters = ','.join('"{0}"'.format(w) for w in search_filters['filters'] )
+		my_query = """ select
+						*
+					from 
+					(   select 	ipf.new_file_path, ipf.skill_matrix_120, ipf.file_name, ipf.file_extension, ipf.creation,
+								ipf.modified, ipf.file_status, ipf.owner, ipf.document_type, ipf.modified_by, ipf.published_flag, ipf.source,
+								ipf.security_level, ipf.docstatus, ipf.file_path, ipf.file_approver, ipf.description, ipf.skill_matrix_18,
+								ipf.validity_end_date, ipf.request_type, ipf.user, ipf.employee_name, ipf.file_viewer_path,
+								ipf.customer, ipf.name, ipf.industry, ipf.uploaded_date, ipf.approver_link
+						from `tabIP File` ipf 
+						left join `tabIP File Tags` ipt
+						on ipt.parent = ipf.name
+							where ( ipf.published_flag = 1 or ipf.file_status = 'Archived' )
+							and ( ipf.skill_matrix_18 in ({0}) or ipf.file_name in ({0}) 
+							or ipf.security_level in ({0}) or ipf.customer in ({0}) 
+							or ipf.industry in ({0}) or ipf.skill_matrix_120 in ({0}) 
+							or ipf.document_type in ({0}) or ipt.ip_tags in ({0}) )  
+					) as new_tbl
+					group by new_tbl.name order by new_tbl.uploaded_date desc
+					""".format(ip_file_filters)
+	else :
+		my_query = ip_file_search_without_filters()
+
 	total_records = get_total_records(my_query)
 	response_data = frappe.db.sql(my_query + limit_query, as_dict=True)
 	get_request_download_status(response_data)
-	total_pages = math.ceil(total_records[0].get("count",0)/5.0)
+	total_pages = math.ceil(len(total_records)/5.0)
+	
 	return response_data, total_pages 
 
 
@@ -49,6 +70,14 @@ def get_total_records(my_query):
 	return frappe.db.sql(my_query.replace("*", "count(*) as count", 1), as_dict=1)
 
 
+def ip_file_search_without_filters():
+	return  """ select new_file_path, skill_matrix_120, file_name, file_extension, creation,
+					modified, file_status, owner, document_type, modified_by, published_flag, source,
+					security_level, docstatus, file_path, file_approver, description, skill_matrix_18,
+					validity_end_date, request_type, user, employee_name, file_viewer_path,
+					customer, name, industry, uploaded_date, approver_link from `tabIP File` 
+					order by uploaded_date desc """
+	 
 
 def get_sub_query_of_request_status(file_name):
 	return """ select  ipd.approval_status, ipd.validity_end_date , ipd.name
@@ -329,7 +358,7 @@ def get_customer_list(doctype, txt, searchfield, start, page_len, filters):
 @frappe.whitelist()
 def validate_user_is_el(customer):
 	employee = frappe.db.get_value("Employee", {"user_id":frappe.session.user}, "name")
-	response = frappe.db.sql(""" select  distinct(opd.user_name), emp.employee_name 
+	response = frappe.db.sql(""" select  distinct(opd.user_name), emp.employee_name
 								from `tabOperation And Project Details` opd
 								join `tabOperation And Project Commercial` opc
 								on opd.parent = opc.name
@@ -337,7 +366,9 @@ def validate_user_is_el(customer):
 								on  emp.name  = opd.user_name 
 								where opd.role in ("EL")
 								and opd.user_name = '%s'  
+								and opc.operational_matrix_status = "Active"
 								and opc.customer = '%s' """%(employee, customer), as_list=1)
+
 	return {"is_el":1} if len(response) else {"is_el":0}
 
 

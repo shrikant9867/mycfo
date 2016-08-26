@@ -11,6 +11,7 @@ from frappe.utils import today, getdate
 import subprocess
 import shlex
 import os
+import json
 
 class IPApprover(Document):		
 
@@ -86,12 +87,13 @@ class IPApprover(Document):
 			request_type = {"New":"Published", "Edit":"Republished"}
 			self.init_for_add_comment(request_type.get(self.request_type))
 			edited_file_path = frappe.get_site_path("public", self.file_path)
+			self.validate_file_path_exists(edited_file_path)
 			shutil.copy(edited_file_path, frappe.get_site_path("public", "files", "mycfo", "published_file", self.file_type, self.file_name + extension))
 			self.create_compatible_odf_fromat()
 			self.prepare_for_published_notification()
 			frappe.msgprint("Document {0} {1} successfully.".format(self.file_name, request_type.get(self.request_type)))
-			if os.path.isfile(edited_file_path):
-				os.remove(edited_file_path)
+			# if os.path.isfile(edited_file_path):
+			# 	os.remove(edited_file_path)
 		else:
 			self.current_status = "Rejected by CD"
 			request_type = {"New":["Rejected by CD", 0], "Edit":["Rejected by CD (Edit)", 1]}
@@ -99,6 +101,10 @@ class IPApprover(Document):
 			self.update_ip_file(ip_file_cond)
 			self.init_for_add_comment(request_type.get(self.request_type)[0])
 			self.process_data_before_notification(self.central_delivery, self.central_delivery_comments)	
+
+	def validate_file_path_exists(self, edited_file_path):
+		if not os.path.isfile(edited_file_path):
+			frappe.throw("File path not found.IP File can not be published.")
 
 
 	def check_for_validity_upgrade(self):
@@ -155,7 +161,7 @@ class IPApprover(Document):
 			"skill_matrix_18":frappe.db.escape(self.skill_matrix_18),
 			"industry":frappe.db.escape(self.industry),
 			"source":frappe.db.escape(self.source),
-			"description":frappe.db.escape(self.file_description),
+			"description":frappe.db.escape(self.file_description) if self.file_description else "",
 			"validity_end_date":self.validity_end_date,
 			"security_level":self.level_of_approval,
 			"file_path":file_path,
@@ -193,13 +199,17 @@ class IPApprover(Document):
 
 	def create_compatible_odf_fromat(self):
 		mapper = self.get_extension_mapper()
+		xlsm_path = ""
+		edited_file_path = frappe.get_site_path("public", self.file_path)
 		if self.file_extension != "zip" and self.file_extension:
 			try:
 				extension = mapper.get(self.file_extension, "pdf")
 				viewer_path = frappe.get_site_path('/'.join(["public", "files", "mycfo", "published_file", self.file_type, self.file_name + "_viewer." + extension]))
 				file_path = '/'.join(["files", "mycfo", "published_file", self.file_type, self.file_name + "." + self.file_extension])
+				dir_path = ""
 				if self.file_extension  == "pdf":
 					file_viewer_path = "assets/mycfo/ViewerJS/index.html#../../../../"  + file_path
+					self.update_ip_file(" file_viewer_path = '%s' "%file_viewer_path)
 				else:
 					file_path = frappe.get_site_path("public", file_path)	
 					if extension != "html":
@@ -208,13 +218,29 @@ class IPApprover(Document):
 						viewer_path = frappe.get_site_path('/'.join(["public", "files", "mycfo", "published_file", self.file_type, self.file_name, self.file_name + "_viewer." + extension]))
 						file_viewer_path = '/'.join(["files", "mycfo", "published_file", self.file_type, self.file_name, self.file_name + "_viewer." + extension])
 						dir_path = frappe.get_site_path("public", "files", "mycfo", "published_file", self.file_type, self.file_name)
-						if os.path.isdir(dir_path):
-							shutil.rmtree(dir_path, ignore_errors=True)
+						if self.file_extension == "xlsm":
+							xlsm_path = file_path
+							file_path = frappe.get_site_path("public", '/'.join(["files", "mycfo", "published_file", self.file_type, self.file_name + "." + "xlsx"]))
 					args = ['unoconv', '-f', str(extension) , '-T', '9', '-o', str(viewer_path), str(file_path)]
-					subprocess.check_call(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)	
-				self.update_ip_file(" file_viewer_path = '%s' "%file_viewer_path)	
+					self.schedule_conversion_in_cron({"dir_path":dir_path, "args":args, "file_viewer_path":file_viewer_path,
+														"file_extension":self.file_extension, "xlsm_path":xlsm_path, 
+														"file_path":file_path, "edited_file_path":edited_file_path} )	
 			except Exception, e:
 				frappe.throw(e)
+
+	def schedule_conversion_in_cron(self, data):
+		ipc = frappe.new_doc("IP File Converter")
+		ipc.ip_file = self.ip_file
+		ipc.ip_approver = self.name
+		ipc.dir_path = data.get("dir_path")
+		ipc.command = json.dumps(data.get("args"))
+		ipc.file_viewer_path = data.get("file_viewer_path")
+		ipc.file_extension = data.get("file_extension")
+		ipc.xlsm_path = data.get("xlsm_path")
+		ipc.file_path = data.get("file_path")
+		ipc.edited_file_path = data.get("edited_file_path")
+		ipc.save(ignore_permissions=True)
+
 
 	def get_extension_mapper(self):
 		return {"gif":"pdf", "jpg":"pdf", "jpeg":"pdf", "png":"pdf", "svg":"pdf",

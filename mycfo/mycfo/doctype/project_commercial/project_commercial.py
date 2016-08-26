@@ -96,8 +96,7 @@ class ProjectCommercial(Document):
 
 		if self.pro_per == '30' or self.pro_per == '31':
 			months-=1
-			frappe.errprint(self.pro_per)
-			frappe.errprint(months)
+			
 		if flt(self.p_value)%cint(months) == 0:
 			due_amount = due_amount
 			if months == 1:
@@ -278,8 +277,9 @@ def get_permission_query_conditions_for_kpi(user):
 	elif "Customer" in frappe.get_roles(user) and not user == "Administrator":
 		customer_list = frappe.db.sql(""" select defvalue from `tabDefaultValue` 
 											where parenttype='User Permission' and defkey = 'Customer' 
-											and parent = '{0}' """.format(user), as_list=1)		
+											and parent = '{0}' """.format(user), as_list=1, debug=1)
 		customer_list = "', '".join([customer[0] for customer in customer_list])
-		return """(`tabKPI`.customer in ('{name_list}')  and `tabKPI`.kpi_status = 'Reviewed'  )""".format(name_list=customer_list)
+
+		return """(`tabKPI`.customer in ('{name_list}')  and `tabKPI`.kpi_status = 'Reviewed')""".format(name_list=customer_list)
 
 

@@ -21,6 +21,27 @@ class KPI(Document):
 			send_kpi_notification(self)
 			send_kpi_notification_el(self)
 
+	def before_submit(self):
+		employee = frappe.db.get_value("Employee", {"user_id":frappe.session.user}, "name")
+		response = frappe.db.sql(""" select  distinct(opd.user_name), emp.employee_name 
+									from `tabOperation And Project Details` opd
+									join `tabOperation And Project Commercial` opc
+									on opd.parent = opc.name
+									join `tabEmployee` emp
+									on  emp.name  = opd.user_name 
+									where opd.role in ("EL")
+									and opd.user_name = '%s'  
+									and opc.customer = '%s' """%(employee, self.customer), as_list=1)
+		roles = frappe.get_roles()
+		is_central = 0
+		if "Central Delivery" in roles:
+			is_central = 1
+
+		if is_central == 1:
+			pass
+		elif not(len(response)):
+			frappe.throw("Only EL Can submit KPI")
+
 	def on_submit(self):
 		css_doc = frappe.new_doc("Customer Satisfaction Survey")
 		css_doc.customer = self.customer
@@ -75,4 +96,18 @@ def send_kpi_notification_el(doc):
 	args = {"user_name":frappe.session.user, "file_name":doc.get("file_name"),"customer":doc.get("customer"),"title":doc.get("title"),"email":doc.get("email")}
 	frappe.sendmail(recipients=el, sender=None, subject=subject,
 			message=frappe.get_template(template).render(args))	
-	
+
+@frappe.whitelist()
+def get_el(customer):
+	list_of_el = frappe.db.sql("""select  distinct(opd.user_name), emp.employee_name  
+									from `tabOperation And Project Details` opd 
+									join `tabOperation And Project Commercial` opc 
+									on opd.parent = opc.name join `tabEmployee` emp 
+									on  emp.name  = opd.user_name  
+									where opd.role in ("EL")   
+									and opc.customer = "{0}" 
+									and opc.operational_matrix_status = "Active" """.format(customer),as_list=1)
+	el_name = ""
+	for i in [e[1] for e in list_of_el]:	
+		el_name += i + "\n"
+	return el_name	

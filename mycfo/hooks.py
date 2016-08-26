@@ -14,8 +14,8 @@ app_version = "0.0.1"
 # ------------------
 
 # include js, css files in header of desk.html
-app_include_css = ["/assets/mycfo/css/jquery.rateyo.min.css", "/assets/mycfo/css/mycfo.css"]
-app_include_js = ["/assets/mycfo/js/jquery.rateyo.min.js","/assets/mycfo/js/jquery.twbsPagination.min.js", "assets/js/mycfo_report.min.js"]
+app_include_css = ["/assets/mycfo/css/jquery.rateyo.min.css", "/assets/mycfo/css/mycfo.css", "/assets/mycfo/css/select2.min.css"]
+app_include_js = ["/assets/mycfo/js/jquery.rateyo.min.js","/assets/mycfo/js/jquery.twbsPagination.min.js", "assets/js/mycfo_report.min.js", "/assets/mycfo/js/select2.full.js"]
 
 # include js, css files in header of web template
 # web_include_css = "/assets/mycfo/css/mycfo.css"
@@ -99,7 +99,8 @@ scheduler_events = {
 	"daily":[
 		"mycfo.ip_library.scheduler_tasks.send_notification_for_expiry_of_document",
 		"mycfo.ip_library.scheduler_tasks.archive_document",
-		"mycfo.discussion_forum.doctype.discussion_topic.discussion_topic.mail_topic_list"
+		"mycfo.discussion_forum.doctype.discussion_topic.discussion_topic.mail_topic_list",
+		"mycfo.mycfo.doctype.el_sign_off_details.el_sign_off_details.send_notification_to_el_sign_off"
 	]
 }
 
