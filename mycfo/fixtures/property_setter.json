@@ -985,7 +985,7 @@
   "name": "Contact-search_fields", 
   "property": "search_fields", 
   "property_type": "Data", 
-  "value": "email,mobile"
+  "value": ""
  }, 
  {
   "default_value": null, 
@@ -1518,7 +1518,7 @@
   "name": "Contact-linkedin_id-previous_field", 
   "property": "previous_field", 
   "property_type": "Data", 
-  "value": "mobile_no"
+  "value": ""
  }, 
  {
   "default_value": null, 
