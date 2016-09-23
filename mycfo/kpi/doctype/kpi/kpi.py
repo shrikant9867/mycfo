@@ -15,11 +15,13 @@ class KPI(Document):
 				frappe.throw("Total of Business weightage, Finance weightage, People weightage & Process weightage must be equal to 100. Currently, Total weightage equals to {0}.".format(total_weightage))
 	
 	def after_insert(self):
-		if not self.email:
-			frappe.throw("Please Set the Email ID for Customer")
+		email = frappe.db.get_value("Customer", self.customer, "email")
+		if not email:
+			frappe.throw("Please Set the Email ID for Customer {0}".format(self.customer))
 		else:
-			send_kpi_notification(self)
-			send_kpi_notification_el(self)
+			title = self.title_prefix + ' - ' + self.customer
+			send_kpi_notification(self, email, title)
+			send_kpi_notification_el(self, title)
 
 	def before_submit(self):
 		employee = frappe.db.get_value("Employee", {"user_id":frappe.session.user}, "name")
@@ -79,22 +81,30 @@ def get_el_list(customer):
 
 	return len(customer_list)
 	
-def send_kpi_notification(doc):
+def send_kpi_notification(doc, email, title):
 	template = "/templates/ip_library_templates/kpi_mail_notification_EL.html"
 	subject = "New KPI Added"
-	email=doc.get("email")
-	args = {"user_name":frappe.session.user, "file_name":doc.get("file_name"),"customer":doc.get("customer"),"title":doc.get("title"),"email":doc.get("email")}
+	args = {"user_name":frappe.session.user, "file_name":doc.get("file_name"),"customer":doc.get("customer"),\
+				"title":title,"email":doc.get("email")}
 	frappe.sendmail(recipients=email, sender=None, subject=subject,
 			message=frappe.get_template(template).render(args))	
 
-def send_kpi_notification_el(doc):
+def send_kpi_notification_el(doc, title):
 	template = "/templates/ip_library_templates/kpi_mail_notification_EL.html"
 	subject = "New KPI Added"
-	el=frappe.db.sql("""select od.email_id from  `tabOperation Details` od join `tabOperation And Project Commercial` topc
-	on od.parent=topc.operational_id where od.role='EL' and topc.customer=%s""",doc.get("customer"),as_list=1)[0][0]
-	print el
-	args = {"user_name":frappe.session.user, "file_name":doc.get("file_name"),"customer":doc.get("customer"),"title":doc.get("title"),"email":doc.get("email")}
-	frappe.sendmail(recipients=el, sender=None, subject=subject,
+	el = frappe.db.sql("""select distinct usr.email from  `tabOperation Details` od join 
+						   `tabOperation And Project Commercial` topc
+							on od.parent=topc.operational_id
+							join `tabEmployee` emp
+							on emp.name = od.user_name
+							join `tabUser` usr
+							on usr.email = emp.user_id 
+							where od.role='EL' and topc.customer=%s""",doc.get("customer"), as_dict=1)
+	el = [row.get("email") for row in el]
+	args = {"user_name":frappe.session.user, "file_name":doc.get("file_name"),\
+					"customer":doc.get("customer"),"title":title, "email":doc.get("email")}
+	if el:
+		frappe.sendmail(recipients=el, sender=None, subject=subject,
 			message=frappe.get_template(template).render(args))	
 
 @frappe.whitelist()
