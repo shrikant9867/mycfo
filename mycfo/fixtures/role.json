@@ -2,6 +2,34 @@
  {
   "docstatus": 0, 
   "doctype": "Role", 
+  "modified": "2015-12-07 15:23:34.606409", 
+  "name": "Engagement Leader", 
+  "role_name": "Engagement Leader"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-12-07 15:24:15.163637", 
+  "name": "Engagement Manager", 
+  "role_name": "Engagement Manager"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-12-07 15:24:51.406409", 
+  "name": "Delivery", 
+  "role_name": "Delivery"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
+  "modified": "2015-12-07 15:25:03.609045", 
+  "name": "IT", 
+  "role_name": "IT"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Role", 
   "modified": "2016-01-14 12:23:31.826715", 
   "name": "Job Seekers", 
   "role_name": "Job Seekers"

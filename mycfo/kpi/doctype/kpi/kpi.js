@@ -27,7 +27,6 @@ cur_frm.fields_dict["kpi_process_details"].grid.get_field("resouce_assigned").ge
 
 cur_frm.add_fetch("resouce_assigned", "employee_name", "employee_name");
 cur_frm.add_fetch("skill_matrix_120", "skill_matrix_18", "skill_matrix_18");
-cur_frm.add_fetch("customer", "email", "email");
 
 //Validation kpi start date
 cur_frm.cscript.start_date = function(doc,cdt,cdn){

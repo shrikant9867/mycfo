@@ -1,6 +1,6 @@
 {
  "allow_copy": 0, 
- "allow_import": 0, 
+ "allow_import": 1, 
  "allow_rename": 0, 
  "autoname": "field:sector", 
  "creation": "2015-10-30 18:42:55.620767", 
@@ -79,7 +79,7 @@
    "email": 1, 
    "export": 1, 
    "if_owner": 0, 
-   "import": 0, 
+   "import": 1, 
    "permlevel": 0, 
    "print": 1, 
    "read": 1, 
