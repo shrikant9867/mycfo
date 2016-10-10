@@ -17,7 +17,7 @@ class KPI(Document):
 	def after_insert(self):
 		email = frappe.db.get_value("Customer", self.customer, "email")
 		if not email:
-			frappe.throw("Please Set the Email ID for Customer {0}".format(self.customer))
+			frappe.msgprint("Please Set the Email ID for Customer {0}".format(self.customer))
 		else:
 			title = self.title_prefix + ' - ' + self.customer
 			send_kpi_notification(self, email, title)
