@@ -1,19 +1,6 @@
 [
  {
   "default_value": null, 
-  "doc_type": "KPI", 
-  "docstatus": 0, 
-  "doctype": "Property Setter", 
-  "doctype_or_field": "DocField", 
-  "field_name": "kpi_status", 
-  "modified": "2016-04-25 11:39:06.688844", 
-  "name": "KPI-kpi_status-options", 
-  "property": "options", 
-  "property_type": "Text", 
-  "value": "Open\nClosed\nAccepted"
- }, 
- {
-  "default_value": null, 
   "doc_type": "Customer", 
   "docstatus": 0, 
   "doctype": "Property Setter", 
@@ -1785,19 +1772,6 @@
   "doc_type": "KPI", 
   "docstatus": 0, 
   "doctype": "Property Setter", 
-  "doctype_or_field": "DocType", 
-  "field_name": null, 
-  "modified": "2016-09-23 18:50:49.304323", 
-  "name": "KPI-read_only_onload", 
-  "property": "read_only_onload", 
-  "property_type": "Check", 
-  "value": null
- }, 
- {
-  "default_value": null, 
-  "doc_type": "KPI", 
-  "docstatus": 0, 
-  "doctype": "Property Setter", 
   "doctype_or_field": "DocField", 
   "field_name": "title", 
   "modified": "2016-09-23 18:50:49.561739", 
@@ -1935,5 +1909,31 @@
   "property": "previous_field", 
   "property_type": "Data", 
   "value": "cin_number"
+ }, 
+ {
+  "default_value": null, 
+  "doc_type": "KPI", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocType", 
+  "field_name": null, 
+  "modified": "2016-10-12 16:32:25.275209", 
+  "name": "KPI-read_only_onload", 
+  "property": "read_only_onload", 
+  "property_type": "Check", 
+  "value": null
+ }, 
+ {
+  "default_value": null, 
+  "doc_type": "KPI", 
+  "docstatus": 0, 
+  "doctype": "Property Setter", 
+  "doctype_or_field": "DocField", 
+  "field_name": "kpi_status", 
+  "modified": "2016-10-12 16:32:26.088693", 
+  "name": "KPI-kpi_status-options", 
+  "property": "options", 
+  "property_type": "Text", 
+  "value": "Open\nReviewed\nAccepted\nClosed"
  }
 ]
