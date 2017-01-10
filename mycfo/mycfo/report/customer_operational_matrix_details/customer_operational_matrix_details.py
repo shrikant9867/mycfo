@@ -13,11 +13,13 @@ def execute(filters=None):
 
 def get_data(filters):
 	result = frappe.db.sql("""select op.operational_id,op.operational_matrix_title,op.operational_matrix_status,op.customer,cu.pan_number,
-								od.role,od.user_name,od.email_id
-									from `tabOperation And Project Commercial` op,`tabCustomer` cu, `tabOperation Details` od 
-										where cu.name = op.customer and od.parent = op.operational_id 
+								od.role,emp.employee_name,od.email_id
+									from `tabOperation And Project Commercial` op,`tabCustomer` cu, `tabOperation Details` od, 
+										`tabEmployee` emp									
+										where cu.name = op.customer 
+											and od.parent = op.operational_id 
+											and emp.name = od.user_name 
 											and od.role in ("EL","EM") order by op.operational_id """,as_list=1)
-	
 	return result
 
 
@@ -29,7 +31,7 @@ def get_colums():
 			_("Customer") + ":Link/Customer:170",
 			_("Pan Number") + ":Data:120",
 			_("Role") + ":Data:80",
-			_("Name") + ":Link/Employee:100",
+			_("Employee Name") + ":Data:150",
 			_("Email Id") + ":Data:200"
 	]
 	return columns
