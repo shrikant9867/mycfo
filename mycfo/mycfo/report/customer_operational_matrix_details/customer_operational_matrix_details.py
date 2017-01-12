@@ -13,7 +13,7 @@ def execute(filters=None):
 
 def get_data(filters):
 	result = frappe.db.sql("""select op.operational_id,op.operational_matrix_title,op.operational_matrix_status,op.customer,cu.pan_number,
-								od.role,emp.employee_name,od.email_id
+								cu.tan_number, cu.cin_number, od.role,emp.employee_name,od.email_id
 									from `tabOperation And Project Commercial` op,`tabCustomer` cu, `tabOperation Details` od, 
 										`tabEmployee` emp									
 										where cu.name = op.customer 
@@ -29,7 +29,9 @@ def get_colums():
 			_("OM Title") + ":Data:200",
 			_("OM Status") + ":Data:100",
 			_("Customer") + ":Link/Customer:170",
-			_("Pan Number") + ":Data:120",
+			_("PAN NO") + ":Data:100",
+			_("TAN NO") + ":Data:100",
+			_("CIN NO") + ":Data:170",
 			_("Role") + ":Data:80",
 			_("Employee Name") + ":Data:150",
 			_("Email Id") + ":Data:200"
