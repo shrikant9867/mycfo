@@ -365,7 +365,7 @@ frappe.ui.form.on("KPI", "refresh", function(frm,cdt,cdn) {
 		cur_frm.set_df_property("customer", "read_only", 1);
 		set_default_properties_for_customer_role();
 		set_weightage_value_in_html_field();
-		show_kpi_acceptance_to_customer();
+		show_kpi_buttons(frm);
 	}
 	
 });
@@ -600,11 +600,27 @@ toggle_kpi_status_field = function(frm){
 	}
 }
 
-show_kpi_acceptance_to_customer = function(){
-	if(inList(user_roles, "Customer")){
-		var mapper = {"accept_all_client_kpi_acceptance":"hidden", "accept_all_client_final_acceptance":"hidden"}
-		$.each(mapper, function(field_name, property_name){
-			cur_frm.set_df_property(field_name, property_name, false);	
-		})
-	}	
+show_kpi_buttons = function (frm) {
+	frappe.call({
+		async:false,
+		freeze:true,
+		method:"mycfo.ip_library.page.ip_file_dashboard.ip_file_dashboard.validate_user_is_el",
+		args:{"customer":frm.doc.customer},
+		callback:function(r){
+			if(r.message.is_el){
+				toggle_kpi_buttons(false);
+			}else if(inList(user_roles, "Customer")){
+				toggle_kpi_buttons(false);
+			}else{
+				toggle_kpi_buttons(true);
+			}
+		}
+	});
+}
+
+toggle_kpi_buttons = function (hidden_status) {
+	var mapper = {"accept_all_client_kpi_acceptance":"hidden", "accept_all_client_final_acceptance":"hidden"}
+	$.each(mapper, function(field_name, property_name){
+		cur_frm.set_df_property(field_name, property_name, hidden_status);	
+	})
 }
