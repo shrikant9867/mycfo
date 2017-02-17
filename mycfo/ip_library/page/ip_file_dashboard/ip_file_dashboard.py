@@ -85,7 +85,7 @@ def get_sub_query_of_request_status(file_name):
 						where ipd.file_name = '{0}'
 						and ipd.ip_file_requester = '{1}'
 						and ipd.approval_status != 'Expired'
-						order by ipd.creation desc limit 1	""".format(file_name, frappe.session.user)
+						order by ipd.creation desc limit 1	""".format(frappe.db.escape(file_name), frappe.session.user)
 
 
 
@@ -343,7 +343,7 @@ def get_feed_back_questionnaire_form(response):
 						where ipd.file_name = '{0}'
 						and ipd.ip_file_requester = '{1}'
 						and ipd.approval_status in ('Download Allowed', 'Expired')
-						order by ipd.creation desc limit 1	""".format(response.get("file_name"), frappe.session.user)
+						order by ipd.creation desc limit 1	""".format(frappe.db.escape(response.get("file_name")), frappe.session.user)
 		fdbk_response = frappe.db.sql(feedback, as_dict=1)
 		if fdbk_response:
 			response["download_feedback_form"] = fdbk_response[0].get("name", "")
