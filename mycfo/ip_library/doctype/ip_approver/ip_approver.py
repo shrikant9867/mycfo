@@ -164,13 +164,13 @@ class IPApprover(Document):
 			"description":frappe.db.escape(self.file_description) if self.file_description else "",
 			"validity_end_date":self.validity_end_date,
 			"security_level":self.level_of_approval,
-			"file_path":file_path,
+			"file_path":frappe.db.escape(file_path),
 			"file_status":file_status,
 			"uploaded_date":today(),
 			"published_flag":1,
 			"customer":frappe.db.escape(self.customer),
 			"file_approver":self.approver or "",
-			"employee_name":self.employee_name
+			"employee_name":frappe.db.escape(self.employee_name)
 		}
 		cond = ""
 		cond_list  = [ "{0} = '{1}' ".format(key, value)  for key, value in file_dict.items()]
@@ -179,7 +179,7 @@ class IPApprover(Document):
 
 
 	def update_ip_file(self, ip_file_cond):
-		query = """ update `tabIP File` set  {0} where name = '{1}' """.format(ip_file_cond, self.ip_file)
+		query = """ update `tabIP File` set  {0} where name = '{1}' """.format(ip_file_cond, frappe.db.escape(self.ip_file))
 		frappe.db.sql(query)
 	
 
@@ -209,7 +209,7 @@ class IPApprover(Document):
 				dir_path = ""
 				if self.file_extension  == "pdf":
 					file_viewer_path = "assets/mycfo/ViewerJS/index.html#../../../../"  + file_path
-					self.update_ip_file(" file_viewer_path = '%s' "%file_viewer_path)
+					self.update_ip_file(" file_viewer_path = '%s' "%frappe.db.escape(file_viewer_path))
 				else:
 					file_path = frappe.get_site_path("public", file_path)	
 					if extension != "html":
