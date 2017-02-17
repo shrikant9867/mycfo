@@ -73,7 +73,7 @@ def init_ip_file_conversion():
 
 			args = json.loads(row.get("command"))	
 			subprocess.check_call(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-			ip_file_cond = " file_viewer_path = '%s' "%row.get("file_viewer_path")
+			ip_file_cond = " file_viewer_path = '%s' "%frappe.db.escape(row.get("file_viewer_path"))
 			update_ip_file(row.get("ip_file"), ip_file_cond)
 			my_dict = {"converter_status":1, "attempt_count":int(row.get("attempt_count",0)) + 1}
 			status_list.append({"ip_file":row.get("ip_file"), "status":"Conversion Success", "errors":""})
@@ -91,7 +91,7 @@ def init_ip_file_conversion():
 				
 
 def update_ip_file(ip_file, ip_file_cond):
-	query = """ update `tabIP File` set  {0} where name = '{1}' """.format(ip_file_cond, ip_file)
+	query = """ update `tabIP File` set  {0} where name = '{1}' """.format(ip_file_cond, frappe.db.escape(ip_file))
 	frappe.db.sql(query)
 	frappe.db.commit()
 

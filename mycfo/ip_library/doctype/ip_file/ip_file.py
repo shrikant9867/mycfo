@@ -283,7 +283,7 @@ def get_permission_query_conditions(user):
 	if "Central Delivery" not in roles and frappe.session.user != "Administrator":
 		emp_name = frappe.db.get_value("Employee",{"user_id":frappe.session.user}, "name")
 		ip_files = frappe.db.sql(""" select name from `tabIP File` where owner = '{0}' or file_approver = '{1}' """.format(frappe.session.user, emp_name),as_dict=1)
-		ip_files = "', '".join([ipf.get("name") for ipf in ip_files if ipf])
+		ip_files = "', '".join([frappe.db.escape(ipf.get("name")) for ipf in ip_files if ipf])
 		return """(`tabIP File`.name in ('{files}') )""".format(files = ip_files)
 
 
