@@ -99,7 +99,7 @@ scheduler_events = {
 	"daily":[
 		"mycfo.ip_library.scheduler_tasks.send_notification_for_expiry_of_document",
 		"mycfo.ip_library.scheduler_tasks.archive_document",
-		"mycfo.discussion_forum.doctype.discussion_topic.discussion_topic.mail_topic_list",
+		# "mycfo.discussion_forum.doctype.discussion_topic.discussion_topic.mail_topic_list",
 		"mycfo.mycfo.doctype.el_sign_off_details.el_sign_off_details.send_notification_to_el_sign_off"
 	]
 }
