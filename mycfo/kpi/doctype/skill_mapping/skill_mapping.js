@@ -13,8 +13,9 @@ frappe.ui.form.on("Skill Mapping","refresh", function(frm) {
       var df = frappe.meta.get_docfield("Previous Employer Project Details","company_name", cur_frm.doc.name);
       df.options = company_name_list;
   }
-});
 
+});
+  
 
 //calculate year of year_of_experience in all three tables
 // frappe.ui.form.on("Previouse Employer Details", "from", function(frm,cdt,cdn) {
