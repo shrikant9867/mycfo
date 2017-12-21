@@ -169,7 +169,7 @@ def get_data():
 					"label": "Resource Pool",
 					"is_query_report": True,
 					"doctype": "Skill Mapping",
-					"description": _("Skill Mapping")
+					"description": _("Skill Mapping Report")
 				}
 			]
 		}

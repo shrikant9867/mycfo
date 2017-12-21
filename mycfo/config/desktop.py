@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+import frappe
 from frappe import _
 
 def get_data():
-	return {
+	roles = frappe.get_roles(frappe.session.user)
+	if 'Prospect' not in (roles):
+		return {
 		"mycfo": {
 			"color": "grey",
 			"icon": "icon-th",
@@ -38,3 +41,22 @@ def get_data():
 			"link":"discussion-forum"
 		}
 	}
+
+	else:
+		return {
+			"Skill Mapping": {
+				"color": "grey",
+				"icon": "icon-th",
+				"type": "doctype",
+				"label": "Skill Mapping",
+				"link": "List/Skill Mapping",
+				"description": _("Skill Mapping Details"),
+			},
+			"Resource Pool":{
+				"color": "blue",
+				"icon": "icon-list",
+				"type": "page",
+				"label": _("Resource Pool"),
+				"link":"resourcepool"
+			}
+		}
