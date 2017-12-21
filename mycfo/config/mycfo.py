@@ -51,7 +51,12 @@ def get_data():
 					"type": "doctype",
 					"name": "Customer Satisfaction Survey",
 					"description": _("Customer Satisfaction Survey Details"),
-				},					
+				},
+				{
+					"type": "doctype",
+					"name": "Skill Mapping",
+					"description": _("Skill Mapping Details"),
+				}						
 			]
 		},
 
@@ -157,6 +162,14 @@ def get_data():
 					"is_query_report": True,
 					"doctype": "Operation And Project Commercial",
 					"description": _("Customer Operational Matrix Details")
+				},
+				{
+					"type": "report",
+					"name": "Resource Pool",
+					"label": "Resource Pool",
+					"is_query_report": True,
+					"doctype": "Skill Mapping",
+					"description": _("Skill Mapping")
 				}
 			]
 		}

@@ -3,15 +3,19 @@
  "creation": "2016-02-11 16:35:11.163949", 
  "docstatus": 0, 
  "doctype": "Page", 
- "modified": "2016-02-11 16:35:11.163949", 
+ "idx": 0, 
+ "modified": "2017-12-21 12:11:45.616886", 
  "modified_by": "Administrator", 
- "module": "KPI", 
+ "module": "kpi", 
  "name": "resourcepool", 
  "owner": "Administrator", 
  "page_name": "resourcepool ", 
  "roles": [
   {
    "role": "All"
+  }, 
+  {
+   "role": "Prospect"
   }
  ], 
  "script": null, 
